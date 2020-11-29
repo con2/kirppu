@@ -1,3 +1,13 @@
+def environmentMap = [
+  "master": "production",
+  "development": "staging",
+]
+
+def namespaceMap = [
+  "production": "kirppu",
+  "staging": "kirppu-staging",
+]
+
 pipeline {
   agent any
 
@@ -9,13 +19,13 @@ pipeline {
   stages {
     stage("Build") {
       steps {
-        sh "emskaffolden -E production -- build --file-output build.json"
+        sh "emskaffolden -E ${environmentMap[env.BRANCH_NAME]} -- build --file-output build.json"
       }
     }
 
     stage("Deploy") {
       steps {
-        sh "emskaffolden -E production -- deploy -n kirppu -a=build.json"
+        sh "emskaffolden -E ${environmentMap[env.BRANCH_NAME]} -- deploy -n ${namespaceMap[environmentMap[env.BRANCH_NAME]]} -a=build.json"
       }
     }
   }
