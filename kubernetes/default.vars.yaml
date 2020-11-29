@@ -9,6 +9,10 @@ kirppu_extra_databases: ''
 kompassi_client_id: ''
 kompassi_client_secret: ''
 
+# Legacy Kompassi API v1 (NOTE: leave empty if djangoapp_secret_managed: false)
+kompassi_api_application_name: ''
+kompassi_api_application_password: ''
+
 # Note: If you use Skaffold/Emskaffolden, leave these at defaults and let Skaffold manage the images
 djangoapp_name: kirppu
 djangoapp_image: !Var djangoapp_name
