@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gunicorn
+  labels:
+    stack: !Var djangoapp_name
+    component: djangoapp
+spec:
+  ports:
+  - port: 8000
+    targetPort: 8000
+  selector:
+    stack: !Var djangoapp_name
+    component: gunicorn

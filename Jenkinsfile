@@ -1,41 +1,39 @@
-def image = "tracon/kirppu:build-${env.BUILD_NUMBER}"
+def environmentMap = [
+  "master": "production",
+  "development": "staging",
+]
 
-stage("Build") {
-  node {
-    checkout scm
-    sh "docker build --tag ${image} ."
+def namespaceMap = [
+  "production": "kirppu",
+  "staging": "kirppu-staging",
+]
+
+pipeline {
+  agent any
+
+  environment {
+    PYTHONUNBUFFERED = "1"
+    SKAFFOLD_DEFAULT_REPO = "harbor.con2.fi/con2"
   }
-}
 
-// stage("Test") {
-//   node {
-//     sh """
-//       docker run \
-//         --rm \
-//         --link jenkins.tracon.fi-postgres:postgres \
-//         --env-file ~/.kirppu.env \
-//         ${image} \
-//         pip install -r requirements-dev.txt && py.test --cov . --doctest-modules
-//     """
-//   }
-// }
+  stages {
+    stage("Build") {
+      steps {
+        sh "emskaffolden -E ${environmentMap[env.BRANCH_NAME]} -- build --file-output build.json"
+      }
+    }
 
-stage("Push") {
-  node {
-    sh "docker tag ${image} tracon/kirppu:latest && docker push tracon/kirppu:latest && docker rmi ${image}"
+    stage("Deploy") {
+      steps {
+        sh "emskaffolden -E ${environmentMap[env.BRANCH_NAME]} -- deploy -n ${namespaceMap[environmentMap[env.BRANCH_NAME]]} -a=build.json"
+      }
+    }
   }
-}
 
-stage("Deploy") {
-  node {
-    git url: "git@github.com:tracon/ansible-tracon"
-    sh """
-      ansible-playbook \
-        --vault-password-file=~/.vault_pass.txt \
-        --user root \
-        --limit nuoli.tracon.fi \
-        --tags kirppu-deploy \
-        tracon.yml
-    """
+  post {
+    always {
+      archiveArtifacts "build.json"
+      archiveArtifacts "kubernetes/template.compiled.yaml"
+    }
   }
 }
