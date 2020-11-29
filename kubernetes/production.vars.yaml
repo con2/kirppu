@@ -1,7 +1,6 @@
 djangoapp_secret_managed: false
 djangoapp_admins:
-  # - Jyrki Launonen <codez@tracon.fi>
-  - Santtu Pajukanta <santtu@pajukanta.fi>
+  - Jyrki Launonen <codez@tracon.fi>
 
 ingress_public_hostname: kirppu.tracon.fi
 
