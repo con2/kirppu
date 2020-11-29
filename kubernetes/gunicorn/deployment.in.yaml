@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gunicorn
+spec:
+  selector:
+    matchLabels:
+      stack: !Var djangoapp_name
+      component: gunicorn
+  template:
+    metadata:
+      labels:
+        stack: !Var djangoapp_name
+        component: gunicorn
+    spec:
+      enableServiceLinks: false
+      securityContext: !Var gunicorn_pod_security_context
+      initContainers:
+        - !If
+            test: !Var setup_should_run
+            then:
+              name: setup
+              image: !Var djangoapp_image
+              args: ["python", "manage.py", "migrate"]
+              env: !Var gunicorn_environment
+              securityContext: !Var gunicorn_container_security_context
+      containers:
+        - name: gunicorn
+          image: !Var djangoapp_image
+          args:
+            - gunicorn
+            - --bind=0.0.0.0:8000
+            - !Format --workers={djangoapp_workers}
+            - --capture-output
+            - --access-logfile=-
+            - kirppu_project.wsgi:application
+          ports:
+            - containerPort: 8000
+          env: !Var gunicorn_environment
+          securityContext: !Var gunicorn_container_security_context
+          startupProbe:
+            httpGet:
+              path: /kirppu/
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: !Var ingress_public_hostname
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: /kirppu/
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: !Var ingress_public_hostname
+            periodSeconds: 30
+          volumeMounts:
+            - mountPath: /tmp
+              name: temp
+      volumes:
+        - name: temp
+          emptyDir: {}

@@ -1,0 +1,17 @@
+apiVersion: skaffold/v2beta9
+kind: Config
+metadata:
+  name: !Var djangoapp_image
+
+build:
+  local:
+    useBuildkit: true
+  artifacts:
+    - image: !Var djangoapp_image
+      context: .
+
+deploy:
+  statusCheckDeadlineSeconds: 300
+  kubectl:
+    manifests:
+      - kubernetes/template.compiled.yaml

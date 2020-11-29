@@ -1,0 +1,46 @@
+# djangoapp deployment using Kubernetes
+# usage: emrichen -f default.vars.yaml kubernetes.in.yaml | kubectl apply -n djangoapp -f -
+
+
+##############
+# POSTGRESQL #
+##############
+---
+!If
+  test: !Var postgres_managed
+  then: !Include postgres/service.in.yaml
+
+---
+!If
+  test: !Var postgres_managed
+  then: !Include postgres/deployment.in.yaml
+
+---
+!If
+  test: !Var postgres_managed
+  then: !Include postgres/pvc.in.yaml
+
+---
+!If
+  test: !Var postgres_managed
+  then: !Include postgres/secret.in.yaml
+
+
+#########################
+# GUNICORN (Web server) #
+#########################
+---
+!Include gunicorn/service.in.yaml
+---
+!Include gunicorn/deployment.in.yaml
+---
+!If
+  test: !Var djangoapp_secret_managed
+  then: !Include gunicorn/secret.in.yaml
+
+
+###########
+# INGRESS #
+###########
+---
+!Include ingress.in.yaml
