@@ -1,5 +1,3 @@
-import functools
-import inspect
 import logging
 import random
 
@@ -19,7 +17,7 @@ from django.shortcuts import (
 )
 from django.utils.translation import gettext as _
 from django.utils.timezone import now
-from ipware.ip import get_ip
+from ipware.ip import get_client_ip
 
 from .api.common import (
     get_item_or_404 as _get_item_or_404,
@@ -50,18 +48,24 @@ from .forms import remove_item_from_receipt
 from . import ajax_util, stats
 from .ajax_util import (
     AjaxError,
-    AjaxFunc,
+    get_all_ajax_functions,
     get_counter,
     get_clerk,
     empty_as_none,
-    require_user_features,
     RET_ACCEPTED,
     RET_BAD_REQUEST,
     RET_CONFLICT,
+    RET_FORBIDDEN,
     RET_AUTH_FAILED,
     RET_LOCKED,
 )
 
+# Must be imported, for part to be included at all in the API.
+# noinspection PyUnresolvedReferences
+from . import api
+
+
+ajax_func = ajax_util.ajax_func_factory("checkout")
 logger = logging.getLogger(__name__)
 
 
@@ -79,81 +83,13 @@ def raise_if_item_not_available(item):
     return None
 
 
-# Registry for ajax functions. Maps function names to AjaxFuncs.
-AJAX_FUNCTIONS = {}
-
-
-def _register_ajax_func(func):
-    AJAX_FUNCTIONS[func.name] = func
-
-
-def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atomic=False,
-              staff_override=False, ignore_session=False):
-    """
-    Decorate a function with some common logic.
-    The names of the function being decorated are required to be present in the JSON object
-    that is passed to the function, and they are automatically decoded and passed to those
-    arguments.
-
-    :param url: URL RegEx this function is served in.
-    :type url: str
-    :param method: HTTP Method required. Default is POST.
-    :type method: str
-    :param counter: Is registered Counter required? Default: True.
-    :type counter: bool
-    :param clerk: Is logged in Clerk required? Default: True.
-    :type clerk: bool
-    :param overseer: Is overseer permission required for Clerk? Default: False.
-    :type overseer: bool
-    :param atomic: Should this function run in atomic transaction? Default: False.
-    :type atomic: bool
-    :param staff_override: Whether this function can be called without checkout being active.
-    :type staff_override: bool
-    :param ignore_session: Whether Event stored in session data should be ignored for the call.
-    :return: Decorated function.
-    """
-
-    def decorator(func):
-        # Get argspec before any decoration.
-        spec = inspect.getfullargspec(func)
-
-        wrapped = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
-
-        fn = ajax_util.ajax_func(
-            func,
-            method,
-            spec.args[1:],
-            spec.defaults,
-            staff_override=staff_override,
-            ignore_session=ignore_session,
-        )(wrapped)
-        if atomic:
-            fn = transaction.atomic(fn)
-
-        # Copy name etc from original function to wrapping function.
-        # The wrapper must be the one referred from urlconf.
-        fn = functools.wraps(wrapped)(fn)
-        _register_ajax_func(AjaxFunc(fn, url, method))
-
-        return fn
-    return decorator
-
-
-# Must be after ajax_func to ensure circular import works. Must be imported, for part to be included at all in the API.
-# noinspection PyUnresolvedReferences
-from .api import (
-    boxes_api,
-    receipt as receipt_api,
-)
-
-
 def checkout_js(request, event_slug):
     """
     Render the JavaScript file that defines the AJAX API functions.
     """
     event = get_object_or_404(Event, slug=event_slug)
     context = {
-        'funcs': AJAX_FUNCTIONS.items(),
+        'funcs': get_all_ajax_functions(),
         'api_name': 'Api',
         'event': event,
     }
@@ -195,8 +131,10 @@ def item_mode_change(request, code, from_, to, message_if_not_first=None):
 
 @ajax_func('^clerk/login$', clerk=False, counter=False)
 def clerk_login(request, event, code, counter):
+    if counter is not None and any(c not in Counter.PRIVATE_KEY_ALPHABET for c in counter):
+        raise AjaxError(RET_BAD_REQUEST, "Invalid key")
     try:
-        counter_obj = Counter.objects.get(event=event, identifier=counter)
+        counter_obj = Counter.objects.get(event=event, private_key=counter)
     except Counter.DoesNotExist:
         raise AjaxError(RET_AUTH_FAILED, _(u"Counter has gone missing."))
 
@@ -233,6 +171,7 @@ def clerk_login(request, event, code, counter):
     request.session["clerk"] = clerk.pk
     request.session["clerk_token"] = clerk.access_key
     request.session["counter"] = counter_obj.pk
+    request.session["counter_key"] = counter_obj.private_key
     request.session["event"] = event.pk
     return clerk_data
 
@@ -253,25 +192,54 @@ def clerk_logout_fn(request):
 
     :param request: Active request, for session access.
     """
-    for key in ["clerk", "clerk_token", "counter", "event", "receipt"]:
+    for key in ["clerk", "clerk_token", "counter", "counter_key", "event", "receipt"]:
         request.session.pop(key, None)
 
 
 @ajax_func('^counter/validate$', clerk=False, counter=False, ignore_session=True)
-def counter_validate(request, event, code):
+def counter_validate(request, event, code=None, key=None):
     """
     Validates the counter identifier and returns its exact form, if it is
     valid.
+    Either `code` or `key` must be given, `code` being the counter identifier code,
+    and `key` being the private key used after first validation has been done.
     """
+    if code is None and key is None:
+        raise AjaxError(RET_BAD_REQUEST, "Either code or key must be given")
+    if key is not None and any(c not in Counter.PRIVATE_KEY_ALPHABET for c in key):
+        raise AjaxError(RET_BAD_REQUEST, "Invalid key")
+
     try:
-        counter = Counter.objects.get(event=event, identifier__iexact=code)
+        if key is None:
+            counter = Counter.objects.get(event=event, identifier__iexact=code)
+            if counter.private_key is not None:
+                raise AjaxError(RET_CONFLICT, "Requested counter is already in use.")
+            counter.assign_private_key()
+        else:
+            counter = Counter.objects.get(event=event, private_key=key)
         clerk_logout_fn(request)
     except Counter.DoesNotExist:
         raise AjaxError(RET_AUTH_FAILED)
 
-    return {"counter": counter.identifier,
-            "event_name": event.name,
-            "name": counter.name}
+    return {
+        "counter": counter.identifier,
+        "event_name": event.name,
+        "name": counter.name,
+        "key": counter.private_key,
+    }
+
+
+@ajax_func('^counter/list$', clerk=False, counter=False, ignore_session=True)
+def counter_list(request, event, code):
+    if not settings.KIRPPU_COUNTER_LIST:
+        raise AjaxError(404, "Api is not enabled")
+    try:
+        if Clerk.by_code(code, event=event) is None:
+            raise AjaxError(RET_FORBIDDEN)
+    except ValueError:
+        raise AjaxError(RET_BAD_REQUEST)
+    counters = Counter.objects.filter(event=event, private_key__isnull=True).values_list("name", flat=True)
+    return list(counters)
 
 
 @ajax_func('^item/find$', method='GET')
@@ -305,7 +273,7 @@ def item_search(request, event, query, code, vendor, min_price, max_price, item_
 
     types = item_type.split()
     if types:
-        clauses.append(Q(itemtype__key__in=types))
+        clauses.append(Q(itemtype_id__in=types))
 
     code = code.strip()
     if code:
@@ -666,11 +634,8 @@ def item_checkin(request, event, code):
 
     left_count = None
     if event.max_brought_items is not None:
-        count = 1
-        if item.box is not None:
-            count = item.box.get_item_count()
-
-        brought_count = Item.objects.filter(vendor=item.vendor, state=Item.BROUGHT).count()
+        count = 1 if event.box_as_single_brought_item or item.box is None else item.box.get_item_count()
+        brought_count = Item.get_brought_count(event, item.vendor)
         if brought_count + count > event.max_brought_items:
             raise AjaxError(RET_CONFLICT, _("Too many items brought, limit is %i!") % event.max_brought_items)
         else:
@@ -883,7 +848,7 @@ def vendor_token_create(request, vendor_id):
         TemporaryAccessPermitLog.objects.create(
             permit=permit,
             action=TemporaryAccessPermitLog.ACTION_INVALIDATE,
-            address=get_ip(request),
+            address=get_client_ip(request),
             peer="{0}/{1}".format(clerk.user.username, clerk.pk),
         )
     old_permits.update(state=TemporaryAccessPermit.STATE_INVALIDATED)
@@ -901,7 +866,7 @@ def vendor_token_create(request, vendor_id):
             TemporaryAccessPermitLog.objects.create(
                 permit=permit,
                 action=TemporaryAccessPermitLog.ACTION_ADD,
-                address=get_ip(request),
+                address=get_client_ip(request),
                 peer="{0}/{1}".format(clerk.user.username, clerk.pk),
             )
             break

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-31 16:14+0300\n"
-"PO-Revision-Date: 2020-05-31 16:18+0300\n"
+"POT-Creation-Date: 2020-12-26 11:22+0200\n"
+"PO-Revision-Date: 2020-12-26 11:38+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 19.12.3\n"
+"X-Generator: Lokalize 20.08.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -56,45 +56,6 @@ msgstr "ei tuotu tapahtumaan"
 msgid "Refresh"
 msgstr "Päivitä"
 
-msgid "code"
-msgstr "koodi"
-
-msgid "item"
-msgstr "tavara"
-
-msgid "price"
-msgstr "hinta"
-
-msgid "type"
-msgstr "tyyppi"
-
-msgid "vendor"
-msgstr "myyjä"
-
-msgid "status"
-msgstr "tila"
-
-msgid "No results."
-msgstr "Ei tuloksia."
-
-msgid "username"
-msgstr "käyttätunnus"
-
-msgid "id"
-msgstr "id"
-
-msgid "name"
-msgstr "nimi"
-
-msgid "email"
-msgstr "sähköposti"
-
-msgid "phone"
-msgstr "puhelin"
-
-msgid "terms accepted?"
-msgstr "ehdot hyväksytty?"
-
 msgid "Barcode"
 msgstr "Viivakoodi"
 
@@ -109,6 +70,9 @@ msgstr "Lukittu"
 
 msgid "Need to validate counter."
 msgstr "Kassa on rekisteröitävä."
+
+msgid "Counter identifier"
+msgstr "Kassan tunniste"
 
 msgid "Login..."
 msgstr "Kirjaudu…"
@@ -159,6 +123,9 @@ msgstr "Merkitse laatikon numero"
 
 msgid "description"
 msgstr "kuvaus"
+
+msgid "code"
+msgstr "koodi"
 
 msgid "count of bundles"
 msgstr "nippujen lukumäärä"
@@ -414,35 +381,23 @@ msgstr "Uuden koodin luominen mitätöi kaikki vanhat koodit."
 msgid "Vendor Search"
 msgstr "Myyjähaku"
 
-msgid "Search vendor"
-msgstr "Etsi myyjä"
-
 msgid "Lost and found properties"
 msgstr "Kadonneet ja löytyneet tavarat"
 
 msgid "Barcode of Item to mark as Lost Property"
 msgstr "Kadonneeksi merkittävän tuotteen viivakoodi"
 
-msgid "state"
-msgstr "tila"
-
 msgid "Receipt List"
 msgstr "Kuittilista"
+
+msgid "Ok"
+msgstr "Ok"
 
 msgid "Receipt details"
 msgstr "Kuitin tiedot"
 
-msgid "counter"
-msgstr "kassa"
-
-msgid "clerk"
-msgstr "myyjä"
-
-msgid "start time"
-msgstr "aloitusaika"
-
-msgid "total"
-msgstr "yhteensä"
+msgid "Press Enter to view this entry"
+msgstr "Paina Enter nähdäksesi tämän tiedot"
 
 msgid ""
 "This will mark all items as printed so they won't be printed again "
@@ -475,6 +430,12 @@ msgstr "eurot"
 msgid "No data"
 msgstr "Ei tietoja"
 
+msgid "Total:"
+msgstr "Yhteensä:"
+
+msgid "price"
+msgstr "hinta"
+
 msgid "brought"
 msgstr "tuotuja"
 
@@ -490,12 +451,51 @@ msgstr "palautettavia"
 msgid "No boxes."
 msgstr "Ei laatkoita."
 
-msgid "Total:"
-msgstr "Yhteensä:"
+#| msgid "clerk (counter)"
+msgid "Available counters"
+msgstr "Saatavilla olevat kassat"
 
-#| msgid "Sold Items"
+msgid "Vendor"
+msgstr "Myyjä"
+
+msgid "name"
+msgstr "nimi"
+
+msgid "email"
+msgstr "sähköposti"
+
+msgid "phone"
+msgstr "puhelin"
+
+msgid "id"
+msgstr "id"
+
+msgid "terms accepted?"
+msgstr "ehdot hyväksytty?"
+
 msgid "Edit Item"
 msgstr "Muokkaa tavaraa"
+
+#| msgid "sold"
+msgid "Unsold"
+msgstr "Myymätön"
+
+msgid "Sold"
+msgstr "Myyty"
+
+#| msgid "Receipt details"
+msgid "Price details"
+msgstr "Hintatiedot"
+
+msgid "State"
+msgstr "Tila"
+
+#| msgid "counter"
+msgid "Count"
+msgstr "Lukumäärä"
+
+msgid "Price"
+msgstr "Hinta"
 
 msgid "Name"
 msgstr "Nimi"
@@ -503,20 +503,19 @@ msgstr "Nimi"
 msgid "Code"
 msgstr "Koodi"
 
-msgid "Vendor"
-msgstr "Myyjä"
+#| msgid "box number"
+msgid "Box number"
+msgstr "Laatikon numero"
 
 msgid "Vendor has requested a price change."
 msgstr "Myyjä on pyytänyt hinnan muutosta."
 
-#| msgid "price"
-msgid "Price"
-msgstr "Hinta"
+msgid "Change will only affect unsold items."
+msgstr "Muutos koskee vain myymättömiä tuotteita."
 
 msgid "Type"
 msgstr "Tyyppi"
 
-#| msgid "abandoned"
 msgid "Abandoned"
 msgstr "Hylätty"
 
@@ -531,6 +530,21 @@ msgstr "Tulosta"
 
 msgid "Save"
 msgstr "Tallenna"
+
+msgid "item"
+msgstr "tavara"
+
+msgid "type"
+msgstr "tyyppi"
+
+msgid "vendor"
+msgstr "myyjä"
+
+msgid "status"
+msgstr "tila"
+
+msgid "No results."
+msgstr "Ei tuloksia."
 
 msgid "#"
 msgstr "#"
@@ -566,9 +580,6 @@ msgstr ""
 "Paina <kbd>Ctrl</kbd>, <kbd>Command</kbd> tai <kbd>Shift</kbd>-painiketta "
 "klikatessa valitaksesi useamman arvon."
 
-msgid "State"
-msgstr "Tila"
-
 msgid "Show hidden items"
 msgstr "Näytä piilotetut tavarat"
 
@@ -577,6 +588,21 @@ msgstr "Etsi"
 
 msgid "Reset"
 msgstr "Tyhjennä"
+
+msgid "state"
+msgstr "tila"
+
+msgid "counter"
+msgstr "kassa"
+
+msgid "clerk"
+msgstr "myyjä"
+
+msgid "start time"
+msgstr "aloitusaika"
+
+msgid "total"
+msgstr "yhteensä"
 
 msgid "Notes"
 msgstr "Huomiot"
@@ -620,11 +646,22 @@ msgstr "Hyvityskuitit…"
 msgid "Mobile code…"
 msgstr "Mobiilikoodi…"
 
+msgid "username"
+msgstr "käyttätunnus"
+
+#, javascript-format
+msgctxt "Behalf of someone"
+msgid "(via %s)"
+msgstr "(%s puolesta)"
+
 msgid "Expected total:"
 msgstr "Odotettu summa:"
 
 msgid "item type"
 msgstr "tavaran tyyppi"
+
+#~ msgid "Search vendor"
+#~ msgstr "Etsi myyjä"
 
 #~| msgid "Compensate"
 #~ msgid "Compensate…"

@@ -2,13 +2,12 @@ import json
 
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
-from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
 from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.admin.views.main import ChangeList
 from django.db import IntegrityError, models, transaction
-from django.urls import reverse, path
+from django.urls import reverse, path, re_path
 from django.utils.encoding import force_str
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as gettext, ngettext
@@ -140,8 +139,8 @@ class EventAdmin(admin.ModelAdmin):
             form.base_fields["source_db"] = forms.ChoiceField(
                 choices=source_dbs,
                 required=False,
-                help_text=gettext("Setting a value other than default enables mobile view."
-                                  " The event is otherwise made unusable."))
+                help_text=gettext("Setting a value other than default enables mobile view"
+                                  " and this event is otherwise made read-only."))
         return form
 
     def save_form(self, request, form, change):
@@ -358,8 +357,8 @@ class ClerkAdmin(admin.ModelAdmin):
     def get_urls(self):
         info = self.opts.app_label, self.opts.model_name
         return super(ClerkAdmin, self).get_urls() + [
-            url(r'^add/bulk_unbound$', self.bulk_add_unbound, name="%s_%s_bulk" % info),
-            url(r'^add/sso$', self.add_from_sso, name="%s_%s_sso" % info),
+            re_path(r'^add/bulk_unbound$', self.bulk_add_unbound, name="%s_%s_bulk" % info),
+            re_path(r'^add/sso$', self.add_from_sso, name="%s_%s_sso" % info),
         ]
 
     def add_from_sso(self, request):
@@ -473,7 +472,17 @@ class ClerkAdmin(admin.ModelAdmin):
 
 @admin.register(Counter)
 class CounterAdmin(admin.ModelAdmin):
-    list_display = ("name", "identifier", "event")
+    list_display = ("name", "identifier", "event", "is_in_use", "is_locked")
+    actions = ("lock_counter", "reset_use")
+
+    @with_description(gettext("Lock Counter"))
+    def lock_counter(self, request, queryset):
+        for counter in queryset:
+            counter.assign_private_key(for_lock=True)
+
+    @with_description(gettext("Reset Counter usage status"))
+    def reset_use(self, request, queryset):
+        queryset.update(private_key=None)
 
 
 admin.site.register(ReceiptExtraRow)
@@ -491,7 +500,7 @@ class UITextAdmin(admin.ModelAdmin):
 @admin.register(ItemType)
 class ItemTypeAdmin(admin.ModelAdmin):
     ordering = ["event", "order"]
-    list_display = ["title", "order", "event", "key"]
+    list_display = ["title", "order", "event"]
     list_editable = ["order"]
     list_filter = ("event",)
     list_display_links = ["title"]

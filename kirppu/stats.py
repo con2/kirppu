@@ -34,8 +34,8 @@ class ItemCollectionData(object):
     The query that is run will yield two-dimensional result (actually with all states, but no empty group_by's):
 
         [
-        {'staged': 1, 'sum': 5, 'advertised': 3, 'sold': 1, 'itemtype': 'manga-english'},
-        {'staged': 0, 'sum': 2, 'advertised': 0, 'sold': 2, 'itemtype': 'other'},
+        {'staged': 1, 'sum': 5, 'advertised': 3, 'sold': 1, 'itemtype': 2},
+        {'staged': 0, 'sum': 2, 'advertised': 0, 'sold': 2, 'itemtype': 5},
         ...
         ]
     """
@@ -137,6 +137,11 @@ class ItemCollectionData(object):
 
     def _populate(self, query):
         raise NotImplementedError()
+
+    @classmethod
+    def columns(cls):
+        # XXX: This assumes subclasses of ItemCollectionRow follow these orders.
+        return ["name"] + list(cls.PROPERTIES) + list(cls.ABANDONED_PROPERTIES)
 
     def __repr__(self):
         return "{}({}, {})".format(self.__class__.__name__, self._group_by, self._data)

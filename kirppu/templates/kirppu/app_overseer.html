@@ -91,8 +91,8 @@
     DateTimeFormatter.init();
 
     ItemSearchForm.itemtypes = [
-        {% for name, description in itemtypes %}
-            { "name": "{{ name | escapejs }}",
+        {% for id, description in itemtypes %}
+            { "name": {{ id }},
               "description": "{{ description | escapejs }}" }
             {% if not forloop.last %} , {% endif %}
         {% endfor %}
@@ -113,7 +113,7 @@
     $(document).ready(function() {
         setupAjax();
         CheckoutConfig.check();
-        new ModeSwitcher();
+        new ModeSwitcher().startDefault("item_find");
     });
 //--></script>
 

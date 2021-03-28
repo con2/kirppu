@@ -171,7 +171,7 @@ class _ApiMixin(object):
 
         self.apiOK = ApiOK(client=self.client, event=self.event.slug)
 
-        self.apiOK.clerk_login(code=self.clerk.get_code(), counter=self.counter.identifier)
+        self.apiOK.clerk_login(code=self.clerk.get_code(), counter=self.counter.private_key)
 
     def tearDown(self):
         self.apiOK.clerk_logout()

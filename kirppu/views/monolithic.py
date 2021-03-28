@@ -527,6 +527,7 @@ def get_items(request, event_slug, bar_type):
 
     render_params = {
         'event': event,
+        'source_event': event.get_real_event(),
         'items': items,
         'printed_items': printed_items,
         'bar_type': bar_type,
@@ -581,6 +582,7 @@ def get_boxes(request, event_slug):
 
     render_params = {
         'event': event,
+        'source_event': event.get_real_event(),
         'boxes': boxes,
         'box_name_placeholder': box_name_placeholder,
 
@@ -812,6 +814,7 @@ def stats_view(request, event: Event):
         'vendor_item_data_counts': vendor_item_data_counts,
         'vendor_item_data_euros': vendor_item_data_euros,
         'vendor_item_data_row_size': vendor_item_data_row_size,
+        'vendor_item_data_order': json.dumps(ItemCountData.columns()),
         'CURRENCY': settings.KIRPPU_CURRENCY["raw"],
     }
 
@@ -1049,7 +1052,7 @@ def lost_and_found_list(request, event_slug):
 
 
 def kirppu_csrf_failure(request, reason=""):
-    if request.is_ajax() or request.META.get("HTTP_ACCEPT", "") == "text/json":
+    if request.META.get("HTTP_ACCEPT", "") in ("text/json", "application/json"):
         # TODO: Unify the response to match requested content type.
         return HttpResponseForbidden(
             _("CSRF verification failed. Request aborted."),

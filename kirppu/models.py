@@ -1,12 +1,13 @@
 from decimal import Decimal
 import random
+import string
 import typing
 import warnings
 
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator
-from django.db import models, transaction
-from django.db.models import F, Sum
+from django.db import models, transaction, IntegrityError
+from django.db.models import F, Sum, Q
 import django.http
 from django.urls import reverse
 from django.utils import timezone
@@ -132,6 +133,11 @@ class Event(models.Model):
         null=True,
         help_text=_("Amount of unsold Items a Vendor can have in the Event. If blank, no limit is imposed."),
         validators=[MinValueValidator(1)],
+    )
+    box_as_single_brought_item = models.BooleanField(
+        default=False,
+        help_text=_("Should a box be considered a single item when counting max brought"
+                    " items instead of considering its contents individually."),
     )
     # Link to another database.
     source_db = models.CharField(blank=True, max_length=250, null=True, unique=True)
@@ -823,13 +829,11 @@ class Box(models.Model):
 
 class ItemType(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    key = models.CharField(max_length=24)
     order = models.IntegerField()
     title = models.CharField(max_length=255)
 
     class Meta:
         unique_together = (
-            ("event", "key"),
             ("event", "order"),
         )
 
@@ -837,8 +841,7 @@ class ItemType(models.Model):
         return self.title
 
     def __repr__(self):
-        return u"ItemType(key={key}, order={order}, title={title})".format(
-            key=repr(self.key),
+        return u"ItemType(order={order}, title={title})".format(
             order=self.order,
             title=repr(self.title)
         )
@@ -846,7 +849,7 @@ class ItemType(models.Model):
     @classmethod
     def as_tuple(cls, event):
         query = cls.objects.filter(event=event)
-        return query.order_by("order").values_list("key", "title")
+        return query.order_by("order").values_list("id", "title")
 
 
 class Item(models.Model):
@@ -954,7 +957,7 @@ class Item(models.Model):
         price="price_cents",
         vendor="vendor_id",
         state_display="get_state_display",
-        itemtype=lambda self: self.itemtype.key,
+        itemtype="itemtype_id",
         itemtype_display="get_itemtype_display",
         adult=lambda self: self.adult == Item.ADULT_YES,
     )
@@ -1074,6 +1077,14 @@ class Item(models.Model):
         """
         return text.isalnum() and text.isupper() and len(text) == cls.CODE_BITS / 5
 
+    @classmethod
+    def get_brought_count(cls, event: Event, vendor: Vendor):
+        if event.box_as_single_brought_item:
+            return Item.objects.filter(vendor=vendor, state=Item.BROUGHT).filter(
+                Q(box__isnull=True) | Q(box__representative_item__id=F("pk"))).count()
+        else:
+            return Item.objects.filter(vendor=vendor, state=Item.BROUGHT).count()
+
 
 class UIText(models.Model):
     def __str__(self):
@@ -1106,6 +1117,8 @@ class UIText(models.Model):
 
 
 class Counter(models.Model):
+    PRIVATE_KEY_ALPHABET = string.ascii_letters + string.digits
+
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     identifier = models.CharField(
         max_length=32,
@@ -1119,6 +1132,48 @@ class Counter(models.Model):
         null=False,
         help_text=_(u"Common name of the counter")
     )
+    private_key = models.CharField(
+        max_length=32,
+        blank=True,
+        null=True,
+        default=None,
+        unique=True,
+    )
+
+    def assign_private_key(self, for_lock=False):
+        length = self._meta.get_field("private_key").max_length
+
+        if for_lock:
+            # Make space for lock character.
+            length -= 1
+
+        retries = -1
+        while retries < 10:
+            retries += 1
+            candidate = "".join(random.choice(self.PRIVATE_KEY_ALPHABET) for _ in range(length))
+            if for_lock:
+                candidate = "!" + candidate
+
+            if Counter.objects.filter(private_key=candidate).exists():
+                continue
+            self.private_key = candidate
+            try:
+                self.save(update_fields=("private_key",))
+            except IntegrityError:
+                pass
+            else:
+                return
+        raise KeyError("Retry-limit reached")
+
+    @short_description(_("Is in use?"))
+    def is_in_use(self):
+        return self.private_key is not None and not self.private_key.startswith("!")
+    is_in_use.boolean = True
+
+    @short_description(_("Is locked?"))
+    def is_locked(self):
+        return self.private_key is not None and self.private_key.startswith("!")
+    is_locked.boolean = True
 
     class Meta:
         unique_together = (

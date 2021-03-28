@@ -3,7 +3,7 @@
 from http import HTTPStatus
 
 from django.test import Client, TestCase
-import factory
+import faker
 
 from .factories import *
 from .api_access import Api
@@ -27,11 +27,11 @@ class PublicTest(TestCase, ResultMixin):
 
     def test_register_item(self):
         data = dict(
-            name=factory.Faker("sentence", nb_words=3).generate({}),
+            name=faker.Faker().sentence(nb_words=3),
             price="1.25",
             tag_type="short",
             suffixes="",
-            item_type=self.type.key,
+            item_type=self.type.id,
             adult=False,
         )
         result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/item/".format(self.event.slug),
@@ -42,9 +42,9 @@ class PublicTest(TestCase, ResultMixin):
 
     def test_register_box(self):
         data = dict(
-            description=factory.Faker("sentence", nb_words=3).generate({}),
+            description=faker.Faker().sentence(nb_words=3),
             price="1.25",
-            item_type=self.type.key,
+            item_type=self.type.id,
             adult=False,
             count=4,
             bundle_size=1,
@@ -55,9 +55,9 @@ class PublicTest(TestCase, ResultMixin):
 
     def test_register_box_with_single_item(self):
         data = dict(
-            description=factory.Faker("sentence", nb_words=3).generate({}),
+            description=faker.Faker().sentence(nb_words=3),
             price="1.25",
-            item_type=self.type.key,
+            item_type=self.type.id,
             adult=False,
             count=1,
             bundle_size=1,
@@ -68,9 +68,9 @@ class PublicTest(TestCase, ResultMixin):
 
     def test_register_single_bundle_box(self):
         data = dict(
-            description=factory.Faker("sentence", nb_words=3).generate({}),
+            description=faker.Faker().sentence(nb_words=3),
             price="1.25",
-            item_type=self.type.key,
+            item_type=self.type.id,
             adult=False,
             count=1,
             bundle_size=2,
@@ -93,7 +93,7 @@ class StatesTest(TestCase, ResultMixin):
         self.clerk = ClerkFactory(event=self.event)
 
         self.api = Api(client=self.client, event=self.event)
-        self.api.clerk_login(code=self.clerk.get_code(), counter=self.counter.identifier)
+        self.assertSuccess(self.api.clerk_login(code=self.clerk.get_code(), counter=self.counter.private_key))
 
     def test_fail_reserve_without_receipt(self):
         ret = self.api.item_reserve(code=self.items[0].code)

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-31 16:14+0300\n"
-"PO-Revision-Date: 2020-05-31 16:15+0300\n"
+"POT-Creation-Date: 2020-12-26 11:22+0200\n"
+"PO-Revision-Date: 2020-12-26 11:19+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 19.12.3\n"
+"X-Generator: Lokalize 20.08.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -57,45 +57,6 @@ msgstr "not brought to the event"
 msgid "Refresh"
 msgstr "Refresh"
 
-msgid "code"
-msgstr "code"
-
-msgid "item"
-msgstr "item"
-
-msgid "price"
-msgstr "price"
-
-msgid "type"
-msgstr "type"
-
-msgid "vendor"
-msgstr "vendor"
-
-msgid "status"
-msgstr "status"
-
-msgid "No results."
-msgstr "No results."
-
-msgid "username"
-msgstr "username"
-
-msgid "id"
-msgstr "id"
-
-msgid "name"
-msgstr "name"
-
-msgid "email"
-msgstr "email"
-
-msgid "phone"
-msgstr "phone"
-
-msgid "terms accepted?"
-msgstr "terms accepted?"
-
 msgid "Barcode"
 msgstr "Barcode"
 
@@ -110,6 +71,9 @@ msgstr "Locked"
 
 msgid "Need to validate counter."
 msgstr "Need to validate counter."
+
+msgid "Counter identifier"
+msgstr "Counter identifier"
 
 msgid "Login..."
 msgstr "Login…"
@@ -160,6 +124,9 @@ msgstr "Mark the box number"
 
 msgid "description"
 msgstr "description"
+
+msgid "code"
+msgstr "code"
 
 msgid "count of bundles"
 msgstr "count of bundles"
@@ -415,35 +382,23 @@ msgstr "Creating a code will invalidate all old codes."
 msgid "Vendor Search"
 msgstr "Vendor Search"
 
-msgid "Search vendor"
-msgstr "Search vendor"
-
 msgid "Lost and found properties"
 msgstr "Lost and found properties"
 
 msgid "Barcode of Item to mark as Lost Property"
 msgstr "Barcode of Item to mark as Lost Property"
 
-msgid "state"
-msgstr "state"
-
 msgid "Receipt List"
 msgstr "Receipt List"
+
+msgid "Ok"
+msgstr "Ok"
 
 msgid "Receipt details"
 msgstr "Receipt details"
 
-msgid "counter"
-msgstr "counter"
-
-msgid "clerk"
-msgstr "clerk"
-
-msgid "start time"
-msgstr "start time"
-
-msgid "total"
-msgstr "total"
+msgid "Press Enter to view this entry"
+msgstr "Press Enter to view this entry"
 
 msgid ""
 "This will mark all items as printed so they won't be printed again "
@@ -476,6 +431,12 @@ msgstr "euros"
 msgid "No data"
 msgstr "No data"
 
+msgid "Total:"
+msgstr "Total:"
+
+msgid "price"
+msgstr "price"
+
 msgid "brought"
 msgstr "brought"
 
@@ -491,12 +452,47 @@ msgstr "returnable"
 msgid "No boxes."
 msgstr "No boxes."
 
-msgid "Total:"
-msgstr "Total:"
+msgid "Available counters"
+msgstr "Available counters"
 
-#| msgid "Sold Items"
+msgid "Vendor"
+msgstr "Vendor"
+
+msgid "name"
+msgstr "name"
+
+msgid "email"
+msgstr "email"
+
+msgid "phone"
+msgstr "phone"
+
+msgid "id"
+msgstr "id"
+
+msgid "terms accepted?"
+msgstr "terms accepted?"
+
 msgid "Edit Item"
 msgstr "Edit Item"
+
+msgid "Unsold"
+msgstr "Unsold"
+
+msgid "Sold"
+msgstr "Sold"
+
+msgid "Price details"
+msgstr "Price details"
+
+msgid "State"
+msgstr "State"
+
+msgid "Count"
+msgstr "Count"
+
+msgid "Price"
+msgstr "Price"
 
 msgid "Name"
 msgstr "Name"
@@ -504,20 +500,18 @@ msgstr "Name"
 msgid "Code"
 msgstr "Code"
 
-msgid "Vendor"
-msgstr "Vendor"
+msgid "Box number"
+msgstr "Box number"
 
 msgid "Vendor has requested a price change."
 msgstr "Vendor has requested a price change."
 
-#| msgid "price"
-msgid "Price"
-msgstr "Price"
+msgid "Change will only affect unsold items."
+msgstr "Change will only affect unsold items."
 
 msgid "Type"
 msgstr "Type"
 
-#| msgid "abandoned"
 msgid "Abandoned"
 msgstr "Abandoned"
 
@@ -532,6 +526,21 @@ msgstr "Print"
 
 msgid "Save"
 msgstr "Save"
+
+msgid "item"
+msgstr "item"
+
+msgid "type"
+msgstr "type"
+
+msgid "vendor"
+msgstr "vendor"
+
+msgid "status"
+msgstr "status"
+
+msgid "No results."
+msgstr "No results."
 
 msgid "#"
 msgstr "#"
@@ -567,9 +576,6 @@ msgstr ""
 "To select/deselect multiple values, press <kbd>Ctrl</kbd>, <kbd>Command</"
 "kbd> or <kbd>Shift</kbd> keys while clicking items."
 
-msgid "State"
-msgstr "State"
-
 msgid "Show hidden items"
 msgstr "Show hidden items"
 
@@ -578,6 +584,21 @@ msgstr "Search"
 
 msgid "Reset"
 msgstr "Reset"
+
+msgid "state"
+msgstr "state"
+
+msgid "counter"
+msgstr "counter"
+
+msgid "clerk"
+msgstr "clerk"
+
+msgid "start time"
+msgstr "start time"
+
+msgid "total"
+msgstr "total"
 
 msgid "Notes"
 msgstr "Notes"
@@ -621,11 +642,22 @@ msgstr "Compensation receipts…"
 msgid "Mobile code…"
 msgstr "Mobile code…"
 
+msgid "username"
+msgstr "username"
+
+#, javascript-format
+msgctxt "Behalf of someone"
+msgid "(via %s)"
+msgstr "(via %s)"
+
 msgid "Expected total:"
 msgstr "Expected total:"
 
 msgid "item type"
 msgstr "item type"
+
+#~ msgid "Search vendor"
+#~ msgstr "Search vendor"
 
 #~| msgid "Compensate"
 #~ msgid "Compensate…"

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-31 16:14+0300\n"
-"PO-Revision-Date: 2020-05-31 16:16+0300\n"
+"POT-Creation-Date: 2020-12-26 11:22+0200\n"
+"PO-Revision-Date: 2020-12-26 11:36+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 19.12.3\n"
+"X-Generator: Lokalize 20.08.3\n"
+
+#| msgid "View items"
+msgid "View help."
+msgstr "Näytä ohje."
+
+msgid ""
+"Setting a value other than default enables mobile view and this event is "
+"otherwise made read-only."
+msgstr ""
+"Muun kuin oletusarvon asettaminen ottaa mobiilinäkymän käyttöön ja asettaa"
+" tämän tapahtuman \"vain luku\"-tilaan."
 
 msgid "User"
 msgstr "Käyttäjä"
@@ -71,6 +82,13 @@ msgstr[1] "Lisätty {count} irrallista kassatätiä."
 msgid "Add unbound clerk"
 msgstr "Lisää irrallinen kassahenkilö"
 
+#| msgid "Checkout counter"
+msgid "Lock Counter"
+msgstr "Lukitse kassa"
+
+msgid "Reset Counter usage status"
+msgstr "Nollaa kassan käyttö"
+
 msgid "Re-generate bar codes for items"
 msgstr "Luo tavaroiden viivakoodit uudelleen"
 
@@ -83,6 +101,9 @@ msgstr "Tavara"
 msgid "Clerk"
 msgstr "Kassahenkilö"
 
+msgid "Item count"
+msgstr "Tavaramäärä"
+
 msgid "Permit"
 msgstr "Lupa"
 
@@ -94,6 +115,9 @@ msgstr "Ei kirjautuneena."
 
 msgid "Counter has gone missing."
 msgstr "Kassakone on kadonnut."
+
+msgid "Unauthorized"
+msgstr "Tunnistautumaton"
 
 msgid "Clerk not found."
 msgstr "Kassahenkilöä ei löytynyt."
@@ -135,6 +159,14 @@ msgstr "Odottamaton tavaran tila: {state_name} ({state})"
 
 msgid "No such clerk."
 msgstr "Ei sellaista kassatätiä."
+
+msgid "Some box items are currently staged and cannot be changed."
+msgstr ""
+"Jotkin laatikon tavaroista on tällä hetkellä varattu myytäväksi eikä niitä"
+" voi muuttaa."
+
+msgid "Nothing left to change"
+msgstr "Jäljellä ei ole mitään muutettavaa."
 
 #, python-format
 msgid "Too many items brought, limit is %i!"
@@ -258,9 +290,6 @@ msgstr "sukunimi"
 msgid "email address"
 msgstr "sähköposti"
 
-#| msgid ""
-#| "Python function body that gets sold_and_compensated queryset as argument "
-#| "and must call result() with None or Decimal argument."
 msgid ""
 "Lisp function body that gets sold_and_compensated queryset as a global and "
 "must return a null or decimal number."
@@ -298,9 +327,6 @@ msgstr "Arvo ei voi olla negatiivinen"
 
 msgid "Price"
 msgstr "Hinta"
-
-msgid "Item count"
-msgstr "Tavaramäärä"
 
 msgid "Item type"
 msgstr "Tavaran tyyppi"
@@ -364,6 +390,13 @@ msgstr "Kassan rekisteröintitunniste"
 
 msgid "Common name of the counter"
 msgstr "Kassan yleinen nimi"
+
+#| msgid "In use"
+msgid "Is in use?"
+msgstr "Käytössä?"
+
+msgid "Is locked?"
+msgstr "Lukittu?"
 
 msgid "Added to receipt"
 msgstr "Lisätty kuittiin"
@@ -542,6 +575,59 @@ msgstr "Apua"
 
 msgid "CapsLock is probably ON!"
 msgstr "CapsLock on luultavasti päällä!"
+
+msgid "You need to enable browser JavaScript support for this feature to work."
+msgstr "Selaimen JavaScript-tuen on oltava päällä käyttääksesi tätä toimintoa."
+
+msgid "Close"
+msgstr "Sulje"
+
+#| msgid "Counter mode"
+msgid "Counter Help"
+msgstr "Kassan ohje"
+
+#| msgid "Actions"
+msgid "Action"
+msgstr "Toiminto"
+
+msgid "Input"
+msgstr "Syöte"
+
+msgid "Example"
+msgstr "Esimerkki"
+
+#| msgid "Checkout counter"
+msgid "Log out from counter"
+msgstr "Kirjaudu ulos myyntikassalta"
+
+msgid ""
+"Suspend current receipt (continue it by reading an item from the receipt)"
+msgstr ""
+"Pysäytä nykyinen kuitti (jatka sitä skannaamalla jokin kuitille jo lisätty"
+" tuote)"
+
+msgid "Abort current receipt"
+msgstr "Keskeytä nykyinen kuitti"
+
+#| msgid "Added to receipt"
+msgid "Add single item to receipt"
+msgstr "Lisää yksittäinen tavara kuittiin"
+
+msgid "Add single item from a box"
+msgstr "Lisää yksittäinen tavara laatikosta"
+
+msgid "Add multiple items from same box"
+msgstr "Lisää useampi tavara samasta laatikosta"
+
+#| msgid "Removed from receipt"
+msgid "Remove item from receipt"
+msgstr "Poista tavara kuitista"
+
+msgid "Payment"
+msgstr "Maksu"
+
+msgid "Quick payment"
+msgstr "Pikamaksu"
 
 msgid "Clerk codes"
 msgstr "Kassahenkilöiden tunnisteet"
@@ -788,9 +874,6 @@ msgstr "Puolesta"
 
 msgid "Add new…"
 msgstr "Lisää uusi…"
-
-msgid "Close"
-msgstr "Sulje"
 
 msgid "New vendor"
 msgstr "Uusi myyjä"

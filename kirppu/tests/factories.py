@@ -95,6 +95,7 @@ class CounterFactory(Factory):
     event = factory.SubFactory(EventFactory)
     identifier = factory.Sequence(lambda n: "counter_{}".format(n))
     name = factory.LazyAttribute(lambda a: a.identifier.capitalize())
+    private_key = "secret"
 
 
 class ClerkFactory(Factory):
@@ -117,7 +118,6 @@ class ItemTypeFactory(Factory):
     class Meta:
         model = ItemType
     event = factory.SubFactory(EventFactory)
-    key = factory.Sequence(lambda n: "type_{}".format(n))
     order = factory.Sequence(lambda n: n)
     title = factory.Faker("sentence", nb_words=2)
 

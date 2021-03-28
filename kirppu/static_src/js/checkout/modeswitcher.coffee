@@ -56,8 +56,8 @@ class @ModeSwitcher
     $(window).on("focus", regainFocus)
 
   # Start default mode operation.
-  startDefault: ->
-    @switchTo(ModeSwitcher.entryPoints["counter_validation"])
+  startDefault: (entry="counter_validation") ->
+    @switchTo(ModeSwitcher.entryPoints[entry])
     _populateCommandRefs()
     return
 

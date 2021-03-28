@@ -5,6 +5,7 @@ import sys
 from django.urls import reverse
 
 from . import color
+from kirppu.ajax_util import get_all_ajax_functions
 
 __author__ = 'codez'
 
@@ -21,8 +22,6 @@ class Api(object):
             def _print(*args):
                 pass
 
-        from kirppu.checkout_api import AJAX_FUNCTIONS
-
         def gen(method, view):
             url = reverse(view, kwargs={"event_slug": event.slug if hasattr(event, "slug") else event})
 
@@ -37,7 +36,7 @@ class Api(object):
             return callback
 
         self._end_points = {}
-        for name, func in AJAX_FUNCTIONS.items():
+        for name, func in get_all_ajax_functions():
             self._end_points[name] = gen(func.method.lower(), func.view)
 
     def __getattr__(self, function):

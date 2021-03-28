@@ -69,7 +69,7 @@ class InitialAddTest(_VendorTest):
         self.assertEqual("ok", self.assertSuccess(
             self.c.post("/kirppu/%s/vendor/accept_terms" % self.event.slug)).json()["result"])
 
-        data = ApiItemFactory(item_type=self.type.key)
+        data = ApiItemFactory(item_type=self.type.id)
         result = self.assertSuccess(
             self.c.post("/kirppu/%s/vendor/item/" % self.event.slug, data=data)).json()
 
@@ -80,7 +80,7 @@ class InitialAddTest(_VendorTest):
         user = UserFactory()
         self.c.force_login(user)
 
-        data = ApiItemFactory(item_type=self.type.key)
+        data = ApiItemFactory(item_type=self.type.id)
         result = self.c.post("/kirppu/%s/vendor/item/" % self.event.slug, data=data)
         self.assertContains(result, "terms", status_code=400)
 
@@ -88,13 +88,13 @@ class InitialAddTest(_VendorTest):
         self.test_register_vendor_and_items()
         event = EventFactory()
 
-        data = ApiItemFactory(item_type=self.type.key)
+        data = ApiItemFactory(item_type=self.type.id)
         result = self.c.post("/kirppu/%s/vendor/item/" % event.slug, data=data)
         self.assertContains(result, "terms", status_code=400)
 
     def test_register_item_invalid_price(self):
         self._defaults()
-        data = ApiItemFactory(item_type=self.type.key, price="0")
+        data = ApiItemFactory(item_type=self.type.id, price="0")
         result = self.c.post("/kirppu/%s/vendor/item/" % self.event.slug, data=data)
         self.assertContains(result, "Price", status_code=400)
 
@@ -102,22 +102,31 @@ class InitialAddTest(_VendorTest):
     def test_register_item_invalid_price_negative(self):
         """Negative price should not be allowed even if the configuration says so."""
         self._defaults()
-        data = ApiItemFactory(item_type=self.type.key, price="-1.00")
+        data = ApiItemFactory(item_type=self.type.id, price="-1.00")
         result = self.c.post("/kirppu/%s/vendor/item/" % self.event.slug, data=data)
         self.assertContains(result, "negative", status_code=400)
 
     @override_settings(KIRPPU_MIN_MAX_PRICE=("0", "400"))
     def test_register_item_zero_price_negative(self):
         self._defaults()
-        data = ApiItemFactory(item_type=self.type.key, price="0.00")
+        data = ApiItemFactory(item_type=self.type.id, price="0.00")
         result = self.assertSuccess(self.c.post("/kirppu/%s/vendor/item/" % self.event.slug, data=data)).json()
         self.assertEqual(1, len(result))
 
     def test_register_item_suffixes(self):
         self._defaults()
-        data = ApiItemFactory(item_type=self.type.key, suffixes="1-10")
+        data = ApiItemFactory(item_type=self.type.id, suffixes="1-10")
         result = self.assertSuccess(self.c.post("/kirppu/%s/vendor/item/" % self.event.slug, data=data)).json()
         self.assertEqual(10, len(result))
+
+    def test_register_item_for_other_event_itemtype(self):
+        self.test_register_vendor_and_items()
+        event = EventFactory()
+        itemtype = ItemTypeFactory(event=event)
+
+        data = ApiItemFactory(item_type=itemtype.id)
+        result = self.c.post("/kirppu/%s/vendor/item/" % self.event.slug, data=data)
+        self.assertContains(result, "item type", status_code=400)
 
     # endregion
 
@@ -125,7 +134,7 @@ class InitialAddTest(_VendorTest):
 
     def test_register_box(self):
         self._defaults()
-        data = ApiBoxFactory(item_type=self.type.key)
+        data = ApiBoxFactory(item_type=self.type.id)
         result = self.c.post("/kirppu/%s/vendor/box/" % self.event.slug, data=data)
         # Result is html...
         self.assertContains(result, data["description"])
@@ -135,14 +144,14 @@ class InitialAddTest(_VendorTest):
         user = UserFactory()
         self.c.force_login(user)
 
-        data = ApiBoxFactory(item_type=self.type.key)
+        data = ApiBoxFactory(item_type=self.type.id)
         result = self.c.post("/kirppu/%s/vendor/box/" % self.event.slug, data=data)
         self.assertContains(result, "terms", status_code=400)
 
     def test_register_box_suffixes(self):
         """Uses ItemForm, should not create multiple sets nor try to validate unused field, though."""
         self._defaults()
-        data = ApiBoxFactory(item_type=self.type.key, suffixes="1-200")
+        data = ApiBoxFactory(item_type=self.type.id, suffixes="1-200")
         result = self.c.post("/kirppu/%s/vendor/box/" % self.event.slug, data=data)
         # Result is html...
         self.assertContains(result, data["description"])
@@ -151,7 +160,7 @@ class InitialAddTest(_VendorTest):
     def test_register_box_bundle(self):
         self._defaults()
         # 5 bundles, each containing 3 items (== 15 items, but they are not individually listed in system)
-        data = ApiBoxFactory(item_type=self.type.key, count=5, bundle_size=3)
+        data = ApiBoxFactory(item_type=self.type.id, count=5, bundle_size=3)
         result = self.c.post("/kirppu/%s/vendor/box/" % self.event.slug, data=data)
         self.assertContains(result, data["description"])
         self.assertEqual(5, Item.objects.count())
@@ -168,7 +177,7 @@ class NoBoxSupportTest(_VendorTest):
         self.event.save()
 
     def test_register_box(self):
-        data = ApiBoxFactory(item_type=self.type.key)
+        data = ApiBoxFactory(item_type=self.type.id)
         result = self.c.post("/kirppu/%s/vendor/box/" % self.event.slug, data=data)
         self.assertResult(result, 404)
 
@@ -217,7 +226,7 @@ class ManipulationTest(_VendorTest):
 
     def test_box_hide(self):
         """Hidden box should not be shown in listing."""
-        data = ApiBoxFactory(item_type=self.type.key)
+        data = ApiBoxFactory(item_type=self.type.id)
         self.assertSuccess(self.c.post("/kirppu/%s/vendor/box/" % self.event.slug, data=data))
 
         result = self.c.get("/kirppu/%s/vendor/boxes/" % self.event.slug)

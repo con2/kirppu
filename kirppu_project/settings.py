@@ -177,6 +177,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
+                'django.template.context_processors.request',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
@@ -230,7 +231,7 @@ LOGGING = {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': True,
+            'propagate': False,
         },
         'celery': {
             'handlers': ['console'],
@@ -356,6 +357,9 @@ KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES = env.int("KIRPPU_SHORT_CODE_EXPIRATIO
 KIRPPU_EXHAUST_SHORT_CODE_ON_LOGOUT = env.bool("KIRPPU_EXHAUST_SHORT_CODE_ON_LOGOUT", default=False)
 KIRPPU_SHORT_CODE_LENGTH = 5
 KIRPPU_MOBILE_LOGIN_RATE_LIMIT = "5/m"
+
+# Show list of unused counters using clerk code without registering the counter?
+KIRPPU_COUNTER_LIST = env.bool("KIRPPU_COUNTER_LIST", default=False)
 
 CSRF_FAILURE_VIEW = "kirppu.views.kirppu_csrf_failure"
 

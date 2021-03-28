@@ -1,5 +1,6 @@
 from django.urls import path, re_path, include
 
+from .ajax_util import get_all_ajax_functions
 from .views import (
     get_boxes_codes,
     get_clerk_codes,
@@ -29,7 +30,7 @@ from .views import (
     lost_and_found_list,
 )
 from .views.frontpage import front_page
-from .checkout_api import AJAX_FUNCTIONS, checkout_js
+from .checkout_api import checkout_js
 from .views.mobile import index as mobile_index, logout as mobile_logout
 from .views.vendors import change_vendor, create_vendor
 from .views.accounting import accounting_receipt_view
@@ -85,7 +86,7 @@ common_urls = [
 
 event_urls.extend([
     re_path(func.url, func.func, name=func.view_name)
-    for func in AJAX_FUNCTIONS.values()
+    for _, func in get_all_ajax_functions()
 ])
 
 urlpatterns = [path(r'<slug:event_slug>/', include(event_urls))] + common_urls

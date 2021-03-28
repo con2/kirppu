@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import get_object_or_404
 
-from ..ajax_util import AjaxError, RET_CONFLICT, get_clerk
+from ..ajax_util import ajax_func_factory, AjaxError, RET_CONFLICT, get_clerk
 from ..models import Receipt, Item, ReceiptItem, Clerk, ReceiptNote
-from ..checkout_api import ajax_func
 
 __author__ = 'codez'
+
+ajax_func = ajax_func_factory("checkout")
 
 
 @ajax_func('^receipt/suspend', atomic=True)

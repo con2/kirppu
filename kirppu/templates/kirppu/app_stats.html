@@ -278,6 +278,15 @@
     <tbody>
     </tbody>
     </table>
+    <script type="application/json" id="stat_order">
+        {{ vendor_item_data_order|safe }}
+    </script>
+    <script type="application/json" id="stat_count">[{% for row in vendor_item_data_counts %}
+        ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+    ]</script>
+    <script type="application/json" id="stat_euros">[{% for row in vendor_item_data_euros %}
+        ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+    ]</script>
 
     <script type="application/javascript"><!--
         (function() {
@@ -285,26 +294,21 @@
             const row_length = {{ vendor_item_data_row_size }} + 0;
 
             // Indices in stat_*; there is one leading item before row contents begin.
-            const index_brought = 2;  {# FIXME: These probably should be retrieved from data engine #}
-            const index_staged = 3;
-            const index_sold = 4;
-            const index_abandoned_brought = row_length + 1;
-            const index_abandoned_staged = row_length + 2;
-            const index_abandoned_sold = row_length + 3;
+            const indices = JSON.parse($("#stat_order").get(0).text);
+            const index_brought = indices.indexOf("brought");
+            const index_staged = indices.indexOf("staged");
+            const index_sold = indices.indexOf("sold");
+            const index_abandoned_brought = indices.indexOf("abandoned_brought");
+            const index_abandoned_staged = indices.indexOf("abandoned_staged");
+            const index_abandoned_sold = indices.indexOf("abandoned_sold");
             const map_abandoned = {};
             map_abandoned[index_brought] = index_abandoned_brought;
             map_abandoned[index_staged] = index_abandoned_staged;
             map_abandoned[index_sold] = index_abandoned_sold;
 
             const stat_table = $("#vendor_statistics tbody");
-            const stat_count = [
-                {% for row in vendor_item_data_counts %}
-                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
-            ];
-            const stat_euros = [
-                {% for row in vendor_item_data_euros %}
-                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
-            ];
+            const stat_count = JSON.parse($("#stat_count").get(0).text);
+            const stat_euros = JSON.parse($("#stat_euros").get(0).text);
 
             const format_plain = function(value) { return value; };
             const format_currency = function(value) {

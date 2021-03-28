@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-31 16:14+0300\n"
-"PO-Revision-Date: 2020-05-31 16:14+0300\n"
+"POT-Creation-Date: 2020-12-26 11:22+0200\n"
+"PO-Revision-Date: 2020-12-26 11:22+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 19.12.3\n"
+"X-Generator: Lokalize 20.08.3\n"
+
+#| msgid "View items"
+msgid "View help."
+msgstr "View help."
+
+msgid ""
+"Setting a value other than default enables mobile view and this event is "
+"otherwise made read-only."
+msgstr ""
+"Setting a value other than default enables mobile view and this event is "
+"otherwise made read-only."
 
 msgid "User"
 msgstr "User "
@@ -69,6 +80,13 @@ msgstr[1] "{count} unbound clerks added."
 msgid "Add unbound clerk"
 msgstr "Add unbound clerk"
 
+#| msgid "Checkout counter"
+msgid "Lock Counter"
+msgstr "Lock Counter"
+
+msgid "Reset Counter usage status"
+msgstr "Reset Counter usage status"
+
 msgid "Re-generate bar codes for items"
 msgstr "Re-generate bar codes for items"
 
@@ -81,6 +99,9 @@ msgstr "Item"
 msgid "Clerk"
 msgstr "Clerk"
 
+msgid "Item count"
+msgstr "Item count"
+
 msgid "Permit"
 msgstr "Permit"
 
@@ -92,6 +113,9 @@ msgstr "Not logged in."
 
 msgid "Counter has gone missing."
 msgstr "Counter has gone missing."
+
+msgid "Unauthorized"
+msgstr "Unauthorized"
 
 msgid "Clerk not found."
 msgstr "Clerk not found."
@@ -133,6 +157,12 @@ msgstr "Unexpected item state: {state_name} ({state})"
 
 msgid "No such clerk."
 msgstr "No such clerk."
+
+msgid "Some box items are currently staged and cannot be changed."
+msgstr "Some box items are currently staged and cannot be changed."
+
+msgid "Nothing left to change"
+msgstr "Nothing left to change"
 
 #, python-format
 msgid "Too many items brought, limit is %i!"
@@ -256,9 +286,6 @@ msgstr "last name"
 msgid "email address"
 msgstr "email address"
 
-#| msgid ""
-#| "Python function body that gets sold_and_compensated queryset as argument "
-#| "and must call result() with None or Decimal argument."
 msgid ""
 "Lisp function body that gets sold_and_compensated queryset as a global and "
 "must return a null or decimal number."
@@ -296,9 +323,6 @@ msgstr "Value cannot be negative"
 
 msgid "Price"
 msgstr "Price"
-
-msgid "Item count"
-msgstr "Item count"
 
 msgid "Item type"
 msgstr "Item type"
@@ -362,6 +386,13 @@ msgstr "Registration identifier of the counter"
 
 msgid "Common name of the counter"
 msgstr "Common name of the counter"
+
+#| msgid "In use"
+msgid "Is in use?"
+msgstr "Is in use?"
+
+msgid "Is locked?"
+msgstr "Is locked?"
 
 msgid "Added to receipt"
 msgstr "Added to receipt"
@@ -540,6 +571,59 @@ msgstr "Help"
 
 msgid "CapsLock is probably ON!"
 msgstr "CapsLock is probably ON!"
+
+msgid "You need to enable browser JavaScript support for this feature to work."
+msgstr ""
+"You need to enable browser JavaScript support for this feature to work."
+
+msgid "Close"
+msgstr "Close"
+
+#| msgid "Counter mode"
+msgid "Counter Help"
+msgstr "Counter Help"
+
+#| msgid "Actions"
+msgid "Action"
+msgstr "Action"
+
+msgid "Input"
+msgstr "Input"
+
+msgid "Example"
+msgstr "Example"
+
+#| msgid "Checkout counter"
+msgid "Log out from counter"
+msgstr "Log out from counter"
+
+msgid ""
+"Suspend current receipt (continue it by reading an item from the receipt)"
+msgstr ""
+"Suspend current receipt (continue it by reading an item from the receipt)"
+
+msgid "Abort current receipt"
+msgstr "Abort current receipt"
+
+#| msgid "Added to receipt"
+msgid "Add single item to receipt"
+msgstr "Add single item to receipt"
+
+msgid "Add single item from a box"
+msgstr "Add single item from a box"
+
+msgid "Add multiple items from same box"
+msgstr "Add multiple items from same box"
+
+#| msgid "Removed from receipt"
+msgid "Remove item from receipt"
+msgstr "Remove item from receipt"
+
+msgid "Payment"
+msgstr "Payment"
+
+msgid "Quick payment"
+msgstr "Quick payment"
 
 msgid "Clerk codes"
 msgstr "Clerk codes"
@@ -787,9 +871,6 @@ msgstr "Behalf of"
 
 msgid "Add new…"
 msgstr "Add new…"
-
-msgid "Close"
-msgstr "Close"
 
 msgid "New vendor"
 msgstr "New vendor"

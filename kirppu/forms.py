@@ -415,8 +415,8 @@ class VendorItemForm(forms.Form):
         return value
 
     def clean_item_type(self):
-        value = self.cleaned_data["item_type"]
-        return ItemType.objects.get(event=self._event, key=value)
+        value = int(self.cleaned_data["item_type"])
+        return ItemType.objects.get(id=value, event=self._event)
 
     db_values = model_dict_fn(
         "name",

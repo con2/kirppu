@@ -89,36 +89,4 @@ Number.prototype.formatCents = () ->
   if this < 0 then wholes = "-" + wholes
   return wholes + "." + fraction_str
 
-# Parse "price" tag to cents, ie. integer.
-# @return [Number] Parsed integer or null on error.
-String.prototype.parseCents = () ->
-  # Match the string to parts: sign, wholes, fraction
-  pat = /^(-?)(\d*)(?:[,.](\d*))?$/
-  matcher = pat.exec(this)
-  if not matcher? then return null
-
-  # Ensure that values are defined.
-  matcher[1] = "" unless matcher[1]?
-  matcher[2] = "0" unless matcher[2]?
-  matcher[3] = "0" unless matcher[3]?
-
-  # Convert to integer.
-  wholes = matcher[2] - 0
-  fraction = matcher[3] - 0
-
-  # Adjust fraction so that ".2" equals 20 and ".02" equals 2.
-  fraction_exp = 10 ** (Number.FRACTION_LEN - matcher[3].length)
-  fraction = Math.round(fraction * fraction_exp)
-
-  # 100 cents per a whole. (or whatever the FRACTION has been defined)
-  cents = wholes * Number.FRACTION
-
-  # Adjust by sign, and add the fraction part to cents.
-  if matcher[1] != "-"
-    cents += fraction
-  else
-    cents = -cents - fraction
-
-  return cents
-
 #endregion

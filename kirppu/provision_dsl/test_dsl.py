@@ -1,6 +1,8 @@
 import decimal
 import os.path
 import re
+import textwrap
+import typing
 import unittest
 
 from django.test import TestCase as DjangoTestCase
@@ -22,33 +24,43 @@ def make_ex_str(raises_e: BaseException):
 
 
 class SourceMetaClass(type):
+    class TestCase(typing.NamedTuple):
+        name: str
+        code: typing.List[str]
+        expected: typing.List[str]  # actually "Optional".
+        source: str
+
     def __new__(mcs, name, bases, namespace, **kwargs):
         tests = {}
+
+        def maybe_save_test(the_test: typing.Optional[SourceMetaClass.TestCase]):
+            if the_test is not None and the_test.code:
+                the_test_name = "test_" + PAT.sub("_", the_test.name)
+                tests[the_test_name] = the_test
+
+        # Collect tests to tests dictionary.
         with open(os.path.join(os.path.dirname(__file__), "test_dsl.scm"), "rt", encoding="utf-8") as source:
             current_test = None
-            for line in source:
+            for lineno, line in enumerate(source, start=1):
                 line = line.rstrip()
                 if line.startswith(";TEST"):
                     # ;TEST test-name
-                    if current_test is not None and current_test[1]:
-                        name = "test_" + PAT.sub("_", current_test[0])
-                        tests[name] = current_test[1:]
+                    maybe_save_test(current_test)
+                    current_test = mcs.TestCase(line[6:], [], [], source.name + ":" + str(lineno))
 
-                    current_test = line[6:], [], []
                 elif not line.isspace() and current_test is not None:
                     if line.lstrip().startswith(";="):
                         # ;= expected_result
-                        current_test[2].append(line[3:])
+                        current_test.expected.append(line[3:])
                     else:
                         # lisp-code
-                        current_test[1].append(line)
+                        current_test.code.append(line)
 
-            if current_test is not None and current_test[1]:
-                name = "test_" + PAT.sub("_", current_test[0])
-                tests[name] = current_test[1:]
+            maybe_save_test(current_test)
 
+        # Transform the tests dictionary to test cases that run the program and check result.
         funcs = {}
-        for test_name, (lisp, expect) in tests.items():
+        for test_name, (_, lisp, expect, source) in tests.items():
             program = "\n".join(lisp)
             expect = expect[0] if expect else None
             if expect is not None:
@@ -57,7 +69,7 @@ class SourceMetaClass(type):
                 elif NUM.match(expect):
                     expect = decimal.Decimal(expect)
 
-            funcs[test_name] = mcs._make_test(test_name, program, expect)
+            funcs[test_name] = mcs._make_test(test_name, program, expect, source)
 
         ns = dict(namespace)
         ns.update(funcs)
@@ -65,11 +77,14 @@ class SourceMetaClass(type):
         return result
 
     @staticmethod
-    def _make_test(name, program, expect):
+    def _make_test(name, program, expect, source):
+        doc = "Code:\n" + textwrap.indent(program, "\t") + "\nExpect:\n\t" + repr(expect)
+
         def the_test(self):
             actual = dsl.run(program)
-            self.assertEqual(expect, actual)
+            self.assertEqual(expect, actual, source + ": Result not expected in test " + repr(name))
         the_test.__name__ = name
+        the_test.__doc__ = doc
         return the_test
 
 

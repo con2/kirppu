@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from ipware.ip import get_ip
+from ipware.ip import get_client_ip
 from ratelimit.utils import is_ratelimited
 
 from ..models import Box, Event, Item, Receipt, ReceiptExtraRow, TemporaryAccessPermit, TemporaryAccessPermitLog, Vendor
@@ -102,7 +102,7 @@ class TableContents(object):
 
 
 def _ratelimit_key(group, request):
-    return get_ip(request)
+    return get_client_ip(request)
 
 
 def _login_view(request, event):
@@ -131,7 +131,7 @@ def _login_view(request, event):
                     TemporaryAccessPermitLog.objects.create(
                         permit=permit,
                         action=TemporaryAccessPermitLog.ACTION_USE if can_use else TemporaryAccessPermitLog.ACTION_TRY,
-                        address=shorten_text(get_ip(request) + "; " + request.META.get("REMOTE_HOST", ""),
+                        address=shorten_text(get_client_ip(request) + "; " + request.META.get("REMOTE_HOST", ""),
                                              TemporaryAccessPermitLog._meta.get_field("address").max_length, False),
                         peer=shorten_text(request.META.get("HTTP_USER_AGENT", ""),
                                           TemporaryAccessPermitLog._meta.get_field("peer").max_length, False)

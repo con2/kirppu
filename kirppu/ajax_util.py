@@ -1,6 +1,9 @@
-from functools import wraps
+import functools
+import inspect
 import json
+import typing
 
+from django.db import transaction
 from django.http.response import (
     Http404,
     HttpResponse,
@@ -57,6 +60,10 @@ class AjaxFunc(object):
         self.method = method                    # http method for templates
 
 
+# Registry for ajax functions. Maps function names to AjaxFuncs per scope.
+AJAX_SCOPES: typing.Dict[str, typing.Dict[str, AjaxFunc]] = {}
+
+
 def ajax_func(original, method='POST', params=None, defaults=None, staff_override=False, ignore_session=False):
     """
     Create view function decorator.
@@ -93,11 +100,8 @@ def ajax_func(original, method='POST', params=None, defaults=None, staff_overrid
         # Decorate func.
         func = require_http_methods([method])(func)
 
-        @wraps(func)
+        @functools.wraps(func)
         def wrapper(request, event_slug, **kwargs):
-            #if not request.is_ajax():
-            #    return HttpResponseBadRequest("Invalid requester")
-
             # Prevent access if checkout is not active.
             event = get_object_or_404(Event, slug=event_slug)
             if not staff_override and not event.checkout_active:
@@ -150,16 +154,22 @@ def get_counter(request):
 
     Raise AjaxError if session is invalid or counter is not found.
     """
-    if "counter" not in request.session:
+    if "counter" not in request.session or "counter_key" not in request.session:
         raise AjaxError(RET_UNAUTHORIZED, _(u"Not logged in."))
 
     counter_id = request.session["counter"]
+    counter_key = request.session["counter_key"]
     try:
         counter_object = Counter.objects.get(pk=counter_id)
     except Counter.DoesNotExist:
         raise AjaxError(
             RET_UNAUTHORIZED,
             _(u"Counter has gone missing."),
+        )
+    if counter_object.private_key != counter_key:
+        raise AjaxError(
+            RET_UNAUTHORIZED,
+            _("Unauthorized")
         )
 
     return counter_object
@@ -191,7 +201,7 @@ def get_clerk(request):
 
 def require_user_features(counter=True, clerk=True, overseer=False, staff_override=False):
     def out_w(func):
-        @wraps(func)
+        @functools.wraps(func)
         def wrapper(request, *args, **kwargs):
             if staff_override and request.user.is_staff:
                 return func(request, *args, **kwargs)
@@ -214,3 +224,65 @@ def require_user_features(counter=True, clerk=True, overseer=False, staff_overri
 
 def empty_as_none(value):
     return None if (value or "").strip() == "" else value
+
+
+def get_all_ajax_functions():
+    for v in AJAX_SCOPES.values():
+        yield from v.items()
+
+
+def ajax_func_factory(scope: str):
+    scope_functions = AJAX_SCOPES.setdefault(scope, dict())
+
+    def wrapper(url: str, method='POST', counter=True, clerk=True, overseer=False, atomic=False,
+                staff_override=False, ignore_session=False):
+        """
+        Decorate a function with some common logic.
+        The names of the function being decorated are required to be present in the JSON object
+        that is passed to the function, and they are automatically decoded and passed to those
+        arguments.
+
+        :param url: URL RegEx this function is served in.
+        :type url: str
+        :param method: HTTP Method required. Default is POST.
+        :type method: str
+        :param counter: Is registered Counter required? Default: True.
+        :type counter: bool
+        :param clerk: Is logged in Clerk required? Default: True.
+        :type clerk: bool
+        :param overseer: Is overseer permission required for Clerk? Default: False.
+        :type overseer: bool
+        :param atomic: Should this function run in atomic transaction? Default: False.
+        :type atomic: bool
+        :param staff_override: Whether this function can be called without checkout being active.
+        :type staff_override: bool
+        :param ignore_session: Whether Event stored in session data should be ignored for the call.
+        :return: Decorated function.
+        """
+
+        def decorator(func):
+            # Get argspec before any decoration.
+            spec = inspect.getfullargspec(func)
+
+            wrapped = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
+
+            fn = ajax_func(
+                func,
+                method,
+                spec.args[1:],
+                spec.defaults,
+                staff_override=staff_override,
+                ignore_session=ignore_session,
+            )(wrapped)
+            if atomic:
+                fn = transaction.atomic(fn)
+
+            # Copy name etc from original function to wrapping function.
+            # The wrapper must be the one referred from urlconf.
+            fn = functools.wraps(wrapped)(fn)
+            scope_functions[func.__name__] = AjaxFunc(fn, url, method)
+
+            return fn
+
+        return decorator
+    return wrapper

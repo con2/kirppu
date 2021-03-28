@@ -68,7 +68,7 @@
     </form>
 
     <div id="receipt_body"></div>
-    <noscript>You need to enable browser JavaScript support for this feature to work.</noscript>
+    <noscript>{% trans "You need to enable browser JavaScript support for this feature to work." %}</noscript>
 {% endblock  %}
 
 {% block tail %}
@@ -144,61 +144,61 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span
-                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="help_dialog_label">Counter Help</h4>
+                            aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>
+                    <h4 class="modal-title" id="help_dialog_label">{% trans "Counter Help" %}</h4>
                 </div>
                 <div class="modal-body">
                     <table class="table table-condensed">
                         <thead>
                         <tr>
-                            <th>Action</th>
-                            <th>Input</th>
-                            <th>Example</th>
+                            <th>{% trans "Action" %}</th>
+                            <th>{% trans "Input" %}</th>
+                            <th>{% trans "Example" %}</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>Log out from counter</td>
+                            <td>{% trans "Log out from counter" %}</td>
                             <td><kbd data-command-value="logout"></kbd></td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td>Suspend current receipt (continue it by reading an item from the receipt)</td>
+                            <td>{% trans "Suspend current receipt (continue it by reading an item from the receipt)" %}</td>
                             <td><kbd data-command-value="suspend"></kbd></td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td>Abort current receipt</td>
+                            <td>{% trans "Abort current receipt" %}</td>
                             <td><kbd data-command-value="abort"></kbd></td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td>Add single item to receipt</td>
+                            <td>{% trans "Add single item to receipt" %}</td>
                             <td><kbd>ITEM_CODE</kbd></td>
                             <td><code>7EB7DR1O</code></td>
                         </tr>
                         <tr>
-                            <td>Add single item from a box</td>
+                            <td>{% trans "Add single item from a box" %}</td>
                             <td><kbd>box#</kbd></td>
                             <td><code>box14</code></td>
                         </tr>
                         <tr>
-                            <td>Add multiple items from same box</td>
+                            <td>{% trans "Add multiple items from same box" %}</td>
                             <td><kbd>#*box#</kbd></td>
                             <td><code>3*box14</code></td>
                         </tr>
                         <tr>
-                            <td>Remove item from receipt</td>
+                            <td>{% trans "Remove item from receipt" %}</td>
                             <td><kbd>-&#8288;ITEM_CODE</kbd></td>
                             <td><code>-&#8288;UUQ7E7V4</code></td>
                         </tr>
                         <tr>
-                            <td>Payment</td>
+                            <td>{% trans "Payment" %}</td>
                             <td><kbd>+EUROS,CENTS</kbd></td>
                             <td><code>+&#8288;12,00</code> for 12,00&euro;</td>
                         </tr>
                         <tr>
-                            <td>Quick payment</td>
+                            <td>{% trans "Quick payment" %}</td>
                             <td><kbd>+</kbd></td>
                             <td></td>
                         </tr>
@@ -206,7 +206,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "Close" %}</button>
                 </div>
             </div>
         </div>
