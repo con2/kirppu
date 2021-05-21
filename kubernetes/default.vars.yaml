@@ -18,6 +18,7 @@ djangoapp_name: kirppu
 djangoapp_image: !Var djangoapp_name
 
 # Whether the secret of the name !Var djangoapp_name is managed by these templates or manually created
+djangoapp_secret_key: ''
 djangoapp_secret_managed: true
 
 # A list of "Full Name <email@example.com>", no commas
