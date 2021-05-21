@@ -1,0 +1,9 @@
+django-environ
+django-ipware
+django-ratelimit
+django
+pillow
+pubcode
+pytz
+mistune
+whitenoise
