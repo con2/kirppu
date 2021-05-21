@@ -115,6 +115,12 @@ You can then run unit tests with
 py.test -vvv --cov . --doctest-modules
 ```
 
+Or using Docker Compose:
+
+```
+docker-compose -f docker-compose.test.yml up --exit-code-from test
+```
+
 - Set `DEBUG=1` environment variable, OR copy `.env.dev` file to `.env`,
   OR set `ENV_PATH` environment variable to point to correct env file.
 - Admin interface
