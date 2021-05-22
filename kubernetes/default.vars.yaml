@@ -156,3 +156,8 @@ ingress_tls: !If
     - secretName: ingress-letsencrypt
       hosts:
         - !Var ingress_public_hostname
+
+# !Void - Skaffold default behaviour (push only when connected to non-local cluster)
+# True - always push
+# False - never push (desired for pull requests)
+emskaffolden_push: !Void
