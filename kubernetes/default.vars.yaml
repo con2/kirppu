@@ -18,6 +18,7 @@ djangoapp_name: kirppu
 djangoapp_image: !Var djangoapp_name
 
 # Whether the secret of the name !Var djangoapp_name is managed by these templates or manually created
+djangoapp_secret_key: ''
 djangoapp_secret_managed: true
 
 # A list of "Full Name <email@example.com>", no commas
@@ -155,3 +156,8 @@ ingress_tls: !If
     - secretName: ingress-letsencrypt
       hosts:
         - !Var ingress_public_hostname
+
+# !Void - Skaffold default behaviour (push only when connected to non-local cluster)
+# True - always push
+# False - never push (desired for pull requests)
+emskaffolden_push: !Void
