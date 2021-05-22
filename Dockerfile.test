@@ -1,10 +1,10 @@
 FROM node:14
 WORKDIR /usr/src/app/kirppu
-COPY kirppu /usr/src/app/kirppu
-RUN cd /usr/src/app/kirppu && \
-    npm install && \
-    npm run gulp && \
-    rm -rf node_modules
+COPY kirppu/package.json kirppu/package-lock.json .
+RUN npm ci
+COPY kirppu .
+RUN npm run gulp
+
 
 FROM python:3.9
 WORKDIR /usr/src/app
