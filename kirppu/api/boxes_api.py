@@ -161,7 +161,12 @@ def box_item_release(request, event, box_number, box_item_count="1"):
         raise AjaxError(RET_BAD_REQUEST, "No active receipt found")
     receipt = get_receipt(receipt_id, for_update=True)
 
-    box_items = list(receipt.items.select_for_update().filter(receiptitem__action=ReceiptItem.ADD, box=box).distinct())
+    # This query may return duplicates due extra inner join for action filtering.
+    # Distinct cannot be used, since this is select_for_update query.
+    receipt_items = receipt.items.select_for_update().filter(receiptitem__action=ReceiptItem.ADD, box=box)
+    # Make distinct by hand.
+    box_items = list({i.pk: i for i in receipt_items}.values())
+
     if len(box_items) < box_item_count:
         raise AjaxError(RET_CONFLICT,
                         _("Only {} items of {} available for removal.").format(len(box_items), box_item_count))
