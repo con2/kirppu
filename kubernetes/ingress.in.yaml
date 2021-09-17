@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: !Var djangoapp_name
@@ -9,7 +9,10 @@ spec:
     - host: !Var ingress_public_hostname
       http:
         paths:
-          - path: /
+          - pathType: Prefix
+            path: /
             backend:
-              serviceName: gunicorn
-              servicePort: 8000
+              service:
+                name: gunicorn
+                port:
+                  number: 8000
