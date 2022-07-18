@@ -4,7 +4,7 @@ import json
 import textwrap
 import typing
 
-from django.test import Client, override_settings
+from django.test import override_settings
 from django.test import TestCase
 
 from kirppu.provision import Provision
@@ -154,13 +154,11 @@ class FinishingProvisionTest(TestCase):
 
 
 # noinspection PyPep8Naming,PyAttributeOutsideInit
-class _ApiMixin(object):
+class _ApiProvisionTest(TestCase):
     def _setUp_Event(self):
         self.event = EventFactory()
 
     def setUp(self):
-        self.client = Client()
-
         self._setUp_Event()
 
         self.vendor = VendorFactory(event=self.event)
@@ -217,7 +215,7 @@ class _ApiMixin(object):
 
 
 @override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
-class ApiNoProvisionTest(_ApiMixin, TestCase):
+class ApiNoProvisionTest(_ApiProvisionTest):
 
     # region No Provision
     def test_no_provision_no_items(self):
@@ -242,7 +240,7 @@ class ApiNoProvisionTest(_ApiMixin, TestCase):
 
 
 @override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
-class ApiLinearProvisionTest(_ApiMixin, TestCase):
+class ApiLinearProvisionTest(_ApiProvisionTest):
     def _setUp_Event(self):
         self.event = EventFactory(
             provision_function="""(* 0.10 (.count sold_and_compensated))"""
@@ -283,7 +281,7 @@ class ApiLinearProvisionTest(_ApiMixin, TestCase):
 
 
 @override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
-class ApiStepProvisionTest(_ApiMixin, TestCase):
+class ApiStepProvisionTest(_ApiProvisionTest):
     def _setUp_Event(self):
         self.event = EventFactory(
             provision_function="""(* 0.50 (// (.count sold_and_compensated) 4))"""
@@ -318,7 +316,7 @@ class ApiStepProvisionTest(_ApiMixin, TestCase):
 
 
 @override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
-class ApiRoundingProvisionTest(_ApiMixin, TestCase):
+class ApiRoundingProvisionTest(_ApiProvisionTest):
     def _setUp_Event(self):
         self.event = EventFactory(
             provision_function=textwrap.dedent("""

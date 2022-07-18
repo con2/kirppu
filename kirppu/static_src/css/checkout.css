@@ -43,6 +43,17 @@ td.receipt_code {
     width: 2em;
     text-align: center;
 }
+.badged_index .badge {
+    animation: cursor-blink 0.5s steps(2, start) infinite;
+}
+@keyframes cursor-blink {
+    from {
+        opacity: 70%
+    }
+    to {
+        opacity: inherit;
+    }
+}
 
 tr.receipt_tr_clickable:hover {
     text-decoration: underline;

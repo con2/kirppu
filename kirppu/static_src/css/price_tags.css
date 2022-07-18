@@ -32,7 +32,7 @@
 .item_container {
     border: 1px solid black;
     width: 99.9%;
-    height: 3.62cm;
+    min-height: 3.62cm;
     float: left;
     padding: 0.1cm;
     position: relative; /* Needed for absolute positioning of child elements. */
@@ -46,8 +46,12 @@
 }
 @media screen, projection, handheld {
     .item_list {
-        height: 2em;
+        min-height: 2em;
         width: 99.9%;
+    }
+    #printed_items {
+        margin-top: 1cm;
+        margin-bottom: 5mm;
     }
 }
 #printed_items > .item_container {
@@ -103,8 +107,9 @@
 @media screen, projection, handheld {
     .item_list .item_price {
         border: none;
-        margin: 0px;
-        margin-top: 0px;
+        margin: 0;
+        position: absolute;
+        top: 0;
         font-size: 100%;
     }
 }
@@ -139,7 +144,7 @@
 
 .item_name {
     width: 8.7cm;
-    height: 2em;
+    min-height: 2em;
     margin: 2px; /* Compensate for border not being there for locked items */
 }
 
@@ -155,10 +160,12 @@
 }
 @media screen, projection, handheld {
     .item_list .item_name {
-        position: absolute;
+        position: relative;
         border: none;
-        margin: 0px;
+        min-height: 1.7em;
+        margin: 0;
         width: 100%;
+        padding-right: 3cm;
         left: 1.5cm;
     }
 }
@@ -202,7 +209,7 @@
 
 .item_adult_tag {
     position: absolute;
-    top: 1cm;
+    bottom: 1.8cm;
     left: 1.75cm;
     font-weight: bold;
 }
@@ -214,7 +221,7 @@
 
 .item_vendor_id {
     position: absolute;
-    top: 1cm;
+    bottom: 1.8cm;
     left: 3cm;
 }
 @media screen, projection, handheld {

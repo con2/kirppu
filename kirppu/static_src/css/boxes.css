@@ -54,9 +54,7 @@
 
 .box_container .box_description {
     width: 17cm;
-    height: 2em;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    min-height: 2em;
 }
 
 .box_content_page .box_description {
@@ -67,10 +65,7 @@
     max-height: 10cm;
 }
 
-.box_adult_tag {
-    position: absolute;
-    top: 1cm;
-    left: 1.75cm;
+.box_adult {
     font-weight: bold;
 }
 
@@ -140,6 +135,10 @@
 
 .box_content_table_page .box_price {
     font-size: 175%;
+}
+
+.box_content_table_page .box_adult {
+    font-size: 130%;
 }
 
 

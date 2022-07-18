@@ -8,7 +8,7 @@ class @ItemEditDialog
 
     @dialog = $(Template.item_edit_dialog_modal())
     @dialog.on('shown.bs.modal', => do @onShown)
-    @dialog.on('hidden.bs.modal', => do @dialog.remove)
+    @dialog.on('hidden.bs.modal', => do @onHidden)
     @setItem(item)
 
   setItem: (item) =>
@@ -71,9 +71,14 @@ class @ItemEditDialog
       tag.find('.barcode_container > img').attr('src', codes[0])
     )
 
-  show: => do @dialog.modal
+  show: => @dialog.modal(keyboard: false)
 
   hide: => @dialog.modal('hide')
+
+  _keyHandle: (e) =>
+    if e.keyCode == 27 # = ESC
+      e.preventDefault()
+      @hide()
 
   onShown: =>
     doc = window.frames['item-edit-print-frame'].document
@@ -83,6 +88,14 @@ class @ItemEditDialog
     )
     console.log(ItemEditDialog.priceTagCss)
     $(doc.body).find('#items').empty().append(@priceTag)
+
+    # A bit excessive, as any form events will also go here, but looks like the dialog cannot be focused and
+    # thus not handle ESC keyboard event.
+    $(document).on("keydown", @_keyHandle)
+
+  onHidden: =>
+    @dialog.remove()
+    $(document).off("keydown", @_keyHandle)
 
   displayError: (msg) =>
     if msg?

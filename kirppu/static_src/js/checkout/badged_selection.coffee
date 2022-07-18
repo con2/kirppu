@@ -16,10 +16,14 @@ class @BadgedSelection
     if event.key == "ArrowDown"
       if @currentSelection + 1 < rows.length
         @setBadge(@currentSelection + 1)
+      else
+        @setBadge(0)
       event.preventDefault()
     else if event.key == "ArrowUp"
       if @currentSelection > 0
         @setBadge(@currentSelection - 1)
+      else
+        @setBadge(rows.length - 1)
       event.preventDefault()
 
   setBadge: (index) ->

@@ -242,9 +242,12 @@ def item_update_price(request, event, code):
 @require_http_methods(["POST"])
 @require_vendor_open
 def item_update_name(request, event, code):
-    name = request.POST.get("value", "no name")
+    name = request.POST.get("value")
+    if name is None or name == "":
+        return HttpResponseBadRequest("Name is required.")
 
-    name = name[:80]
+    max_len = Item._meta.get_field("name").max_length
+    name = name.strip()[:max_len].strip()
 
     with transaction.atomic():
         vendor = Vendor.get_vendor(request, event)

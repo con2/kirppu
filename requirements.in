@@ -1,9 +1,9 @@
 django-environ
 django-ipware
 django-ratelimit
-django
-pillow
+django~=3.2.0
+pillow~=9.0.1
 pubcode
 pytz
-mistune
+mistune==0.8.4
 whitenoise

@@ -180,9 +180,19 @@ def split_list(parser, token):
 split_list = register.tag(split_list)
 
 
+# From django.utils.html
+_json_script_escapes = {
+    ord('>'): '\\u003E',
+    ord('<'): '\\u003C',
+    ord('&'): '\\u0026',
+}
+
+
+@register.filter("json")
 def as_json(obj):
-    return mark_safe(json.dumps(obj))
-register.filter("json", as_json)
+    from django.core.serializers.json import DjangoJSONEncoder
+    json_str = json.dumps(obj, separators=(",", ":"), cls=DjangoJSONEncoder).translate(_json_script_escapes)
+    return mark_safe(json_str)
 
 
 @register.filter

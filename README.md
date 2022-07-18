@@ -16,7 +16,7 @@ It consists of a high level guide outlining the steps, example guide that has mo
 
 ### High level guide
 
-1. Install Python 3.5+.
+1. Install Python >= 3.7.
     1. Install pip.
        Pip is used for downloading and installing dependencies. It is included
        by default in Python since 3.4.

@@ -37,6 +37,11 @@
                     <span class="price">{{ price }}</span> / {{ bundle_size }} pcs
                 {% endblocktrans %}</div>
             </div>
+            <div class="row">
+                {% if item.adult == "yes" %}
+                    <div class="col-xs-2 box_adult">K-18</div>
+                {% endif %}
+            </div>
 
             <div class="row box_empty_row"></div>
             <div class="row box_empty_row" style="height: 5em;"></div>

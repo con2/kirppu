@@ -63,6 +63,7 @@ KIRPPU_EXTRA_EVENTS = dict(e.split("@", maxsplit=1) for e in env.list("KIRPPU_EX
 if set(KIRPPU_EXTRA_EVENTS.values()) - set(DATABASES.keys()):
     raise ImproperlyConfigured("Some KIRPPU_EXTRA_EVENTS databases were not found in KIRPPU_EXTRA_DATABASES.")
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts

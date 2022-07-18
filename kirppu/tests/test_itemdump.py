@@ -1,4 +1,4 @@
-from django.test import Client, TestCase
+from django.test import TestCase
 
 from ..models import Item
 from .factories import EventFactory, EventPermissionFactory, ItemFactory, ItemTypeFactory, UserFactory, VendorFactory
@@ -15,13 +15,12 @@ class ItemDumpTest(TestCase):
             ItemFactory(vendor=vendor, itemtype=itemtype, state=Item.BROUGHT)
 
     def _get(self, query=""):
-        return self.c.get("/kirppu/%s/itemdump/" % self.event.slug + "?" + query)
+        return self.client.get("/kirppu/%s/itemdump/" % self.event.slug + "?" + query)
 
     def setUp(self):
         self.user = UserFactory()
         self.event = EventFactory()
-        self.c = Client()
-        self.c.force_login(self.user)
+        self.client.force_login(self.user)
 
     def test_defaultState(self):
         self._addPermission()

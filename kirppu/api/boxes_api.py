@@ -111,7 +111,10 @@ def box_item_reserve(request, event, box_number, box_item_count="1"):
     # Reserve it only when it is last item to be reserved.
     representative_item_id = box.representative_item_id
     if len(candidates) == box_item_count + 1:
-        candidates = [c for c in candidates if c != representative_item_id]
+        if representative_item_id in candidates:
+            candidates = [c for c in candidates if c != representative_item_id]
+        else:
+            candidates = candidates[:-1]
 
     if len(candidates) == box_item_count:
         items = Item.objects.filter(pk__in=candidates)

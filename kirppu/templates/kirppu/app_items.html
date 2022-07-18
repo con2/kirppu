@@ -135,7 +135,7 @@
             {% include 'kirppu/app_items_item.html' with controls_enabled=True name=i.name price=i.price_fmt code=i.code vendor_id=i.vendor_id tag_type=i.type adult=i.adult locked=i.is_locked %}
         {% endfor %}
     </div>
-    <div style="margin-top: 1cm" id="printed_items" data-require-terms="true">
+    <div id="printed_items" data-require-terms="true">
         {# Output a template container for every printed item user has. #}
         {% for i in printed_items %}
             {% include 'kirppu/app_items_item.html' with controls_enabled=True name=i.name price=i.price_fmt code=i.code vendor_id=i.vendor_id tag_type="list" adult=i.adult locked=True %}
