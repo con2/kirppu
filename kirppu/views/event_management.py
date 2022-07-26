@@ -13,7 +13,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View
 from django.utils import timezone
 
-from utils import format_datetime
+from ..utils import format_datetime
 from ..models import AccessSignup, Clerk, Event, EventPermission, UserAdapter
 
 
