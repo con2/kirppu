@@ -1,20 +1,21 @@
-from django import VERSION
-from django.http import HttpResponse
-from django.utils.http import url_has_allowed_host_and_scheme
-from django.views.generic import View
-from django.shortcuts import redirect, resolve_url
-from django.conf import settings
-from django.urls import reverse
-from django.contrib.auth import authenticate, login, logout
+import typing
 
 import requests
+from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
+from django.shortcuts import redirect, resolve_url
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.generic import View
 from requests_oauthlib import OAuth2Session
 
 
 def get_session(request, **kwargs):
-    return OAuth2Session(settings.KOMPASSI_OAUTH2_CLIENT_ID,
+    return OAuth2Session(
+        settings.KOMPASSI_OAUTH2_CLIENT_ID,
         redirect_uri=request.build_absolute_uri(reverse('oauth2_callback_view')),
-        scope=settings.KOMPASSI_OAUTH2_SCOPE, # XXX hardcoded scope
+        scope=settings.KOMPASSI_OAUTH2_SCOPE,  # XXX hardcoded scope
         **kwargs
     )
 
@@ -49,7 +50,8 @@ class CallbackView(View):
             return redirect("/")
 
         session = get_session(request, state=request.session['oauth_state'])
-        token = session.fetch_token(settings.KOMPASSI_OAUTH2_TOKEN_URL,
+        token = session.fetch_token(
+            settings.KOMPASSI_OAUTH2_TOKEN_URL,
             client_secret=settings.KOMPASSI_OAUTH2_CLIENT_SECRET,
             authorization_response=request.build_absolute_uri(),
         )
@@ -61,11 +63,7 @@ class CallbackView(View):
 
         self._finish(request)
 
-        if VERSION[:2] >= (1, 11):
-            user = authenticate(request=request, oauth2_session=session)
-        else:
-            # Django <1.11 compatibility.
-            user = authenticate(oauth2_session=session)
+        user = authenticate(request=request, oauth2_session=session)
         if user is not None and user.is_active:
             login(request, user)
             return redirect(get_redirect_url(request, next_url, settings.LOGIN_REDIRECT_URL))
@@ -80,14 +78,14 @@ class CallbackView(View):
 
 class LogoutView(View):
     def get(self, request):
-        next_url = request.GET.get("next", None)  # type: str
+        next_url: str = request.GET.get("next", None)
         next_url = get_redirect_url(request, next_url, "/")
 
         if "oauth_tokens" not in request.session:
             logout(request)
             return redirect(next_url)
 
-        token = request.session["oauth_tokens"]  # type: dict
+        token: typing.Dict[str, str] = request.session["oauth_tokens"]
 
         # Server returns always 200.
         requests.post(settings.KOMPASSI_OAUTH2_REVOKE_URL, {

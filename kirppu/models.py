@@ -1,4 +1,5 @@
 from decimal import Decimal
+import enum
 import random
 import string
 import typing
@@ -73,7 +74,7 @@ class UserAdapterBase(object):
 
 
 # The actual class is found by string in settings.
-UserAdapter = import_string(settings.KIRPPU_USER_ADAPTER)
+UserAdapter: UserAdapterBase = import_string(settings.KIRPPU_USER_ADAPTER)
 
 
 class Person(models.Model):
@@ -149,6 +150,8 @@ class Event(models.Model):
         (VISIBILITY_NOT_LISTED, _("Not listed in front page")),
     )
     visibility = models.SmallIntegerField(choices=VISIBILITY, default=VISIBILITY_VISIBLE)
+    access_signup = models.BooleanField(default=False)
+    access_signup_token = models.CharField(blank=True, default="", max_length=128)
 
     def __str__(self):
         return self.name
@@ -244,6 +247,7 @@ class EventPermission(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    can_manage_event = models.BooleanField(default=False)
     can_see_clerk_codes = models.BooleanField(default=False)
     can_see_statistics = models.BooleanField(default=False)
     can_see_accounting = models.BooleanField(default=False)
@@ -253,6 +257,7 @@ class EventPermission(models.Model):
     can_create_sub_vendor = models.BooleanField(default=False)
 
     _short_mapping = (
+        (can_manage_event, "Manage"),
         (can_see_clerk_codes, "CCodes"),
         (can_see_statistics, "STAT"),
         (can_see_accounting, "ACC"),
@@ -398,12 +403,12 @@ class Clerk(models.Model):
         return "----------------"
 
     @classmethod
-    def by_code(cls, code, **query):
+    def by_code(cls, code: str, include_unbound: bool = False, **query):
         """
         Return the Clerk instance with the given hex code.
 
         :param code: Raw code string from access card.
-        :type code: str
+        :param include_unbound: If `True`, unbound Clerk object is returned. Otherwise, a `None` is returned.
         :return: The corresponding Clerk or None if access token is invalid.
         :rtype: Clerk | None
         :raises: ValueError if not a valid Clerk access code.
@@ -428,7 +433,7 @@ class Clerk(models.Model):
             clerk = cls.objects.get(access_key=access_key_hex, **query)
         except cls.DoesNotExist:
             return None
-        if clerk.user is None:
+        if not include_unbound and clerk.user is None:
             return None
         return clerk
 
@@ -477,7 +482,7 @@ class Clerk(models.Model):
 
         :param count: Count of unbound Clerks to generate, default 1.
         :type count: int
-        :param commit: If `True` the item(s) are saved instead of just returned in the list.
+        :param commit: If `True` the item(s) are saved instead of just returned in a list.
         :type commit: bool
         :return: List of generated rows.
         :rtype: list[Clerk]
@@ -490,6 +495,49 @@ class Clerk(models.Model):
                 item.save()
             ids.append(item)
         return ids
+
+
+class AccessSignup(models.Model):
+    class Target(int, enum.Enum):
+        def __new__(cls, value: int, label):
+            obj = int.__new__(cls, value)
+            obj._value_ = value
+            obj.label = label
+            return obj
+        CLERK = 1, _("Clerk")
+        OVERSEER = 2, _("Overseer")
+        STATS = 3, _("Statistics")
+        ACCOUNTING = 4, _("Accounting")
+
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    creation_time = models.DateTimeField()
+    update_time = models.DateTimeField()
+    resolution_time = models.DateTimeField(null=True)
+    resolution_accepted = models.BooleanField(default=False)
+    # Comma-separated list of Target values.
+    target_set = models.CharField(max_length=255)
+    message = models.TextField(max_length=500)
+
+    def __str__(self):
+        return "%s / %s" % (self.event.name, self.user.username)
+
+    def save(self, no_update_time: bool = False, **kwargs):
+        now = timezone.now()
+        if self.creation_time is None:
+            self.creation_time = now
+        updates = kwargs.pop("update_fields", None)
+        if not no_update_time:
+            self.update_time = now
+            if updates is not None:
+                updates = list(updates)
+                updates.append("update_time")
+        super().save(update_fields=updates, **kwargs)
+
+    class Meta:
+        unique_together = (
+            ("event", "user"),
+        )
 
 
 class Vendor(models.Model):

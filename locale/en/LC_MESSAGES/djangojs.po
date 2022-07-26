@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019, 2020.
+# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019, 2020, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-26 11:22+0200\n"
-"PO-Revision-Date: 2020-12-26 11:19+0200\n"
+"POT-Creation-Date: 2022-07-26 10:00+0300\n"
+"PO-Revision-Date: 2022-07-26 09:55+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 20.08.3\n"
+"X-Generator: Lokalize 21.12.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -400,6 +400,9 @@ msgstr "Receipt details"
 msgid "Press Enter to view this entry"
 msgstr "Press Enter to view this entry"
 
+msgid "Saving"
+msgstr "Saving"
+
 msgid ""
 "This will mark all items as printed so they won't be printed again "
 "accidentally. Continue?"
@@ -600,6 +603,84 @@ msgstr "start time"
 msgid "total"
 msgstr "total"
 
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Remove code"
+msgstr "Remove code"
+
+msgid "Generate new code"
+msgstr "Generate new code"
+
+msgid "Keep current value"
+msgstr "Keep current value"
+
+msgid "[none]"
+msgstr "[none]"
+
+msgid "Change code"
+msgstr "Change code"
+
+msgid "Is a clerk"
+msgstr "Is a clerk"
+
+msgid "Has access code"
+msgstr "Has access code"
+
+msgid "Manage event"
+msgstr "Manage event"
+
+msgid "See clerk codes"
+msgstr "See clerk codes"
+
+msgid "See statistics"
+msgstr "See statistics"
+
+msgid "See accounting"
+msgstr "See accounting"
+
+msgid "Register items outside registration"
+msgstr "Register items outside registration"
+
+msgid "Perform overseer actions"
+msgstr "Perform overseer actions"
+
+msgid "Switch sub vendor"
+msgstr "Switch sub vendor"
+
+msgid "Create sub vendor"
+msgstr "Create sub vendor"
+
+msgid "Accept signup"
+msgstr "Accept signup"
+
+msgid "As Clerk"
+msgstr "As Clerk"
+
+msgid "Only Permissions"
+msgstr "Only Permissions"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Signup info"
+msgstr "Signup info"
+
+msgid "Submit time"
+msgstr "Submit time"
+
+msgid "Resolution time"
+msgstr "Resolution time"
+
+msgid "Accepted"
+msgstr "Accepted"
+
+msgid "Applied"
+msgstr "Applied"
+
+msgid "Reject"
+msgstr "Reject"
+
 msgid "Notes"
 msgstr "Notes"
 
@@ -655,9 +736,6 @@ msgstr "Expected total:"
 
 msgid "item type"
 msgstr "item type"
-
-#~ msgid "Search vendor"
-#~ msgstr "Search vendor"
 
 #~| msgid "Compensate"
 #~ msgid "Compensate…"

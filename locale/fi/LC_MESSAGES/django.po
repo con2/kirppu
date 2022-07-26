@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020.
+# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-26 11:22+0200\n"
-"PO-Revision-Date: 2020-12-26 11:36+0200\n"
+"POT-Creation-Date: 2022-07-26 10:00+0300\n"
+"PO-Revision-Date: 2022-07-26 09:55+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,9 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 20.08.3\n"
+"X-Generator: Lokalize 21.12.3\n"
 
-#| msgid "View items"
 msgid "View help."
 msgstr "Näytä ohje."
 
@@ -25,8 +24,8 @@ msgid ""
 "Setting a value other than default enables mobile view and this event is "
 "otherwise made read-only."
 msgstr ""
-"Muun kuin oletusarvon asettaminen ottaa mobiilinäkymän käyttöön ja asettaa"
-" tämän tapahtuman \"vain luku\"-tilaan."
+"Muun kuin oletusarvon asettaminen ottaa mobiilinäkymän käyttöön ja asettaa "
+"tämän tapahtuman \"vain luku\"-tilaan."
 
 msgid "User"
 msgstr "Käyttäjä"
@@ -82,7 +81,6 @@ msgstr[1] "Lisätty {count} irrallista kassatätiä."
 msgid "Add unbound clerk"
 msgstr "Lisää irrallinen kassahenkilö"
 
-#| msgid "Checkout counter"
 msgid "Lock Counter"
 msgstr "Lukitse kassa"
 
@@ -137,6 +135,10 @@ msgstr "Myyjä ei ole hyväksynyt ehtoja!"
 msgid "Unexpected box number conflict"
 msgstr "Odottamaton laatikkonumeron ristiriita"
 
+#, python-format
+msgid "Too many items brought, limit is %i!"
+msgstr "Liian monta tuotua tavaraa, raja on %i!"
+
 msgid "Some box items ({}/{}) are in unexpected state."
 msgstr "Jotkin laatikon tavarat ({}/{}) ovat odottamattomassa tilassa."
 
@@ -162,15 +164,11 @@ msgstr "Ei sellaista kassatätiä."
 
 msgid "Some box items are currently staged and cannot be changed."
 msgstr ""
-"Jotkin laatikon tavaroista on tällä hetkellä varattu myytäväksi eikä niitä"
-" voi muuttaa."
+"Jotkin laatikon tavaroista on tällä hetkellä varattu myytäväksi eikä niitä "
+"voi muuttaa."
 
 msgid "Nothing left to change"
 msgstr "Jäljellä ei ole mitään muutettavaa."
-
-#, python-format
-msgid "Too many items brought, limit is %i!"
-msgstr "Liian monta tuotua tavaraa, raja on %i!"
 
 msgid "Someone else's item!"
 msgstr "Jonkun toisen tuote!"
@@ -281,6 +279,9 @@ msgstr "Tavaralla täytyy olla tyyppi."
 msgid "Invalid item type."
 msgstr "Virheellinen tavaran tyyppi."
 
+msgid "Message (optional)"
+msgstr "Viesti (valinnainen)"
+
 msgid "first name"
 msgstr "etunimi"
 
@@ -304,6 +305,13 @@ msgstr ""
 "Myymättömien tavaroiden lukumäärä, jonka myyjä voi tuoda tapahtumaan. Jos "
 "tyhjä, rajaa ei ole."
 
+msgid ""
+"Should a box be considered a single item when counting max brought items "
+"instead of considering its contents individually."
+msgstr ""
+"Lasketaanko laatikko yksittäiseksi tuotteeksi laskettaessa tapahtumaan "
+"tuotujen myymättömien tuotteiden rajaa."
+
 msgid "Visible"
 msgstr "Näkyvillä"
 
@@ -321,6 +329,15 @@ msgstr "Käyttötunnisteen arvo"
 
 msgid "Is enabled?"
 msgstr "Käytössä?"
+
+msgid "Overseer"
+msgstr "Valvoja"
+
+msgid "Statistics"
+msgstr "Tilastot"
+
+msgid "Accounting"
+msgstr "Kirjanpito"
 
 msgid "Value cannot be negative"
 msgstr "Arvo ei voi olla negatiivinen"
@@ -391,7 +408,6 @@ msgstr "Kassan rekisteröintitunniste"
 msgid "Common name of the counter"
 msgstr "Kassan yleinen nimi"
 
-#| msgid "In use"
 msgid "Is in use?"
 msgstr "Käytössä?"
 
@@ -460,6 +476,21 @@ msgstr "Mitätöinti"
 
 msgid "Sum"
 msgstr "Summa"
+
+msgid "Access signup"
+msgstr "Pääsyhakemus"
+
+msgid "Signup for access"
+msgstr "Pääsyoikeuden haku"
+
+msgid "Categories to apply"
+msgstr "Oikeusluokat"
+
+msgid "Last saved"
+msgstr "Viimeksi talletettu"
+
+msgid "Submit"
+msgstr "Lähetä"
 
 msgid "Box list"
 msgstr "Laatikkolista"
@@ -582,11 +613,9 @@ msgstr "Selaimen JavaScript-tuen on oltava päällä käyttääksesi tätä toim
 msgid "Close"
 msgstr "Sulje"
 
-#| msgid "Counter mode"
 msgid "Counter Help"
 msgstr "Kassan ohje"
 
-#| msgid "Actions"
 msgid "Action"
 msgstr "Toiminto"
 
@@ -596,20 +625,18 @@ msgstr "Syöte"
 msgid "Example"
 msgstr "Esimerkki"
 
-#| msgid "Checkout counter"
 msgid "Log out from counter"
 msgstr "Kirjaudu ulos myyntikassalta"
 
 msgid ""
 "Suspend current receipt (continue it by reading an item from the receipt)"
 msgstr ""
-"Pysäytä nykyinen kuitti (jatka sitä skannaamalla jokin kuitille jo lisätty"
-" tuote)"
+"Pysäytä nykyinen kuitti (jatka sitä skannaamalla jokin kuitille jo lisätty "
+"tuote)"
 
 msgid "Abort current receipt"
 msgstr "Keskeytä nykyinen kuitti"
 
-#| msgid "Added to receipt"
 msgid "Add single item to receipt"
 msgstr "Lisää yksittäinen tavara kuittiin"
 
@@ -619,7 +646,6 @@ msgstr "Lisää yksittäinen tavara laatikosta"
 msgid "Add multiple items from same box"
 msgstr "Lisää useampi tavara samasta laatikosta"
 
-#| msgid "Removed from receipt"
 msgid "Remove item from receipt"
 msgstr "Poista tavara kuitista"
 
@@ -768,7 +794,7 @@ msgstr "Hallinta"
 msgid "Site administration"
 msgstr "Sivuston hallinta"
 
-msgid "Coming events"
+msgid "Upcoming events"
 msgstr "Tulevat tapahtumat"
 
 msgid "No future events"
@@ -776,6 +802,9 @@ msgstr "Ei tulevia tapahtumia"
 
 msgid "Old events"
 msgstr "Vanhat tapahtumat"
+
+msgid "Coming events"
+msgstr "Tulevat tapahtumat"
 
 msgid "Return to vendor statistics"
 msgstr "Palaa myyjätilastoihin"
@@ -912,6 +941,18 @@ msgstr ""
 "%(link_content)s>kuinka Javascript yleensä otetaan käyttöön</a>, tai kytke "
 "noscript-lisäosa pois käytöstä tältä sivulta."
 
+msgid "People management"
+msgstr "Henkilöstön hallinta"
+
+msgid "Link to signup"
+msgstr "Linkki hakemuslomakkeeseen"
+
+msgid "Signups"
+msgstr "Hakemukset"
+
+msgid "Current people"
+msgstr "Nykyinen henkilöstö"
+
 msgid "Terms of use"
 msgstr "Käyttöehdot"
 
@@ -1018,6 +1059,9 @@ msgstr "Tai kirjaudu tavallisesti?"
 
 msgid "Image extension not supported"
 msgstr "Kuvatyyppi ei ole tuettu"
+
+msgid "Signup is not enabled for the event"
+msgstr "Hakemukset eivät ole käytössä tapahtumalle"
 
 msgid "Event number"
 msgstr "Tapahtumanumero"
@@ -1132,8 +1176,8 @@ msgstr "Mobiili"
 msgid "Checkout commands"
 msgstr "Kassan komennot"
 
-msgid "Statistics"
-msgstr "Tilastot"
+msgid "Manage event"
+msgstr "Hallitse tapahtumaa"
 
 msgid "View"
 msgstr "Näytä"
@@ -1146,9 +1190,6 @@ msgstr "Näytä tavarat"
 
 msgid "View items (CSV)"
 msgstr "Näytä tavarat (CSV)"
-
-msgid "Accounting"
-msgstr "Kirjanpito"
 
 msgid "Ranma ½ Vol."
 msgstr "Ranma ½ Vol."

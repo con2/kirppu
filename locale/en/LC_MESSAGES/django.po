@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020.
+# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-26 11:22+0200\n"
-"PO-Revision-Date: 2020-12-26 11:22+0200\n"
+"POT-Creation-Date: 2022-07-26 10:00+0300\n"
+"PO-Revision-Date: 2022-07-26 09:49+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,9 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 20.08.3\n"
+"X-Generator: Lokalize 21.12.3\n"
 
-#| msgid "View items"
 msgid "View help."
 msgstr "View help."
 
@@ -80,7 +79,6 @@ msgstr[1] "{count} unbound clerks added."
 msgid "Add unbound clerk"
 msgstr "Add unbound clerk"
 
-#| msgid "Checkout counter"
 msgid "Lock Counter"
 msgstr "Lock Counter"
 
@@ -135,6 +133,10 @@ msgstr "Vendor has not accepted terms!"
 msgid "Unexpected box number conflict"
 msgstr "Unexpected box number conflict"
 
+#, python-format
+msgid "Too many items brought, limit is %i!"
+msgstr "Too many items brought, limit is %i!"
+
 msgid "Some box items ({}/{}) are in unexpected state."
 msgstr "Some box items ({}/{}) are in unexpected state."
 
@@ -163,10 +165,6 @@ msgstr "Some box items are currently staged and cannot be changed."
 
 msgid "Nothing left to change"
 msgstr "Nothing left to change"
-
-#, python-format
-msgid "Too many items brought, limit is %i!"
-msgstr "Too many items brought, limit is %i!"
 
 msgid "Someone else's item!"
 msgstr "Someone else's item!"
@@ -277,6 +275,9 @@ msgstr "Item must have a type."
 msgid "Invalid item type."
 msgstr "Invalid item type."
 
+msgid "Message (optional)"
+msgstr "Message (optional)"
+
 msgid "first name"
 msgstr "first name"
 
@@ -300,6 +301,13 @@ msgstr ""
 "Amount of unsold Items a Vendor can have in the Event. If blank, no limit is "
 "imposed."
 
+msgid ""
+"Should a box be considered a single item when counting max brought items "
+"instead of considering its contents individually."
+msgstr ""
+"Should a box be considered a single item when counting max brought items "
+"instead of considering its contents individually."
+
 msgid "Visible"
 msgstr "Visible"
 
@@ -317,6 +325,15 @@ msgstr "Access code assigned to the clerk."
 
 msgid "Is enabled?"
 msgstr "Is enabled?"
+
+msgid "Overseer"
+msgstr "Overseer"
+
+msgid "Statistics"
+msgstr "Statistics"
+
+msgid "Accounting"
+msgstr "Accounting"
 
 msgid "Value cannot be negative"
 msgstr "Value cannot be negative"
@@ -387,7 +404,6 @@ msgstr "Registration identifier of the counter"
 msgid "Common name of the counter"
 msgstr "Common name of the counter"
 
-#| msgid "In use"
 msgid "Is in use?"
 msgstr "Is in use?"
 
@@ -456,6 +472,21 @@ msgstr "Invalidate"
 
 msgid "Sum"
 msgstr "Sum"
+
+msgid "Access signup"
+msgstr "Access signup"
+
+msgid "Signup for access"
+msgstr "Signup for access"
+
+msgid "Categories to apply"
+msgstr "Categories to apply"
+
+msgid "Last saved"
+msgstr "Last saved"
+
+msgid "Submit"
+msgstr "Submit"
 
 msgid "Box list"
 msgstr "Box list"
@@ -579,11 +610,9 @@ msgstr ""
 msgid "Close"
 msgstr "Close"
 
-#| msgid "Counter mode"
 msgid "Counter Help"
 msgstr "Counter Help"
 
-#| msgid "Actions"
 msgid "Action"
 msgstr "Action"
 
@@ -593,7 +622,6 @@ msgstr "Input"
 msgid "Example"
 msgstr "Example"
 
-#| msgid "Checkout counter"
 msgid "Log out from counter"
 msgstr "Log out from counter"
 
@@ -605,7 +633,6 @@ msgstr ""
 msgid "Abort current receipt"
 msgstr "Abort current receipt"
 
-#| msgid "Added to receipt"
 msgid "Add single item to receipt"
 msgstr "Add single item to receipt"
 
@@ -615,7 +642,6 @@ msgstr "Add single item from a box"
 msgid "Add multiple items from same box"
 msgstr "Add multiple items from same box"
 
-#| msgid "Removed from receipt"
 msgid "Remove item from receipt"
 msgstr "Remove item from receipt"
 
@@ -765,14 +791,17 @@ msgstr "Management"
 msgid "Site administration"
 msgstr "Site administration"
 
-msgid "Coming events"
-msgstr "Coming events"
+msgid "Upcoming events"
+msgstr "Upcoming events"
 
 msgid "No future events"
 msgstr "No future events"
 
 msgid "Old events"
 msgstr "Old events"
+
+msgid "Coming events"
+msgstr "Coming events"
 
 msgid "Return to vendor statistics"
 msgstr "Return to vendor statistics"
@@ -909,6 +938,18 @@ msgstr ""
 "%(link_content)s>how Javascript usually can be enabled</a>, or disable "
 "noscript-plugin for this page."
 
+msgid "People management"
+msgstr "People management"
+
+msgid "Link to signup"
+msgstr "Link to signup"
+
+msgid "Signups"
+msgstr "Signups"
+
+msgid "Current people"
+msgstr "Current people"
+
 msgid "Terms of use"
 msgstr "Terms of use"
 
@@ -1015,6 +1056,9 @@ msgstr "Or log in regularly?"
 
 msgid "Image extension not supported"
 msgstr "Image extension not supported"
+
+msgid "Signup is not enabled for the event"
+msgstr "Signup is not enabled for the event"
 
 msgid "Event number"
 msgstr "Event number"
@@ -1129,8 +1173,8 @@ msgstr "Mobile"
 msgid "Checkout commands"
 msgstr "Checkout commands"
 
-msgid "Statistics"
-msgstr "Statistics"
+msgid "Manage event"
+msgstr "Manage event"
 
 msgid "View"
 msgstr "View"
@@ -1143,9 +1187,6 @@ msgstr "View items"
 
 msgid "View items (CSV)"
 msgstr "View items (CSV)"
-
-msgid "Accounting"
-msgstr "Accounting"
 
 msgid "Ranma ½ Vol."
 msgstr "Ranma ½ Vol."

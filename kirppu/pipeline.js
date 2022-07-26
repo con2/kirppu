@@ -31,7 +31,13 @@ module.exports.css = {
             "css/table_row_auto_numbering.css",
         ],
         "output_filename": "checkout.css",
-    }
+    },
+    'event_management': {
+        "source_filenames": [
+            "css/people_management.css",
+        ],
+        "output_filename": "event_management.css",
+    },
 };
 
 module.exports.js = {
@@ -146,7 +152,14 @@ module.exports.js = {
             "js/stats.coffee",
         ],
         "output_filename": "stats.js"
-    }
+    },
+    'people_management': {
+        "source_filenames": [
+            "js/checkout/datetime_formatter.coffee",
+            "js/event_management/people_management.js",
+        ],
+        "output_filename": "people_management.js"
+    },
 };
 
 module.exports.rollup = {

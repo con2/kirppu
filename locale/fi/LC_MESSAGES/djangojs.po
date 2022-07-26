@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019, 2020.
+# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019, 2020, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-26 11:22+0200\n"
-"PO-Revision-Date: 2020-12-26 11:38+0200\n"
+"POT-Creation-Date: 2022-07-26 10:00+0300\n"
+"PO-Revision-Date: 2022-07-26 10:01+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 20.08.3\n"
+"X-Generator: Lokalize 21.12.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -399,6 +399,9 @@ msgstr "Kuitin tiedot"
 msgid "Press Enter to view this entry"
 msgstr "Paina Enter nähdäksesi tämän tiedot"
 
+msgid "Saving"
+msgstr "Tallennetaan"
+
 msgid ""
 "This will mark all items as printed so they won't be printed again "
 "accidentally. Continue?"
@@ -451,7 +454,6 @@ msgstr "palautettavia"
 msgid "No boxes."
 msgstr "Ei laatkoita."
 
-#| msgid "clerk (counter)"
 msgid "Available counters"
 msgstr "Saatavilla olevat kassat"
 
@@ -476,21 +478,18 @@ msgstr "ehdot hyväksytty?"
 msgid "Edit Item"
 msgstr "Muokkaa tavaraa"
 
-#| msgid "sold"
 msgid "Unsold"
 msgstr "Myymätön"
 
 msgid "Sold"
 msgstr "Myyty"
 
-#| msgid "Receipt details"
 msgid "Price details"
 msgstr "Hintatiedot"
 
 msgid "State"
 msgstr "Tila"
 
-#| msgid "counter"
 msgid "Count"
 msgstr "Lukumäärä"
 
@@ -503,7 +502,6 @@ msgstr "Nimi"
 msgid "Code"
 msgstr "Koodi"
 
-#| msgid "box number"
 msgid "Box number"
 msgstr "Laatikon numero"
 
@@ -604,6 +602,84 @@ msgstr "aloitusaika"
 msgid "total"
 msgstr "yhteensä"
 
+msgid "Edit"
+msgstr "Muokkaa"
+
+msgid "Remove code"
+msgstr "Poista koodi"
+
+msgid "Generate new code"
+msgstr "Luo uusi koodi"
+
+msgid "Keep current value"
+msgstr "Pidä nykyinen arvo"
+
+msgid "[none]"
+msgstr "[tyhjä]"
+
+msgid "Change code"
+msgstr "Vaihda koodia"
+
+msgid "Is a clerk"
+msgstr "On kassahenkilö"
+
+msgid "Has access code"
+msgstr "On kassahenkilökoodi"
+
+msgid "Manage event"
+msgstr "Hallitse tapahtumaa"
+
+msgid "See clerk codes"
+msgstr "Nähdä kassahenkilökoodit"
+
+msgid "See statistics"
+msgstr "Nähdä tilastot"
+
+msgid "See accounting"
+msgstr "Nähdä kirjanpito"
+
+msgid "Register items outside registration"
+msgstr "Rekisteröi tuotteita rekisteröintiajan ulkopuolella"
+
+msgid "Perform overseer actions"
+msgstr "Valvojan toiminnot"
+
+msgid "Switch sub vendor"
+msgstr "Vaihda alimyyjä"
+
+msgid "Create sub vendor"
+msgstr "Luo alimyyjä"
+
+msgid "Accept signup"
+msgstr "Hyväksy hakemus"
+
+msgid "As Clerk"
+msgstr "Kassahenkilönä"
+
+msgid "Only Permissions"
+msgstr "Vain oikeudet"
+
+msgid "Message"
+msgstr "Viesti"
+
+msgid "Signup info"
+msgstr "Hakemuksen tiedot"
+
+msgid "Submit time"
+msgstr "Lähetysaika"
+
+msgid "Resolution time"
+msgstr "Päätösaika"
+
+msgid "Accepted"
+msgstr "Hyväksytty"
+
+msgid "Applied"
+msgstr "Haettu"
+
+msgid "Reject"
+msgstr "Hylkää"
+
 msgid "Notes"
 msgstr "Huomiot"
 
@@ -659,9 +735,6 @@ msgstr "Odotettu summa:"
 
 msgid "item type"
 msgstr "tavaran tyyppi"
-
-#~ msgid "Search vendor"
-#~ msgstr "Etsi myyjä"
 
 #~| msgid "Compensate"
 #~ msgid "Compensate…"

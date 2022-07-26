@@ -1,0 +1,47 @@
+{% extends "kirppu/common.html" %}{% load kirppu_tags i18n static %}
+
+{% block title %}{% trans "Access signup" %} – {{ block.super }}{% endblock %}
+
+{% block navbar_right %}
+{% include "kirppu/navbar_login.html" %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+            <h2>{% trans "Signup for access" %}</h2>
+            <form method="POST" class="form-horizontal">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">{% trans "Categories to apply" %}</label>
+                    {% for name, field in form.fields_targets %}
+                        <div class="{% if not forloop.first %}col-sm-offset-2 {% endif %}col-sm-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="{{ name }}" name="{{ name }}" {% if field.value %}checked{% endif %}
+                                           type="checkbox"/> {{ field.label }}
+                                </label>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% with form.field_message as field %}
+                <div class="form-group">
+                    <label for="{{ field.0 }}" class="col-sm-2 control-label">{{ field.1.label }}</label>
+                    <div class="col-sm-6">
+                        <textarea id="{{ field.0 }}" name="{{ field.0 }}" class="form-control"
+                                  rows="8">{{ field.1.value|default_if_none:"" }}</textarea>
+                    </div>
+                </div>
+            {% endwith %}
+            {% if update_time %}
+                <div class="form-group">
+                    <label class="col-sm-2">{% trans "Last saved" %}</label>
+                    <div class="col-sm-3">{{ update_time }}</div>
+                </div>
+            {% endif %}
+                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

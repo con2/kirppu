@@ -1,0 +1,32 @@
+table.twisted-heading {
+    margin-top: -3em;
+}
+th.thin-table-head {
+    height: 13em;
+    width: 3em;
+    white-space: nowrap;
+}
+th.thin-table-head.thinner-table-head {
+    height: 9em;
+}
+th.thin-table-head.thin-table-head-separate {
+    width: 5em;
+}
+th.thin-table-head > div {
+    transform: rotate(-45deg) translate(12px, 5px);
+    width: 2em;
+}
+th.thin-table-head > div > span {
+    border-bottom: 1px solid gray;
+    padding-bottom: 6px;
+}
+table.table > tbody > tr > td {
+    vertical-align: middle;
+}
+td.button-cell {
+    width: 0;
+}
+th.button-cell {
+    white-space: nowrap;
+    visibility: hidden;
+}

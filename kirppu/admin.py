@@ -21,6 +21,7 @@ from .forms import (
 )
 
 from .models import (
+    AccessSignup,
     Clerk,
     Event,
     EventPermission,
@@ -699,4 +700,14 @@ class TemporaryAccessPermitLogAdmin(admin.ModelAdmin):
         RefLinkAccessor("permit", gettext("Permit")),
         "timestamp",
         "action",
+    )
+
+
+@admin.register(AccessSignup)
+class AccessSignupAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "event",
+        "user",
+        "update_time",
     )

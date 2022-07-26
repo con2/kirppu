@@ -470,6 +470,9 @@ def _vendor_menu_contents(request, event: Event) -> typing.List[MenuItem]:
             or permissions.can_see_statistics:
         manage_sub.append(fill(_(u"Statistics"), "kirppu:stats_view"))
 
+    if permissions.can_manage_event or request.user.is_superuser:
+        manage_sub.append(fill(_(u"Manage event"), "kirppu:manage_event"))
+
     if request.user.is_staff:
         try:
             manage_sub.append(fill(_(u"Site administration"), "admin:index", is_global=True))

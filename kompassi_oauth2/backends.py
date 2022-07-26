@@ -1,5 +1,8 @@
-from django.contrib.auth import get_user_model
+import typing
+
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import BaseBackend
 from requests_oauthlib import OAuth2Session
 
 User = get_user_model()
@@ -10,11 +13,8 @@ def user_defaults_from_kompassi(kompassi_user):
                 settings.KOMPASSI_USER_MAP_V2)
 
 
-class KompassiOAuth2AuthenticationBackend(object):
-    def authenticate(self, request=None, oauth2_session=None, **kwargs):
-        if isinstance(request, OAuth2Session):
-            # Django <1.11 compatibility.
-            oauth2_session = request
+class KompassiOAuth2AuthenticationBackend(BaseBackend):
+    def authenticate(self, request, oauth2_session: typing.Optional[OAuth2Session] = None, **kwargs):
         if oauth2_session is None:
             # Not ours (password login)
             return None
@@ -23,7 +23,7 @@ class KompassiOAuth2AuthenticationBackend(object):
         response.raise_for_status()
         kompassi_user = response.json()
 
-        user, created = User.objects.get_or_create(
+        user, created = User.objects.update_or_create(
             username=kompassi_user['username'],
             defaults=user_defaults_from_kompassi(kompassi_user)
         )

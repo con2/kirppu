@@ -6,8 +6,6 @@ from django.http.response import HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.translation import gettext as _
 from django.utils import timezone
 
-__author__ = 'jyrkila'
-
 RFC8601DATETIME = "%Y-%m-%dT%H:%M:%S%z"
 RFC8601DATE = "%Y-%m-%d"
 TIME = "%H:%M:%S"

@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .fields import ItemPriceField, SuffixField, StripField
 from .models import (
+    AccessSignup,
     Clerk,
     Event,
     ReceiptItem,
@@ -451,3 +452,61 @@ class PersonCreationForm(forms.ModelForm):
     class Meta:
         model = Person
         fields = forms.ALL_FIELDS
+
+
+class AccessSignupBooleanField(forms.BooleanField):
+    def __init__(self, enum_value: AccessSignup.Target):
+        super().__init__(required=False, label=enum_value.label)
+        self._enum_value = enum_value
+
+    def to_python(self, value):
+        as_boolean = super().to_python(value)
+        if as_boolean:
+            return self._enum_value.value
+
+
+class AccessSignupForm(forms.Form):
+    t_clerk = AccessSignupBooleanField(AccessSignup.Target.CLERK)
+    t_overseer = AccessSignupBooleanField(AccessSignup.Target.OVERSEER)
+    t_stats = AccessSignupBooleanField(AccessSignup.Target.STATS)
+    t_accounting = AccessSignupBooleanField(AccessSignup.Target.ACCOUNTING)
+    message = forms.CharField(required=False, max_length=500, label=_("Message (optional)"))
+
+    def __init__(self, *args, **kwargs):
+        data = kwargs.pop("initial", None)
+        if isinstance(data, AccessSignup):
+            initial = {
+                "message": data.message,
+            }
+            for target in data.target_set.split(","):
+                target = target.strip()
+                if target:
+                    t = AccessSignup.Target(int(target))
+                    initial["t_" + t.name.lower()] = "1"
+            kwargs["initial"] = initial
+        elif data is not None:
+            kwargs["initial"] = data
+        super().__init__(*args, **kwargs)
+
+    def _target_set(self):
+        result = [
+            self.cleaned_data["t_clerk"],
+            self.cleaned_data["t_overseer"],
+            self.cleaned_data["t_stats"],
+            self.cleaned_data["t_accounting"],
+        ]
+        return ",".join(str(v) for v in result if v is not None)
+
+    db_values = model_dict_fn(
+        "message",
+        target_set=_target_set,
+        __access_fn=lambda self, value: self.cleaned_data[value],
+    )
+
+    def fields_targets(self):
+        for bound_field in self:
+            if isinstance(bound_field.field, AccessSignupBooleanField):
+                yield bound_field.name, bound_field
+
+    def field_message(self):
+        return "message", self["message"]

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 import math
+import typing
 
 """
 Miscellaneous utility functions.
@@ -266,8 +267,10 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod()
 
+T = typing.TypeVar("T")
 
-def get_form(form, request, *args, **kwargs):
+
+def get_form(form: typing.Type[T], request, *args, **kwargs) -> T:
     """
     Get form instance that matches request type.
 

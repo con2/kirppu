@@ -29,6 +29,8 @@ from .views import (
     statistical_stats_view,
     lost_and_found_list,
 )
+from .views import access_signup
+from .views import event_management
 from .views.frontpage import front_page
 from .checkout_api import checkout_js
 from .views.mobile import index as mobile_index, logout as mobile_logout
@@ -78,6 +80,11 @@ event_urls = [
 
     path('api/checkout.js', checkout_js, name='checkout_js'),
     path(r'commands/', get_counter_commands, name='commands'),
+
+    path('manage/', event_management.index, name='manage_event'),
+    path('manage/people', event_management.PeopleManagement.as_view(), name='people_manage'),
+
+    path('signup', access_signup.signup, name='signup'),
 ]
 
 common_urls = [
