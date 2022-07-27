@@ -27,6 +27,7 @@ const DEST = "static/kirppu";
 
 // Compression enabled, if run with arguments: --type production
 const shouldCompress = args.type === "production";
+const debug = args.type === "debug";
 
 const jsHeader = (ctx) => `// ================ ${ctx.index}: ${ctx.original} ================\n\n`;
 const cssHeader = (ctx) => `/* ================ ${ctx.index}: ${ctx.original} ================ */\n\n`;
@@ -113,7 +114,7 @@ const rollupTasks = Object.entries(pipeline.rollup).map(function([name, def]) {
                 rollup_sucrase({
                     jsxPragma: 'redom.el',
                     transforms: ['jsx'],
-                    production: shouldCompress,
+                    production: !debug,
                 })
             ]
         }).then(bundle => {

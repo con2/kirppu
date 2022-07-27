@@ -315,11 +315,11 @@ class PeopleManagement(View):
         if accept_type == "clerk":
             clerk, _ = Clerk.objects.get_or_create(event=event, user_id=user.pk)
             self._make_clerk_info(info, clerk)
-        elif accept_type == "permission":
+        elif accept_type == "permissions":
             perm, _ = EventPermission.objects.get_or_create(event=event, user_id=user.pk)
             self._make_permission_info(info, perm)
         else:
-            raise ValueError("Accept value of {} is not valid".format(accept_type))
+            raise ValueError("Accept value of '{}' is not valid".format(accept_type))
 
         signup_data = make_signup_data(signup_info)
 
