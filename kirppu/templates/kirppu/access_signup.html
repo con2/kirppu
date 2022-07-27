@@ -12,6 +12,7 @@
             <h2>{% trans "Signup for access" %}</h2>
             <form method="POST" class="form-horizontal">
                 {% csrf_token %}
+                {% if token %}<input type="hidden" name="token" value="{{ token }}"/>{% endif %}
                 <div class="form-group">
                     <label class="col-sm-2 control-label">{% trans "Categories to apply" %}</label>
                     {% for name, field in form.fields_targets %}

@@ -286,7 +286,7 @@ export function signup_row(info, showDialog) {
 }
 
 export function signup_table(signup_cols, signup_data, show_dialog) {
-    if (!signup_data) {
+    if (!signup_data || signup_data.length === 0) {
         return <strong>{gettext("No data")}</strong>
     }
 

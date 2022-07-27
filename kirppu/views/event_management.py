@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import typing
+import urllib.parse
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AbstractUser
@@ -139,7 +140,7 @@ class PeopleManagement(View):
 
         signup_url = reverse("kirppu:signup", kwargs={"event_slug": event.slug})
         if event.access_signup_token:
-            signup_url += "?token=" + event.access_signup_token
+            signup_url += "?token=" + urllib.parse.quote(event.access_signup_token)
 
         return render(request, self.template_name, {
             "event_slug": event.slug,

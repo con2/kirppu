@@ -3,6 +3,9 @@ import base64
 import math
 import typing
 
+if typing.TYPE_CHECKING:
+    import django.http
+
 """
 Miscellaneous utility functions.
 """
@@ -284,6 +287,13 @@ def get_form(form: typing.Type[T], request, *args, **kwargs) -> T:
         return form(request.POST, *args, **kwargs)
     else:
         return form(*args, **kwargs)
+
+
+def get_query_dict(request: "django.http.HttpRequest") -> typing.Optional["django.http.QueryDict"]:
+    if request.method == "GET":
+        return request.GET
+    elif request.method == "POST":
+        return request.POST
 
 
 def shorten_text(text, length=80, cut_on_dot=True):
