@@ -54,6 +54,7 @@ def signup(request, event_slug: str):
         return HttpResponseRedirect(url)
 
     return render(request, "kirppu/access_signup.html", {
+        "event": event,
         "form": form,
         "token": event.access_signup_token,
         "update_time": update_time,

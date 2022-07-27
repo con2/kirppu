@@ -15,6 +15,7 @@ class @ClerkLoginMode extends CheckoutMode
   actions: -> [[
     "",
     (code) =>
+      code = code.replace("\u00AD", "")
       Api.clerk_login(
         code: code
         counter: @cfg.settings.counterCode

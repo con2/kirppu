@@ -37,6 +37,7 @@ from ..checkout_api import clerk_logout_fn
 from .. import ajax_util
 from ..forms import ItemRemoveForm, VendorItemForm, VendorBoxForm, remove_item_from_receipt as _remove_item_from_receipt
 from ..fields import ItemPriceField
+from .menu import vendor_menu
 from ..models import (
     Box,
     Clerk,
@@ -405,96 +406,6 @@ def box_content(request, event_slug, box_id, bar_type):
     return render(request, "kirppu/app_boxes_content.html", render_params)
 
 
-class MenuItem(typing.NamedTuple):
-    name: typing.Optional[str]
-    url: typing.Optional[str]
-    active: typing.Optional[bool]
-    sub_items: typing.Optional[typing.List["MenuItem"]]
-
-
-def _vendor_menu_contents(request, event: Event) -> typing.List[MenuItem]:
-    """
-    Generate menu for Vendor views.
-    Returned tuple contains entries for the menu, each entry containing a
-    name, url, and flag indicating whether the entry is currently active
-    or not.
-
-    :param event: The event.
-    :param request: Current request being processed.
-    :return: List of menu items containing name, url and active fields.
-    """
-    active = request.resolver_match.view_name
-
-    def fill(name, func, sub=None, query=None, is_global=False):
-        if not is_global:
-            kwargs = {"event_slug": event.slug}
-        else:
-            kwargs = {}
-        link = url.reverse(func, kwargs=kwargs) if func else None
-        from urllib.parse import quote
-        if query:
-            link += "?" + "&".join(
-                quote(k, safe="") + (("=" + quote(v, safe="")) if v else "")
-                for k, v in query.items())
-        return MenuItem(name, link, func == active, sub)
-
-    items = [
-        fill(_(u"Home"), "kirppu:vendor_view"),
-    ]
-
-    if not event.source_db:
-        items.append(fill(_(u"Item list"), "kirppu:page"))
-        if event.use_boxes:
-            items.append(fill(_(u"Box list"), "kirppu:vendor_boxes"))
-
-    if event.mobile_view_visible:
-        items.append(fill(_("Mobile"), "kirppu:mobile"))
-
-    manage_sub = []
-    permissions = EventPermission.get(event, request.user)
-    if not event.source_db and (request.user.is_staff or UserAdapter.is_clerk(request.user, event)):
-        manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
-        if event.checkout_active:
-            manage_sub.append(fill(_(u"Checkout"), "kirppu:checkout_view"))
-            if event.use_boxes:
-                manage_sub.append(fill(_("Box codes"), "kirppu:box_codes"))
-
-    if not event.source_db and (request.user.is_staff or permissions.can_see_clerk_codes):
-        manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
-
-    if not event.source_db and (request.user.is_staff or permissions.can_see_accounting):
-        manage_sub.append(fill(_(u"Lost and Found"), "kirppu:lost_and_found"))
-
-    if request.user.is_staff\
-            or UserAdapter.is_clerk(request.user, event)\
-            or permissions.can_see_statistics:
-        manage_sub.append(fill(_(u"Statistics"), "kirppu:stats_view"))
-
-    if permissions.can_manage_event or request.user.is_superuser:
-        manage_sub.append(fill(_(u"Manage event"), "kirppu:manage_event"))
-
-    if request.user.is_staff:
-        try:
-            manage_sub.append(fill(_(u"Site administration"), "admin:index", is_global=True))
-        except url.NoReverseMatch as e:
-            pass
-
-    if manage_sub:
-        items.append(fill(_(u"Management"), "", manage_sub))
-
-    if permissions.can_see_accounting:
-        accounting_sub = [
-            fill(_("View"), "kirppu:accounting"),
-            fill(_("Download"), "kirppu:accounting", query={"download": ""}),
-            MenuItem(None, None, None, None),
-            fill(_("View items"), "kirppu:item_dump", query={"txt": ""}),
-            fill(_("View items (CSV)"), "kirppu:item_dump"),
-        ]
-        items.append(fill(_("Accounting"), "", accounting_sub))
-
-    return items
-
-
 @login_required
 @require_http_methods(["GET"])
 @barcode_view
@@ -544,7 +455,7 @@ def get_items(request, event_slug, bar_type):
 
         'is_registration_open': is_vendor_open(request, event),
         'is_registration_closed_for_users': is_registration_closed_for_users(event=event),
-        'menu': _vendor_menu_contents(request, event),
+        'menu': vendor_menu(request, event),
         'itemTypes': ItemType.as_tuple(event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
@@ -597,7 +508,7 @@ def get_boxes(request, event_slug):
 
         'is_registration_open': is_vendor_open(request, event),
         'is_registration_closed_for_users': is_registration_closed_for_users(event),
-        'menu': _vendor_menu_contents(request, event),
+        'menu': vendor_menu(request, event),
         'itemTypes': ItemType.as_tuple(event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
@@ -693,7 +604,8 @@ def get_boxes_codes(request, event_slug, bar_type):
 
     return render(request, "kirppu/boxes_list.html", {
         "bar_type": bar_type,
-        "boxes": vm
+        "boxes": vm,
+        "event": event,
     })
 
 
@@ -977,7 +889,7 @@ def vendor_view(request, event_slug):
         'boxes_printed': len(list(filter(lambda i: i.is_printed(), boxes))),
 
         'profile_url': settings.PROFILE_URL,
-        'menu': _vendor_menu_contents(request, event),
+        'menu': vendor_menu(request, event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
     }
     context.update(vendor_data)
@@ -1051,7 +963,7 @@ def lost_and_found_list(request, event_slug):
         vendor_list[vendor_id].items.append(item)
 
     return render(request, "kirppu/lost_and_found.html", {
-        'menu': _vendor_menu_contents(request, event),
+        'menu': vendor_menu(request, event),
         'event': event,
         'items': vendor_list,
     })

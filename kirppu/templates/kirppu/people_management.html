@@ -44,7 +44,7 @@
     <script type="application/json" id="data">{{ info_data|json }}</script>
     <script type="application/json" id="available">{{ available_clerks|json }}</script>
     <script type="application/json" id="config">{
-        "postUrl": "{% url "kirppu:people_manage" event_slug=event_slug %}",
+        "postUrl": "{% url "kirppu:people_manage" event_slug=event.slug %}",
         "csrfToken": "{{ csrf_token }}"
     }</script>
     <div class="row">

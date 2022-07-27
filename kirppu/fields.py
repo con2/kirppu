@@ -27,14 +27,14 @@ class ItemPriceField(Field):
 
         value = value.replace(",", ".")
         try:
-            value = Decimal(value).quantize(Decimal('0.1'), rounding=decimal.ROUND_UP)
+            value = Decimal(value).quantize(Decimal('0.10'), rounding=decimal.ROUND_UP)
         except InvalidOperation:
             raise ValidationError(self.error_messages['invalid'], code='invalid')
 
         # Round up to nearest 50 cents.
-        remainder = value % Decimal('.5')
+        remainder = value % Decimal('.50')
         if remainder > Decimal('0'):
-            value += Decimal('.5') - remainder
+            value += Decimal('.50') - remainder
 
         return value
 

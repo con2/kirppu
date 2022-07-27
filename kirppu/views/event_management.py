@@ -143,7 +143,7 @@ class PeopleManagement(View):
             signup_url += "?token=" + urllib.parse.quote(event.access_signup_token)
 
         return render(request, self.template_name, {
-            "event_slug": event.slug,
+            "event": event,
             "available_clerks": available_clerks,
             "info_data": info_data,
             "signup_data": {
