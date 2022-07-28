@@ -1,55 +1,54 @@
 {% extends "kirppu/common.html" %}{% load kirppu_tags i18n static %}
 
 {% block head %}
-{{ block.super }}
-            <link href="{% static "kirppu/css/event_management.css" %}" rel="stylesheet">
-            <script src="{% static "kirppu/jst/templates.js" %}"></script>
-            <script src="{% static "kirppu/js/checkout_comp.js" %}"></script>
+    {{ block.super }}
+    <link href="{% static "kirppu/css/event_management.css" %}" rel="stylesheet">
+    <script src="{% static "kirppu/jst/templates.js" %}"></script>
+    <script src="{% static "kirppu/js/checkout_comp.js" %}"></script>
 {% endblock %}
 
 {% block title %}{% trans "People management" %} – {{ block.super }}{% endblock %}
 
+{% block navbar_left %}
+    {% include "kirppu/menubar.html" %}
+{% endblock %}
 {% block navbar_right %}
-{% include "kirppu/navbar_login.html" %}
+    {% include "kirppu/navbar_login.html" %}
 {% endblock %}
 
 {% block body %}
     <div class="row">
-        <div class="col-xs-10 col-xs-offset-1">
-            <h2>{% trans "People management" %}</h2>
+        <div class="col-xs-9 col-xs-push-2">
+            <h1>{% trans "People management" %}</h1>
             <a id="copylink" href="{{ signup_url }}">{% trans "Link to signup" %}</a>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xs-10 col-xs-offset-1">
-            <h3>{% trans "Signups" %}</h3>
+            <h2>{% trans "Signups" %}</h2>
             <div class="panel panel-warning">
                 <div class="panel-heading">Note</div>
-                <div class="panel-body">After accepting a signup(s), reload the page for it to appear in Current people.</div>
+                <div class="panel-body">After accepting a signup(s), reload the page for it to appear in Current
+                    people.
+                </div>
             </div>
-        </div>
-    </div>
-    <script type="application/json" id="signups">{{ signup_data|json }}</script>
-    <div class="row" style="margin-bottom: 2em;">
-        <div class="col-xs-10 col-xs-offset-1" id="signup-body">
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xs-5 col-xs-offset-1">
-            <h3>{% trans "Current people" %}</h3>
+            <script type="application/json" id="signups">{{ signup_data|json }}</script>
+            <div id="signup-body" style="margin-bottom: 3em;"></div>
+
+            <h2>{% trans "Current people" %}</h2>
+            <script type="application/json" id="data">{{ info_data|json }}</script>
+            <script type="application/json" id="available">{{ available_clerks|json }}</script>
+            <script type="application/json" id="config">{
+    "postUrl": "{% url "kirppu:people_manage" event_slug=event.slug %}",
+    "csrfToken": "{{ csrf_token }}"
+}</script>
+            <div id="content-body"></div>
+            <script src="{% static "kirppu/js/people_management.js" %}"></script>
+        </div>
+        <div class="col-xs-2 col-xs-pull-9">
+            <ul class="nav nav-pills nav-stacked">
+                {% for item in side_menu %}
+                    <li role="presentation"{% if item.active %} class="active"{% endif %}><a href="{{ item.url }}">{{ item.name }}</a></li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
-    <script type="application/json" id="data">{{ info_data|json }}</script>
-    <script type="application/json" id="available">{{ available_clerks|json }}</script>
-    <script type="application/json" id="config">{
-        "postUrl": "{% url "kirppu:people_manage" event_slug=event.slug %}",
-        "csrfToken": "{{ csrf_token }}"
-    }</script>
-    <div class="row">
-        <div class="col-xs-10 col-xs-offset-1" id="content-body">
-        </div>
-    </div>
-    <script src="{% static "kirppu/js/people_management.js" %}"></script>
 {% endblock %}

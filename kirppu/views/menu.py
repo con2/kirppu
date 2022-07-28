@@ -110,3 +110,15 @@ def vendor_menu(request, event: Event) -> typing.List[MenuItem]:
         items.append(fill(_("Accounting"), "", accounting_sub))
 
     return items
+
+
+def event_management_menu(
+        request,
+        event: Event,
+) -> typing.List[MenuItem]:
+    fill = functools.partial(_fill, event, request.resolver_match.view_name)
+
+    items: typing.List[MenuItem] = [
+        fill(_("People"), "kirppu:people_manage"),
+    ]
+    return items

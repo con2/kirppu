@@ -16,6 +16,7 @@ from django.utils import timezone
 
 from ..utils import format_datetime
 from ..models import AccessSignup, Clerk, Event, EventPermission, UserAdapter
+from .menu import vendor_menu, event_management_menu
 
 
 def _requirements(request, **kwargs):
@@ -146,6 +147,8 @@ class PeopleManagement(View):
             "event": event,
             "available_clerks": available_clerks,
             "info_data": info_data,
+            "menu": vendor_menu(request, event),
+            "side_menu": event_management_menu(request, event),
             "signup_data": {
                 "cols": signup_cols,
                 "data": signup_data,

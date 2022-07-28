@@ -1,0 +1,15 @@
+{% for item in menu %}
+    {% if not item.sub_items %}
+    <li{% if item.active %} class="active"{% endif %}><a href="{{ item.url }}">{{ item.name }}</a></li>
+    {% else %}
+    <li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ item.name }} <span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+        {% for sub_item in item.sub_items %}
+            {% if sub_item.name %}<li{% if sub_item.active %} class="active"{% endif %}><a href="{{ sub_item.url }}">{{ sub_item.name }}</a></li>
+            {% else %}<li role="separator" class="divider"></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </li>
+    {% endif %}
+{% endfor %}
