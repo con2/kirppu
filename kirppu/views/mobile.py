@@ -101,8 +101,13 @@ class TableContents(object):
         self.sum = Decimal(0)
 
 
+def _get_client_ip(request):
+    client_ip, routable = get_client_ip(request)
+    return client_ip
+
+
 def _ratelimit_key(group, request):
-    return get_client_ip(request)
+    return _get_client_ip(request)
 
 
 def _login_view(request, event):
@@ -131,7 +136,7 @@ def _login_view(request, event):
                     TemporaryAccessPermitLog.objects.create(
                         permit=permit,
                         action=TemporaryAccessPermitLog.ACTION_USE if can_use else TemporaryAccessPermitLog.ACTION_TRY,
-                        address=shorten_text(get_client_ip(request) + "; " + request.META.get("REMOTE_HOST", ""),
+                        address=shorten_text(_get_client_ip(request) + "; " + request.META.get("REMOTE_HOST", ""),
                                              TemporaryAccessPermitLog._meta.get_field("address").max_length, False),
                         peer=shorten_text(request.META.get("HTTP_USER_AGENT", ""),
                                           TemporaryAccessPermitLog._meta.get_field("peer").max_length, False)
