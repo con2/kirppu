@@ -910,6 +910,9 @@ def item_reserve(request, event, code):
         raise AjaxError(RET_BAD_REQUEST, "No active receipt found")
     receipt = get_receipt(receipt_id, for_update=True)
 
+    if receipt.status != Receipt.PENDING:
+        raise AjaxError(RET_CONFLICT, "Internal error: Receipt is not open anymore.")
+
     message = raise_if_item_not_available(item)
     if item.state in (Item.ADVERTISED, Item.BROUGHT, Item.MISSING):
         ItemStateLog.objects.log_state(item, Item.STAGED, request=request)

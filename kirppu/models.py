@@ -1415,7 +1415,7 @@ class ReceiptNote(models.Model):
 
 class ItemStateLogManager(models.Manager):
     @staticmethod
-    def _make_log_state(request, doit):
+    def _make_log_state(request, item, doit):
         from .ajax_util import get_clerk, get_counter, AjaxError
         counter = None
         clerk = None
@@ -1425,7 +1425,13 @@ class ItemStateLogManager(models.Manager):
         except AjaxError:
             if request.user.is_authenticated:
                 try:
-                    clerk = Clerk.objects.get(user=request.user)
+                    if item is not None:
+                        event_id = item.vendor.event_id
+                        clerk_set = Clerk.objects.filter(event_id=event_id)
+                    else:
+                        # Will probably raise MultipleObjectsReturned.
+                        clerk_set = Clerk.objects
+                    clerk = clerk_set.get(user=request.user)
                 except Clerk.DoesNotExist:
                     clerk = None
 
@@ -1439,7 +1445,7 @@ class ItemStateLogManager(models.Manager):
                 new_state=new_state,
                 clerk=clerk,
                 counter=counter)
-        return self._make_log_state(request, actual)
+        return self._make_log_state(request, item, actual)
 
     def log_states(self, item_set, new_state, request):
         def actual(counter, clerk):
@@ -1454,7 +1460,7 @@ class ItemStateLogManager(models.Manager):
                 for item in item_set
             ]
             return self.bulk_create(objs)
-        return self._make_log_state(request, actual)
+        return self._make_log_state(request, None, actual)
 
 
 class ItemStateLog(models.Model):
