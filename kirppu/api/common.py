@@ -5,30 +5,34 @@ from django.utils.translation import gettext as _
 from ..ajax_util import AjaxError, RET_BAD_REQUEST, RET_CONFLICT
 from ..models import Box, Item, Receipt
 
-__author__ = 'codez'
-
 
 def get_item_or_404(code, for_update=False, event=None, **kwargs):
     """
-    :param code: Item barcode to find.
-    :type code: str
+    :param code: Item barcode to find. If not given, pk should be in arguments.
     :param for_update: If True, Item is retrieved for update.
     :param event: Optional Event object to match the Item by.
     :param kwargs: Extra query filters.
     :rtype: Item
     :raises Http404: If an Item matching the query does not exist.
     """
+    if code is not None:
+        kwargs["code"] = code
     try:
         if for_update:
-            item = Item.get_item_by_barcode_for_update(code, **kwargs)
+            item = Item.get_item_for_update(**kwargs)
         else:
-            item = Item.get_item_by_barcode(code, **kwargs)
+            item = Item.get_item(**kwargs)
     except Item.DoesNotExist:
         item = None
 
     if item is None:
-        raise Http404(_(u"No item found matching '{0}'").format(code))
+        if code is None:
+            f = kwargs.get("pk")
+        else:
+            f = "'%s'" % code
+        raise Http404(_("No item found matching {0}").format(f))
 
+    # vendor_event is assumed to be annotated by Item.get_item*
     if event is not None and item.vendor_event != event.id:
         raise AjaxError(RET_CONFLICT, "Item is not registered in this event!")
 

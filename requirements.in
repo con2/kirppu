@@ -5,5 +5,5 @@ django~=3.2.0
 pillow~=9.0.1
 pubcode
 pytz
-mistune==0.8.4
+mistune~=2.0.4
 whitenoise

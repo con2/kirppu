@@ -138,7 +138,14 @@ class @VendorCompensation extends CheckoutMode
         @_onLoopDone()
 
     # Compensate an item. When successful, set the item state. If failure, add it to list of failed items.
-    Api.item_compensate(code: item.code)
+    if item.code
+      req = Api.item_compensate(code: item.code)
+    else
+      req = Api.box_item_compensate(
+        pk: item.pk
+        box_code: item.box_code
+      )
+    req
       .done(() => item.state = ItemState.compensated)
       .done(cb("ok", "success"))
       .fail((jqXHR) => @_addFailedItem(jqXHR, item))

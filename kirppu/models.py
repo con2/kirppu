@@ -836,7 +836,6 @@ class Box(models.Model):
         """
         Construct new Box and Item and generate its barcode.
 
-        :param args: Box Constructor arguments
         :param kwargs: Item Constructor arguments
         :return: New stored Box object with calculated code.
         :rtype: Box
@@ -869,6 +868,7 @@ class Box(models.Model):
                 Item.new(
                     name=item_title,
                     box=obj,
+                    no_code=True,
                     **kwargs
                 )
 
@@ -949,7 +949,7 @@ class Item(models.Model):
     code = models.CharField(
         max_length=16,
         blank=True,
-        null=False,
+        null=True,
         db_index=True,
         unique=True,
         help_text=_(u"Barcode content of the product"),
@@ -1048,17 +1048,19 @@ class Item(models.Model):
         return value.quantize(Item.Q_EXP)
 
     @classmethod
-    def new(cls, *args, **kwargs):
+    def new(cls, *args, no_code: bool = False, **kwargs):
         """
         Construct new Item and generate its barcode.
 
-        :param args: Item Constructor arguments
-        :param kwargs: Item Constructor arguments
+        :param args: Item Constructor arguments.
+        :param kwargs: Item Constructor arguments.
+        :param no_code: If True, no code will be generated for the Item.
         :return: New stored Item object with calculated code.
         :rtype: Item
         """
         obj = cls(*args, **kwargs)
-        obj.code = Item.gen_barcode()
+        if not no_code:
+            obj.code = Item.gen_barcode()
         obj.full_clean()
         obj.save()
 
@@ -1097,21 +1099,18 @@ class Item(models.Model):
         return self.state != Item.ADVERTISED
 
     @staticmethod
-    def get_item_by_barcode(data, **kwargs):
+    def get_item(**kwargs):
         """
         Get Item by barcode.
-
-        :param data: Barcode data scanned from product
-        :type data: str
 
         :rtype: Item
         :raise Item.DoesNotExist: If no Item matches the code.
         """
-        return Item.objects.annotate(vendor_event=F("vendor__event__id")).get(code=data, **kwargs)
+        return Item.objects.annotate(vendor_event=F("vendor__event__id")).get(**kwargs)
 
     @staticmethod
-    def get_item_by_barcode_for_update(data, **kwargs):
-        return Item.objects.annotate(vendor_event=F("vendor__event__id")).select_for_update().get(code=data, **kwargs)
+    def get_item_for_update(**kwargs):
+        return Item.objects.annotate(vendor_event=F("vendor__event__id")).select_for_update().get(**kwargs)
 
     @classmethod
     def is_item_barcode(cls, text):

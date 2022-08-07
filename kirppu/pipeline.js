@@ -47,6 +47,7 @@ module.exports.js = {
             "../node_modules/jquery/dist/jquery.js",
             "../node_modules/bootstrap/dist/js/bootstrap.js",
             "js/csrf.coffee",
+            "js/customtexts_front.js",
             "../node_modules/redom/dist/redom.js"
         ],
         "output_filename": "general.js",

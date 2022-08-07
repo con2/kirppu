@@ -192,7 +192,7 @@ def clerk_logout_fn(request):
 
     :param request: Active request, for session access.
     """
-    for key in ["clerk", "clerk_token", "counter", "counter_key", "event", "receipt"]:
+    for key in ["clerk", "clerk_token", "compensation", "counter", "counter_key", "event", "receipt"]:
         request.session.pop(key, None)
 
 
@@ -548,6 +548,9 @@ def compensable_items(request, event, vendor):
         if item.box_id is not None:
             i["box_number"] = item.box_number
             i["box_code"] = item.box_code
+            # Pk needed, as box items don't have code anymore.
+            i["code"] = None
+            i["pk"] = item.pk
         return i
 
     r = dict(items=[format_dict(i) for i in items_for_compensation])
@@ -742,6 +745,28 @@ def item_compensate(request, event, code):
 
     item = _get_item_or_404(code, vendor=vendor_id, for_update=True, event=event)
     item_dict = item_mode_change(request, item, Item.SOLD, Item.COMPENSATED)
+
+    ReceiptItem.objects.create(item=item, receipt=receipt)
+    receipt.calculate_total()
+    receipt.save(update_fields=("total",))
+
+    return item_dict
+
+
+@ajax_func('^box/compensate$', atomic=True)
+def box_item_compensate(request, event, pk, box_code):
+    if "compensation" not in request.session:
+        raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
+    receipt_pk, vendor_id = request.session["compensation"]
+    receipt = Receipt.objects.select_for_update().get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
+
+    item = _get_item_or_404(None, pk=pk, vendor=vendor_id, for_update=True, event=event)
+    # stupidly expensive check...
+    if item.box.representative_item.code != box_code:
+        raise AjaxError(RET_BAD_REQUEST, "Box item not found for {}".format(box_code))
+
+    item_dict = item_mode_change(request, item, Item.SOLD, Item.COMPENSATED)
+    item_dict["pk"] = item.pk
 
     ReceiptItem.objects.create(item=item, receipt=receipt)
     receipt.calculate_total()

@@ -13,3 +13,19 @@ td address {
 button.btn-minwidth {
     min-width: 6em;
 }
+
+code.yv8k02zi {
+    color: #fff;
+    background: #fff;
+    width: 3em;
+    display: inline-block;
+    white-space: pre;
+    overflow: hidden;
+    user-select: none;
+    line-height: normal;
+    padding: 0;
+}
+code.yv8k02zi:before {
+    color: #f00;
+    content: "???";
+}

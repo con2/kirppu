@@ -1,152 +1,168 @@
 # -*- coding: utf-8 -*-
 
+import base64
+import itertools
 import re
+import typing
 
 import mistune
 from django.template import loader
+from django.template.context import Context, RequestContext
 
-__author__ = 'codez'
 
 __all__ = [
     "mark_down",
 ]
 
 
-class CustomTagLexer(mistune.BlockLexer):
-    def __init__(self):
+# Also check customtexts_front.js that does the reverse with these.
+EMAIL_CLASS = "yv8k02zi"
+EMAIL_KEY = "yJrx6Rvvyn39u4La"
+
+
+def insert_before_or_append(the_list: typing.List[str], before: str, item: str):
+    i = the_list.index(before)
+    if i >= 0:
+        the_list.insert(i, item)
+    else:
+        the_list.append(item)
+
+
+def kirppu_plugin(md: mistune.Markdown):
+    md.inline.register_rule("email", r"<email>\s*([^<]*)\s*</email>", _make_email)
+    insert_before_or_append(md.inline.rules, "inline_html", "email")
+
+    md.inline.register_rule("glyph", r"<glyph \s*([\w-]+)\s*/>", _make_glyph)
+    insert_before_or_append(md.inline.rules, "inline_html", "glyph")
+
+    # register_rule makes wrong kind of lambda for _start rules.
+    md.block.rule_methods["alertbox_start"] = (
+        re.compile(r"<alertbox \s*(\w+)\s*>"),
+        lambda m, state, string: _make_alertbox(md.block, m, state, string)
+    )
+    insert_before_or_append(md.block.rules, "block_html", "alertbox_start")
+
+    md.block.register_rule("template", re.compile(r"<itemlist\s*/>"), _make_itemlist)
+    insert_before_or_append(md.block.rules, "block_html", "template")
+
+
+def _make_email(inline, m, state):
+    return "email", m.group(1)
+
+
+def _make_glyph(inline, m, state):
+    return "glyph", m.group(1)
+
+
+def _make_itemlist(block, m, state):
+    return {
+        "type": "template",
+        "text": "",
+        "params": ("kirppu/vendor_item_list.html",),
+    }
+
+
+def _make_alertbox(block, m, state, string: str):
+    end_tag = "</alertbox>"
+    block_end = string.find(end_tag, m.end())
+    box_type = m.group(1)
+
+    valid_types = {
+        "success",
+        "info",
+        "warning",
+        "danger"
+    }
+    if box_type not in valid_types:
+        raise ValueError(
+            "Invalid argument to alertbox: \"" + box_type + "\". Must have a single argument, any of: " + ", ".join(
+                valid_types)
+        )
+
+    text = string[m.end():block_end]
+    token = {
+        "type": "alertbox",
+        "params": (box_type,),
+        "text": text,
+    }
+    return token, block_end + len(end_tag)
+
+
+class CustomTagRenderer(mistune.HTMLRenderer):
+    def __init__(self, context: typing.Optional[typing.Union[RequestContext, Context]]):
         super().__init__()
-        self.default_rules = list(self.default_rules)
-        self._custom_tags = {
-            "alertbox": self._make_alert_box,
-            "itemlist": self._make_item_list,
-        }
+        self._context = context
 
-    def parse_block_html(self, m):
-        tag = m.group(1)
-        if tag:
-            action = self._custom_tags.get(tag)
-            attrs = m.group(2).strip()
-            text = m.group(3)
-        else:
-            # mistune does not parse empty block html further. Do it by hand.
-            # Strip (trailing) whitespace and tag start '<' and end '/>' away.
-            content = m.group(0).strip()[1:-2]
-            content = content.split(" ", maxsplit=1)
-            tag = content[0]
-            if len(content) == 1:
-                attrs = ""
-            else:
-                attrs = content[1]
-            text = ""
-            action = self._custom_tags.get(tag)
-
-        if action:
-            return action(tag, attrs, text)
-
-        return super().parse_block_html(m)
-
-    def _make_alert_box(self, tag, attrs, text):
-        valid_attrs = {
-            "success",
-            "info",
-            "warning",
-            "danger"
-        }
-        if attrs not in valid_attrs:
-            raise ValueError("Invalid argument to alertbox: \"" + attrs + "\"."
-                             " Must have a single argument, any of: " + ", ".join(valid_attrs))
-
-        # XXX: BootStrap specific extra content.
-        self.tokens.append({
-            'type': 'open_html',
-            'tag': 'div',
-            'extra': ' class="alert alert-%s" role="alert"' % attrs,
-            'text': text
-        })
-
-    def _make_item_list(self, tag, attrs, text):
-        self.tokens.append({
-            'type': 'template',
-            'template': 'kirppu/vendor_item_list.html',
-        })
-
-
-class CustomInlines(mistune.InlineLexer):
-    _glyph_pattern = re.compile(r"\w+")
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._non_empty_tags = {
-            "email": self._make_email
-        }
-        self._empty_tags = {
-            "glyph": self._make_glyph
-        }
-
-    def output_inline_html(self, m):
-        tag = m.group(1)
-        non_empty = self._non_empty_tags.get(tag)
-        if non_empty is not None:
-            return non_empty(m)
-
-        elif tag is None:
-            # mistune does not parse empty inline html further. Do it by hand.
-            # Strip tag start '<' and end '/>' away.
-            content = m.group(0)[1:-2]  # type: str
-            if " " in content:
-                tag, attr = content.split(" ", maxsplit=1)
-                attr = attr.strip()
-            else:
-                tag = content
-                attr = ""
-
-            empty = self._empty_tags.get(tag)
-            if empty is not None:
-                return empty(attr)
-
-        return super().output_inline_html(m)
-
-    def _make_email(self, m):
-        text = m.group(3)
-        return self.renderer.email(text)
-
-    def _make_glyph(self, attr):
-        if not attr or self._glyph_pattern.match(attr) is None:
-            raise ValueError("glyph must have exactly one argument, the glyph name.")
-        return self.renderer.glyph(attr)
-
-
-class CustomTagRenderer(mistune.Renderer):
-    def email(self, address):
-        html = "<code>" + self.escape(address).replace("@", " <em>at</em> ") + "</code>"
+    @staticmethod
+    def email(address):
+        enc = bytes(
+            ord(a) ^ ord(k)
+            for a, k in zip(address.replace("@", " <em>at</em> "), itertools.cycle(EMAIL_KEY))
+        )
+        safe = base64.b64encode(enc).decode().rstrip("=")
+        html = '<code class="%s">' % EMAIL_CLASS + safe + "</code>"
         return html
 
     @staticmethod
     def glyph(glyph):
-        # XXX: BootStrap specific format.
-        html = '<span class="glyphicon glyphicon-%s"></span>' % glyph
+        html = '<span class="glyphicon glyphicon-%s"> </span>' % glyph
         return html
 
+    @staticmethod
+    def alertbox(text, box_type):
+        html = '<div class="alert alert-%s" role="alert">' % box_type
+        html += text + "</div>"
+        return html
 
-class CustomCore(mistune.Markdown):
-    def __init__(self, context, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._context = context  # Assumed to be django.template.context.RequestContext or Context.
-
-    def output_template(self):
-        template_name = self.token["template"]
+    def template(self, text, template_name):
+        if self._context is None:
+            import warnings
+            warnings.warn("No context when trying to render a template %s" % template_name)
         context = self._context if self._context is None or isinstance(self._context, dict) else self._context.flatten()
         return loader.render_to_string(template_name, context)
 
 
-def mark_down(text, context=None):
-    renderer = CustomTagRenderer(escape=False)
-    m = CustomCore(
-        context=context,
-        renderer=renderer,
-        inline=CustomInlines(renderer),
-        block=CustomTagLexer(),
-        parse_block_html=True,
+def mark_down(text, context: typing.Optional[typing.Union[RequestContext, Context]] = None):
+    m = mistune.create_markdown(
+        escape=False,
+        renderer=CustomTagRenderer(context),
+        plugins=[
+            'strikethrough',
+            'footnotes',
+            'table',
+            kirppu_plugin,
+        ],
     )
     return m(text)
 
+
+def main():
+    text = """
+# Heading
+
+## Subheading
+
+### Sub-subheading
+
+- Un-ordered list item
+  - Sub-item
+
+1. Ordered list item
+
+*emphasis*
+
+**strong**
+
+[Link title](https://...)
+
+Email address: <email>email@example.org</email>
+
+A glyph: <glyph volume-off />
+
+<alertbox danger>Alert text content</alertbox>
+    """
+    print(mark_down(text))
+
+
+if __name__ == '__main__':
+    main()

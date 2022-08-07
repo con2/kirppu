@@ -32,7 +32,7 @@ def receipt_suspend(request, note):
 @ajax_func('^receipt/continue')
 def receipt_continue(request, code):
     clerk = request.session["clerk"]
-    item = Item.get_item_by_barcode(code)
+    item = Item.get_item(code=code)
     receipt = get_object_or_404(Receipt, status=Receipt.SUSPENDED,
                                 type=Receipt.TYPE_PURCHASE,
                                 receiptitem__item=item, receiptitem__action=ReceiptItem.ADD)

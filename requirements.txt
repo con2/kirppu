@@ -6,7 +6,7 @@
 #
 asgiref==3.5.2
     # via django
-django==3.2.14
+django==3.2.15
     # via -r requirements.in
 django-environ==0.9.0
     # via -r requirements.in
@@ -16,7 +16,7 @@ django-ratelimit==3.0.1
     # via -r requirements.in
 future==0.18.2
     # via pubcode
-mistune==0.8.4
+mistune==2.0.4
     # via -r requirements.in
 pillow==9.0.1
     # via -r requirements.in
