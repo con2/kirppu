@@ -148,7 +148,7 @@ def ajax_func(original, method='POST', params=None, defaults=None, staff_overrid
     return decorator
 
 
-def get_counter(request):
+def get_counter(request) -> Counter:
     """
     Get the Counter object associated with a request.
 
@@ -175,7 +175,7 @@ def get_counter(request):
     return counter_object
 
 
-def get_clerk(request):
+def get_clerk(request) -> Clerk:
     """
     Get the Clerk object associated with a request.
 

@@ -4,8 +4,6 @@ from django.shortcuts import get_object_or_404
 from ..ajax_util import ajax_func_factory, AjaxError, RET_CONFLICT, get_clerk
 from ..models import Receipt, Item, ReceiptItem, Clerk, ReceiptNote
 
-__author__ = 'codez'
-
 ajax_func = ajax_func_factory("checkout")
 
 
@@ -31,7 +29,7 @@ def receipt_suspend(request, note):
 
 @ajax_func('^receipt/continue')
 def receipt_continue(request, code):
-    clerk = request.session["clerk"]
+    clerk = get_clerk(request)
     item = Item.get_item(code=code)
     receipt = get_object_or_404(Receipt, status=Receipt.SUSPENDED,
                                 type=Receipt.TYPE_PURCHASE,

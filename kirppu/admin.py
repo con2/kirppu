@@ -188,6 +188,9 @@ class EventPermissionAdmin(admin.ModelAdmin):
         "event",
         "user",
     )
+    autocomplete_fields = [
+        "user",
+    ]
 
 
 @admin.register(Vendor)
@@ -261,6 +264,9 @@ class ClerkAdmin(admin.ModelAdmin):
     exclude = ['access_key']
     list_filter = ("event",)
     list_display_links = None
+    autocomplete_fields = [
+        "user",
+    ]
 
     def get_list_display(self, request):
         if settings.DEBUG:
@@ -531,6 +537,9 @@ class ItemAdmin(admin.ModelAdmin):
         "vendor__event",
         "state",
     )
+    autocomplete_fields = [
+        "box",
+    ]
 
 
 _receipt_item_link = RefLinkAccessor("item", gettext("Item"))
@@ -613,6 +622,9 @@ class ItemStateLogAdmin(admin.ModelAdmin):
     list_filter = (
         "old_state", "new_state", "clerk", "counter",
     )
+    autocomplete_fields = [
+        "item",
+    ]
 
     @with_description(ItemStateLog._meta.get_field("time").verbose_name)
     def time_str(self, instance: ItemStateLog):

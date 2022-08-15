@@ -720,7 +720,7 @@ def item_compensate_start(request, event, vendor):
     if not vendor_list:
         raise AjaxError(RET_BAD_REQUEST)
 
-    clerk = Clerk.objects.get(pk=request.session["clerk"])
+    clerk = get_clerk(request)
     counter = Counter.objects.get(pk=request.session["counter"])
 
     receipt = Receipt(
