@@ -12,9 +12,7 @@ from kirppu.provision import Provision
 from .factories import *
 from .api_access import Api
 from . import ResultMixin
-from ..models import Item, Receipt
-
-__author__ = 'codez'
+from ..models import Account, Item, Receipt
 
 
 class ApiOK(Api, ResultMixin):
@@ -164,7 +162,8 @@ class _ApiProvisionTest(TestCase):
         self.vendor = VendorFactory(event=self.event)
         self.items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
-        self.counter = CounterFactory(event=self.event)
+        self.account = AccountFactory(event=self.event, balance=Decimal(100))
+        self.counter = CounterFactory(event=self.event, default_store_location=self.account)
         self.clerk = ClerkFactory(event=self.event)
 
         self.apiOK = ApiOK(client=self.client, event=self.event.slug)
@@ -258,6 +257,7 @@ class ApiLinearProvisionTest(_ApiProvisionTest):
 
         receipt, response = self._compensate(self.items)
         self.assertEqual(1150, receipt["total"])  # 10*(1.25-0.10) as cents
+        self.assertEqual(self.account.balance - Decimal("11.50"), Account.objects.get(pk=self.account.pk).balance)
 
     def test_linear_provision_two_phases(self):
         part_1 = self.items[:6]

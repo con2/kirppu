@@ -6,7 +6,7 @@ export default function render({
     onCreateMobileCode
 }) {
     return (
-        <form className="hidden-print">
+        <form className="hidden-print" id="vendor_report_buttons">
             <input type="button" className="btn btn-primary"
                    value={gettext('Balance Reconciliation…')}
                    onclick={onCompensate}

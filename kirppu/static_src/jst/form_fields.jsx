@@ -1,4 +1,15 @@
+/**
+ * @typedef {Object} OptionsListItem
+ * @property {String} name
+ * @property {String} description
+ */
 
+/**
+ * @param {Object} obj
+ * @param {OptionsListItem[]} obj.list Options to show.
+ * @param {boolean} obj.multiple Allow multiple selections?
+ * @param {String} obj.selection Currently selected `.name`.
+ **/
 export function Options({list, multiple, selection}) {
     // multiple must be set here, otherwise the control will half-select first item by default.
     return (

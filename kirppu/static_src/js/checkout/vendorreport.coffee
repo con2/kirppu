@@ -83,6 +83,8 @@ class @VendorReport extends CheckoutMode
     $("input", buttons).attr("disabled", "disabled")
     @cfg.uiRef.body.append(buttons)
 
+    @refreshNotes()
+
     Api.item_list(
       vendor: @vendor.id
     ).done((items) =>
@@ -92,6 +94,50 @@ class @VendorReport extends CheckoutMode
         $("input", buttons).removeAttr("disabled")
         @onGotItems(items, boxes)
       )
+    )
+
+  refreshNotes: =>
+    Api.vendor_notes(vendor_id: @vendor.id).done((notes) =>
+      previous = $("#vendor_note_list")
+      if (notes)
+        dom = Template.vendor_note_list(notes, @onAddNote, @onCompleteNote)
+        if previous.length
+          previous.replaceWith(dom)
+        else
+          $("#vendor_report_buttons").after(dom)
+      else
+        if previous.length
+          previous.remove()
+    )
+
+  onAddNote: =>
+    body = $ Template.AddVendorNote(withConfirm: false)
+
+    dlg = new Dialog2(
+      titleText: gettext("Add a note")
+      body: body
+      buttons: [
+        {text: gettext("Cancel"), classes: "btn-default"},
+        {text: gettext("Accept"), classes: "btn-primary", click: =>
+          Api.vendor_note_add(
+            vendor_id: @vendor.id
+            note: body.find("#note").val()
+          ).then(
+            @refreshNotes,
+            => safeWarning("Add failed.", false, true)
+          )
+        },
+      ]
+    )
+    dlg.show()
+
+  onCompleteNote: (id) =>
+    Api.vendor_note_complete(
+      vendor_id: @vendor.id
+      note_id: id
+    ).then(
+      @refreshNotes,
+      => safeWarning("Complete failed.", false, true)
     )
 
   onGotItems: (items, boxes) =>
@@ -201,36 +247,27 @@ class @VendorReport extends CheckoutMode
     dlg.body.append(table)
 
   onCreateMobileCode: =>
-    dlg = new Dialog()
-    dlg.title.text(gettext("Mobile code"))
-
-    buttonClose = dlg.addNegative().text(gettext("Close"))
-    buttonCreate = dlg.addButton("warning").text(gettext("Create new code"))
-
-    codeDisplay = $("<div>").addClass("short-code-display")
-    bodyText = $("<p>").text(gettext("Creating a code will invalidate all old codes."))
-
-    body = $("<div>")
-    body.append(bodyText, codeDisplay)
-
-    buttonCreate.click(() =>
-      dlg.setEnabled(buttonCreate, false)
-      dlg.setEnabled(buttonClose, false)
+    onCreate = =>
+      dlg.setEnableAll(false)
       Api.vendor_token_create(
         vendor_id: @vendor.id
+        expiry: timeInput.val()
       ).then(
         (data) =>
           codeDisplay.text(data.code)
           setTimeout(
-            () => dlg.setEnabled(buttonClose),
+            () => dlg.setEnableAll(true),
             2000)
 
         (jqXHR) =>
-          dlg.setEnabled(buttonCreate)
-          dlg.setEnabled(buttonClose)
+          dlg.setEnableAll(true)
           bodyText.text(jqXHR.responseText)
       )
-    )
 
-    dlg.body.append(body)
+    tpl = $(Template.mobile_code_dialog(onCreate))
+    timeInput = tpl.find("#expiry-time")
+    codeDisplay = tpl.find(".short-code-display")
+    bodyText = tpl.find(".modal-body")
+
+    dlg = new Dialog2(null, tpl)
     dlg.show()

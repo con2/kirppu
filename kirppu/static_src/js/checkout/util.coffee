@@ -50,23 +50,26 @@ stillBlinking = false
 @UtilSound =
   error: null
   success: null
+  question: null
 
 # Display safe alert error message.
 #
 # @param message [String] Message to display.
 # @param blink [Boolean, optional] If true (default), container is blinked.
-@safeAlert = (message, blink=true) ->
+@safeAlert = (message, blink = true) ->
   if UtilSound.error?
     UtilSound.error.play()
-  safeDisplay(CheckoutConfig.uiRef.errorText, message, blink)
+  safeDisplay(CheckoutConfig.uiRef.errorText, message, if blink then "alert-error-blink")
 
 
 # Display safe alert warning message.
 #
 # @param message [String] Message to display.
 # @param blink [Boolean, optional] If true (default), container is blinked.
-@safeWarning = (message, blink=false) ->
-  safeDisplay(CheckoutConfig.uiRef.warningText, message, blink)
+@safeWarning = (message, blink = false, sound = false) ->
+  if sound and UtilSound.question?
+    UtilSound.question.play()
+  safeDisplay(CheckoutConfig.uiRef.warningText, message, if blink then "alert-warn-blink")
 
 
 @fixToUppercase = (code) ->
@@ -81,27 +84,27 @@ stillBlinking = false
 #
 # @param textRef [jQuery] Div reference for the message.
 # @param message [String] The message.
-# @param blinkCount [Boolean] If true, container is blinked.
+# @param blink [String] If truthy, container is blinked with this class.
 safeDisplay = (textRef, message, blink) ->
   body = CheckoutConfig.uiRef.container
   text = textRef
-  cls = "alert-blink"
 
-  if message instanceof $
-    text.html(message)
-  else
-    text.text(message)
-  text.removeClass("alert-off")
-  return if blink == false
+  if message
+    if message instanceof $
+      text.html(message)
+    else
+      text.text(message)
+    text.removeClass("alert-off")
+  return if !blink
 
   listener = () ->
-    body.removeClass(cls)
+    body.removeClass(blink)
     stillBlinking = false
     return
   body.one("animationend", listener)
 
   stillBlinking = true
-  body.addClass(cls)
+  body.addClass(blink)
   return
 
 # Remove safe alert message, if the alert has been completed.

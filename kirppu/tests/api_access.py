@@ -7,8 +7,6 @@ from django.urls import reverse
 from . import color
 from kirppu.ajax_util import get_all_ajax_functions
 
-__author__ = 'codez'
-
 
 class Api(object):
     def __init__(self, client, event, debug=False):
@@ -35,9 +33,10 @@ class Api(object):
             callback.method = method
             return callback
 
-        self._end_points = {}
+        end_points = {}
         for name, func in get_all_ajax_functions():
-            self._end_points[name] = gen(func.method.lower(), func.view)
+            end_points[name] = gen(func.method.lower(), func.view)
+        self._end_points = end_points
 
     def __getattr__(self, function):
         if function == '__wrapped__':  # Placate inspect.is_wrapper

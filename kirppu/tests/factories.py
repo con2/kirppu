@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.utils.timezone import now, timedelta
 from kirppuauth.models import User
 from kirppu.models import (
+    Account,
     Box,
     Clerk,
     Counter,
@@ -21,9 +22,8 @@ import factory.django
 
 Factory = factory.django.DjangoModelFactory
 
-__author__ = 'codez'
-
 __all__ = [
+    "AccountFactory",
     "UserFactory",
     "EventFactory",
     "EventPermissionFactory",
@@ -58,7 +58,7 @@ class UserFactory(Factory):
         return obj
 
 
-# Outside of the class to avoid meta-class magic from sending this to _create.
+# Outside the class to avoid metaclass magic from sending this to _create.
 UserFactory.DEFAULT_PASSWORD = "AjU2k3Pzpdpz5yf5sjZn9p56"
 
 
@@ -89,6 +89,15 @@ class VendorFactory(Factory):
     event = factory.SubFactory(EventFactory)
 
 
+# Monetary account, not related to user.
+class AccountFactory(Factory):
+    class Meta:
+        model = Account
+
+    event = factory.SubFactory(EventFactory)
+    name = factory.Faker("sentence", nb_words=2)
+
+
 class CounterFactory(Factory):
     class Meta:
         model = Counter
@@ -96,6 +105,7 @@ class CounterFactory(Factory):
     identifier = factory.Sequence(lambda n: "counter_{}".format(n))
     name = factory.LazyAttribute(lambda a: a.identifier.capitalize())
     private_key = "secret"
+    default_store_location = factory.SubFactory(AccountFactory)
 
 
 class ClerkFactory(Factory):

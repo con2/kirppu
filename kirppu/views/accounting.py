@@ -3,14 +3,16 @@ from collections import defaultdict
 import csv
 import typing
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _, pgettext_lazy, gettext
 from django.utils import timezone
 
 from .csv_utils import csv_streamer_view, strip_generator
+from .menu import vendor_menu
 from ..models import (
     Event,
     EventPermission,
@@ -235,3 +237,20 @@ class AccountingWriter(object):
             ))
 
         assert self.total_balance == 0
+
+
+@login_required
+def live_accounts(request, event_slug: str):
+    event = get_object_or_404(Event, slug=event_slug)
+    if not EventPermission.get(event, request.user).can_see_accounting:
+        raise PermissionDenied
+
+    return render(
+        request,
+        "kirppu/live_accounts.html",
+        context={
+            "CURRENCY": settings.KIRPPU_CURRENCY,
+            "event": event,
+            "menu": vendor_menu(request, event),
+        }
+    )

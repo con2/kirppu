@@ -3,6 +3,7 @@ import functools
 import typing
 from urllib.parse import quote
 
+from django.http.request import HttpRequest
 from django.urls import reverse, NoReverseMatch
 from django.utils.translation import gettext as _
 
@@ -14,6 +15,10 @@ class MenuItem(typing.NamedTuple):
     url: typing.Optional[str]
     active: typing.Optional[bool]
     sub_items: typing.Optional[typing.List["MenuItem"]]
+
+    @staticmethod
+    def separator():
+        return MenuItem(None, None, None, None)
 
 
 def _fill(event: Event, active: str, name, func, sub=None, query=None, is_global=False):
@@ -30,7 +35,7 @@ def _fill(event: Event, active: str, name, func, sub=None, query=None, is_global
 
 
 def management_menu(
-        request,
+        request: HttpRequest,
         event: Event,
         permissions: typing.Optional[EventPermission] = None
 ) -> typing.List[MenuItem]:
@@ -69,7 +74,28 @@ def management_menu(
     return manage_sub
 
 
-def vendor_menu(request, event: Event) -> typing.List[MenuItem]:
+def accounting_menu(
+        request: HttpRequest,
+        event: Event,
+        permissions: typing.Optional[EventPermission] = None
+) -> typing.Optional[typing.List[MenuItem]]:
+    fill = functools.partial(_fill, event, request.resolver_match.view_name)
+
+    permissions = permissions or EventPermission.get(event, request.user)
+
+    if permissions.can_see_accounting:
+        return [
+            fill(_("View"), "kirppu:accounting"),
+            fill(_("Download"), "kirppu:accounting", query={"download": ""}),
+            MenuItem.separator(),
+            fill(_("View items"), "kirppu:item_dump", query={"txt": ""}),
+            fill(_("View items (CSV)"), "kirppu:item_dump"),
+            MenuItem.separator(),
+            fill(_("Accounts"), "kirppu:live_accounts"),
+        ]
+
+
+def vendor_menu(request: HttpRequest, event: Event) -> typing.List[MenuItem]:
     """
     Generate menu for Vendor views.
     Returned tuple contains entries for the menu, each entry containing a
@@ -95,25 +121,20 @@ def vendor_menu(request, event: Event) -> typing.List[MenuItem]:
         items.append(fill(_("Mobile"), "kirppu:mobile"))
 
     permissions = EventPermission.get(event, request.user)
+
     manage_sub = management_menu(request, event, permissions=permissions)
     if manage_sub:
         items.append(fill(_(u"Management"), "", manage_sub))
 
-    if permissions.can_see_accounting:
-        accounting_sub = [
-            fill(_("View"), "kirppu:accounting"),
-            fill(_("Download"), "kirppu:accounting", query={"download": ""}),
-            MenuItem(None, None, None, None),
-            fill(_("View items"), "kirppu:item_dump", query={"txt": ""}),
-            fill(_("View items (CSV)"), "kirppu:item_dump"),
-        ]
+    accounting_sub = accounting_menu(request, event, permissions=permissions)
+    if accounting_sub:
         items.append(fill(_("Accounting"), "", accounting_sub))
 
     return items
 
 
 def event_management_menu(
-        request,
+        request: HttpRequest,
         event: Event,
 ) -> typing.List[MenuItem]:
     fill = functools.partial(_fill, event, request.resolver_match.view_name)

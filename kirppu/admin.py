@@ -22,6 +22,7 @@ from .forms import (
 
 from .models import (
     AccessSignup,
+    Account,
     Clerk,
     Event,
     EventPermission,
@@ -230,6 +231,7 @@ class VendorAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Person)
+admin.site.register(Account)
 
 
 class ClerkEditLink(FieldAccessor):

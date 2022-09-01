@@ -123,9 +123,10 @@ class StatesTest(TestCase, ResultMixin):
         self.assertEqual(HTTPStatus.LOCKED, expected_failure.status_code)
 
     def _register_box_brought(self, box):
-        box_checkin = self.assertResult(self.api.item_checkin(code=box.representative_item.code),
+        rep = box.representative_item
+        box_checkin = self.assertResult(self.api.item_checkin(code=rep.code, vendor=rep.vendor_id),
                                         expect=HTTPStatus.ACCEPTED).json()
-        self.assertSuccess(self.api.box_checkin(code=box.representative_item.code,
+        self.assertSuccess(self.api.box_checkin(code=rep.code,
                                                 box_info=box_checkin["box"]["box_number"]))
         return box
 

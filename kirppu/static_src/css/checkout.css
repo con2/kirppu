@@ -55,6 +55,14 @@ td.receipt_code {
     }
 }
 
+td.min-width {
+    width: 0;
+}
+td.erased {
+    color: #555;
+    text-decoration: line-through;
+}
+
 tr.receipt_tr_clickable:hover {
     text-decoration: underline;
     cursor: pointer;
@@ -105,18 +113,30 @@ tr.table-row-groupItem > td {
     padding: 2px 5px 2px !important;
 }
 
-.alert-blink {
+.alert-error-blink {
     /* Container class when blinking. */
-    animation: alert-blink 0.3s steps(2, start) 4;
+    animation: alert-error-blink 0.3s steps(2, start) 4;
+}
+.alert-warn-blink {
+    /* Container class when blinking. */
+    animation: alert-warn-blink 0.3s steps(2, start) 4;
 }
 .alert-off {
     /* Text container when no current error. */
     display: none;
 }
 
-@keyframes alert-blink {
+@keyframes alert-error-blink {
     from {
         background-color: deeppink;
+    }
+    to {
+        background-color: inherit;
+    }
+}
+@keyframes alert-warn-blink {
+    from {
+        background-color: darkgoldenrod;
     }
     to {
         background-color: inherit;

@@ -1,8 +1,15 @@
 # Dialog helper class for using BootStrap Modal Dialog with only one common template.
 class @Dialog
-  constructor: (template="#dialog_template", title="#dialog_template_label") ->
+  constructor: () ->
+    template = Template.dialog(
+      title: "??"
+      body: ""
+      buttons: []
+    )
+    @_dom = $("#dialog_template")
+
     @container = $(template)
-    @title = @container.find(title)
+    @title = @container.find("#dialog_label")
     @body = @container.find(".modal-body")
     @buttons = @container.find(".modal-footer")
 
@@ -12,9 +19,7 @@ class @Dialog
 
     @_buttonList = []
     @container.on("hidden.bs.modal", () =>
-      @title.empty()
-      @body.empty()
-      @buttons.empty()
+      @container.remove()
     )
 
   # Add positive button to the dialog.
@@ -64,8 +69,32 @@ class @Dialog
   # Display the dialog. This will append added buttons to `buttons`-container.
   # @param modalArgs [optional] Arguments for BootStrap `modal()`.
   show: (modalArgs=keyboard:false) ->
+    @_dom.append(@container)
     @buttons.append(@_buttonList)
     @container.modal(modalArgs)
 
   _button: (clazz="default") ->
     $("""<button type="button" class="btn btn-#{ clazz }" data-dismiss="modal">""")
+
+
+class @Dialog2
+  constructor: (obj, tpl) ->
+    @_dom = $("#dialog_template")
+
+    if obj == null
+      @_dialog = $(tpl)
+    else
+      @_dialog = $(Template.dialog(obj))
+    @_dialog.on("hidden.bs.modal", () =>
+      @_dialog.remove()
+    )
+
+  show: (modalArgs=keyboard: false) ->
+    @_dom.append(@container)
+    @_dialog.modal(modalArgs)
+
+  setEnableAll: (enable) ->
+    $(".modal-footer button", @_dialog).each(() ->
+      this.disabled = !enable
+      return
+    )

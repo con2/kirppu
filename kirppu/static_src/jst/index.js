@@ -1,13 +1,18 @@
+import {account_transfer_form, account_transfer_verify, account_transfers} from "./accounts.jsx";
+import {account_table} from "./live_accounts.jsx";
 import box_check_in_dialog from "./box_check_in_dialog.jsx";
 import box_report_table from "./box_report_table.jsx";
 import box_sell_allocation_dialog from "./box_sell_allocation_dialog.jsx";
 import counter_list from "./counter_list.jsx";
+import dialog from "./dialog.jsx";
+import {AddVendorNote, insufficient_vendor_info, vendor_note_list} from "./vendor_notes.jsx";
 import {item_edit_dialog_content, item_edit_dialog_modal} from './item_edit_dialog.jsx';
 import {item_find_table, item_find_table_item, item_find_table_no_results} from "./item_find_table.jsx";
 import {item_receipt_table, item_receipt_table_row} from './item_receipt_table.jsx';
 import item_report_table from "./item_report_table.jsx";
 import item_search_form from './item_search_form.jsx';
 import {lost_and_found_table, lost_and_found_table_item} from "./lost_and_found_table.jsx";
+import mobile_code_dialog from "./mobile_code.jsx";
 import {overseer_receipt_table, overseer_receipt_table_item, overseer_receipt_table_no_results} from "./overseer_receipt_table.jsx";
 import {accept_person_dialog, person_info_table, PersonRow, signup_row, signup_table} from "./people_management.jsx";
 import progress_bar from "./progress_bar.jsx";
@@ -23,10 +28,17 @@ import vendor_report_item_table from "./vendor_report_item_table.jsx";
 
 const Template = {
     accept_person_dialog: accept_person_dialog,
+    account_table: account_table,
+    account_transfer_form: account_transfer_form,
+    account_transfer_verify: account_transfer_verify,
+    account_transfers: account_transfers,
+    AddVendorNote: AddVendorNote,
     box_check_in_dialog: box_check_in_dialog,
     box_report_table: box_report_table,
     box_sell_allocation_dialog: box_sell_allocation_dialog,
     counter_list: counter_list,
+    dialog: dialog,
+    insufficient_vendor_info: insufficient_vendor_info,
     item_edit_dialog_content: item_edit_dialog_content,
     item_edit_dialog_modal: item_edit_dialog_modal,
     item_find_table: item_find_table,
@@ -38,6 +50,7 @@ const Template = {
     item_search_form: item_search_form,
     lost_and_found_table: lost_and_found_table,
     lost_and_found_table_item: lost_and_found_table_item,
+    mobile_code_dialog: mobile_code_dialog,
     overseer_receipt_table: overseer_receipt_table,
     overseer_receipt_table_item: overseer_receipt_table_item,
     overseer_receipt_table_no_results: overseer_receipt_table_no_results,
@@ -57,6 +70,7 @@ const Template = {
     vendor_list: vendor_list,
     vendor_list_item: vendor_list_item,
     vendor_info: vendor_info,
+    vendor_note_list: vendor_note_list,
     vendor_report_item_table: vendor_report_item_table,
 }
 

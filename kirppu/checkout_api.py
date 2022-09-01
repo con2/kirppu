@@ -1,5 +1,7 @@
 import logging
+import math
 import random
+import typing
 
 from django.conf import settings
 
@@ -33,14 +35,17 @@ from .models import (
     Counter,
     Event,
     EventPermission,
+    Account,
     ReceiptItem,
     ReceiptExtraRow,
     Vendor,
+    VendorNote,
     ItemStateLog,
     Box,
     TemporaryAccessPermit,
     TemporaryAccessPermitLog,
-    decimal_to_transport
+    decimal_to_transport,
+    default_temporary_access_permit_expiry,
 )
 from .fields import ItemPriceField
 from .forms import remove_item_from_receipt
@@ -147,7 +152,7 @@ def clerk_login(request, event, code, counter):
         raise AjaxError(RET_AUTH_FAILED, _(u"No such clerk."))
 
     clerk_data = clerk.as_dict()
-    permissions = EventPermission.get(event, request.user)
+    permissions = EventPermission.get(event, clerk.user)
     oversee = permissions.can_perform_overseer_actions
     clerk_data['overseer_enabled'] = oversee
     clerk_data['stats_enabled'] = oversee or permissions.can_see_statistics
@@ -438,7 +443,10 @@ def _item_edit(request, item, price, state):
             ).values_list('receipt_id', flat=True)
 
             for receipt_id in receipt_ids:
-                remove_item_from_receipt(request, item, receipt_id)
+                receipt = Receipt.objects.get(pk=receipt_id)
+                remove_item_from_receipt(request, item, receipt)
+                account_id = receipt.dst_account_id
+                Account.objects.filter(pk=account_id).update(balance=F("balance") - price)
         else:
             raise AjaxError(
                 RET_BAD_REQUEST,
@@ -627,13 +635,21 @@ def box_list(request, vendor):
 
 
 @ajax_func('^item/checkin$', atomic=True)
-def item_checkin(request, event, code):
+def item_checkin(request, event, code, vendor: int, note: typing.Optional[str] = None):
     item = _get_item_or_404(code, for_update=True, event=event)
     if not item.vendor.terms_accepted:
         raise AjaxError(500, _(u"Vendor has not accepted terms!"))
+    clerk = get_clerk(request)
 
     if item.state != Item.ADVERTISED:
         _item_state_conflict(item)
+
+    if not vendor or item.vendor_id != int(vendor):
+        return JsonResponse(
+            item.as_dict(),
+            status=RET_ACCEPTED,
+            reason="NOT CHANGED",
+        )
 
     left_count = None
     if event.max_brought_items is not None:
@@ -660,6 +676,15 @@ def item_checkin(request, event, code):
     result = item_mode_change(request, item, Item.ADVERTISED, Item.BROUGHT)
     if left_count is not None:
         result["_item_limit_left"] = left_count
+
+    if note:
+        the_note = VendorNote.objects.create(
+            vendor_id=item.vendor_id,
+            clerk=clerk,
+            text=note,
+        )
+        result["_note"] = the_note.as_dict()
+
     return result
 
 
@@ -801,7 +826,19 @@ def item_compensate_end(request, event):
     receipt.status = Receipt.FINISHED
     receipt.end_time = now()
     receipt.calculate_total()
-    receipt.save(update_fields=("status", "end_time", "total"))
+
+    account_id = receipt.counter.default_store_location_id
+    total = receipt.total
+    receipt.src_account_id = account_id
+
+    receipt.save(update_fields=("status", "end_time", "total", "src_account"))
+
+    try:
+        Account.objects.filter(pk=account_id).update(balance=F("balance") - total)
+    except IntegrityError:
+        account_balance = Account.objects.get(pk=account_id).balance
+        raise AjaxError(RET_CONFLICT,
+                        _("Not enough money in account ({1}) to give out ({2})").format(account_balance, total))
 
     del request.session["compensation"]
 
@@ -809,7 +846,7 @@ def item_compensate_end(request, event):
 
 
 @ajax_func('^vendor/get$', method='GET')
-def vendor_get(request, event, id=None, code=None):
+def vendor_get(request, event, id: typing.Optional[int] = None, code: typing.Optional[str] = None):
     id = empty_as_none(id)
     code = empty_as_none(code)
 
@@ -822,7 +859,7 @@ def vendor_get(request, event, id=None, code=None):
         id = _get_item_or_404(code, event=event).vendor_id
 
     try:
-        vendor = Vendor.objects.get(pk=int(id))
+        vendor = Vendor.objects.get(pk=int(id), event=event)
     except (ValueError, Vendor.DoesNotExist):
         raise AjaxError(RET_BAD_REQUEST, _(u"Invalid vendor id"))
     else:
@@ -864,7 +901,7 @@ def vendor_find(request, event, q):
 
 
 @ajax_func('^vendor/token/create$', method='POST', atomic=True)
-def vendor_token_create(request, vendor_id):
+def vendor_token_create(request, vendor_id, expiry: int = None):
     clerk = get_clerk(request)
     vendor = Vendor.objects.get(id=int(vendor_id))
 
@@ -878,7 +915,17 @@ def vendor_token_create(request, vendor_id):
         )
     old_permits.update(state=TemporaryAccessPermit.STATE_INVALIDATED)
 
-    numbers = settings.KIRPPU_SHORT_CODE_LENGTH
+    if expiry:
+        expiry = int(expiry)
+        if expiry < 10000:
+            numbers = round(math.log10(1700 * expiry))
+        else:
+            raise AjaxError(RET_BAD_REQUEST, "Reduce the expiry time")
+        numbers = max(numbers, settings.KIRPPU_SHORT_CODE_LENGTH)
+    else:
+        numbers = settings.KIRPPU_SHORT_CODE_LENGTH
+        expiry = None
+
     permit, code = None, None
     for retry in range(60):
         try:
@@ -886,6 +933,7 @@ def vendor_token_create(request, vendor_id):
             permit = TemporaryAccessPermit.objects.create(
                 vendor=vendor,
                 creator=clerk,
+                expiration_time=default_temporary_access_permit_expiry(expiry),
                 short_code=str(code),
             )
             TemporaryAccessPermitLog.objects.create(
@@ -999,9 +1047,13 @@ def _get_active_receipt(request, id, allowed_states=(Receipt.PENDING,)):
 def receipt_finish(request, id):
     receipt, receipt_id = _get_active_receipt(request, id)
 
+    account_id = receipt.counter.default_store_location_id
     receipt.end_time = now()
     receipt.status = Receipt.FINISHED
-    receipt.save(update_fields=("end_time", "status"))
+    receipt.dst_account_id = account_id
+    receipt.save(update_fields=("end_time", "status", "dst_account"))
+
+    Account.objects.filter(pk=account_id).update(balance=F("balance") + receipt.total)
 
     receipt_items = Item.objects.select_for_update().filter(receipt=receipt, receiptitem__action=ReceiptItem.ADD)
     ItemStateLog.objects.log_states(item_set=receipt_items, new_state=Item.SOLD, request=request)

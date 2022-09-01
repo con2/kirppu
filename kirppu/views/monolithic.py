@@ -39,6 +39,7 @@ from ..forms import ItemRemoveForm, VendorItemForm, VendorBoxForm, remove_item_f
 from ..fields import ItemPriceField
 from .menu import vendor_menu
 from ..models import (
+    Account,
     Box,
     Clerk,
     Event,
@@ -926,7 +927,10 @@ def remove_item_from_receipt(request, event_slug):
 
     if request.method == "POST" and form.is_valid():
         try:
-            removal = _remove_item_from_receipt(request, form.cleaned_data["code"], form.cleaned_data["receipt"])
+            with transaction.atomic():
+                removal = _remove_item_from_receipt(request, form.cleaned_data["code"], form.cleaned_data["receipt"])
+                account_id = removal.receipt.dst_account_id
+                Account.objects.filter(pk=account_id).update(balance=models.F("balance") - removal.item.price)
         except (ValueError, AssertionError) as e:
             form.add_error(None, e.args[0])
         else:

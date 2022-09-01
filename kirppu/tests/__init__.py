@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-__author__ = 'codez'
+# Import the main module for the ajax framework to populate endpoints.
+# noinspection PyUnresolvedReferences
+import kirppu.checkout_api
 
 
 def color(c: int, s: str) -> str:

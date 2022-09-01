@@ -30,12 +30,12 @@ from .views import (
     lost_and_found_list,
 )
 from .views import access_signup
+from .views import accounting
 from .views import event_management
 from .views.frontpage import front_page
 from .checkout_api import checkout_js
 from .views.mobile import index as mobile_index, logout as mobile_logout
 from .views.vendors import change_vendor, create_vendor
-from .views.accounting import accounting_receipt_view
 from .views.item_dump import dump_items_view
 
 __author__ = 'jyrkila'
@@ -43,7 +43,8 @@ __author__ = 'jyrkila'
 app_name = "kirppu"
 
 event_urls = [
-    path(r'accounting/', accounting_receipt_view, name="accounting"),
+    path(r'accounting/', accounting.accounting_receipt_view, name="accounting"),
+    path(r'accounting/live', accounting.live_accounts, name="live_accounts"),
     path(r'itemdump/', dump_items_view, name="item_dump"),
     path(r'clerks/', get_clerk_codes, name='clerks'),
     path(r'boxes/', get_boxes_codes, name="box_codes"),

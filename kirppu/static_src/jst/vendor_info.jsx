@@ -12,7 +12,7 @@ function Row({title, value, classes}) {
 export default function render({vendor, title=true}) {
     return (
         <div className="vendor-info-box">
-            {title && <h3>{gettext("Vendor")}</h3>}
+            {title && <h3 className="hidden-print">{gettext("Vendor")}</h3>}
             <Row title={gettext("name")} value={vendor.name}/>
             <Row title={gettext("email")} value={vendor.email} classes="hidden-print"/>
             <Row title={gettext("phone")} value={vendor.phone} classes="hidden-print"/>
