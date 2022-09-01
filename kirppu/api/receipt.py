@@ -17,7 +17,7 @@ from ..ajax_util import (
     get_counter,
     require_user_features,
 )
-from ..models import Account, Clerk, Event, EventPermission, Item, Receipt, ReceiptItem, ReceiptNote
+from ..models import Account, Clerk, EventPermission, Item, Receipt, ReceiptItem, ReceiptNote
 
 ajax_func = ajax_func_factory("checkout")
 
@@ -69,26 +69,20 @@ def receipt_continue(request, code):
     return data
 
 
-def _event(request, ev):
+def _check_access(request, event):
     try:
         # Access from overseer.
-        # Clerk fetch and access check unnecessarily duplicated.
         require_user_features(overseer=True)(lambda r: None)(request)
-        clerk = get_clerk(request)
-        event = clerk.event
     except AjaxError as e:
         # Access from public side.
-        if ev is None:
-            raise
-        event = Event.objects.get(event_slug=ev)
         if not EventPermission.get(event, request.user).can_see_accounting:
             raise AjaxError(RET_FORBIDDEN)
     return event
 
 
 @ajax_func('^accounts/$', method="GET", counter=False, clerk=False)
-def list_accounts(request, ev=None):
-    event = _event(request, ev)
+def list_accounts(request, event):
+    _check_access(request, event)
     accounts = Account.objects.filter(event=event)
     return [a.as_dict() for a in accounts]
 
@@ -101,8 +95,8 @@ def _with_note(receipt, receipt_note=None):
 
 
 @ajax_func("accounts/transfers$", method="GET", counter=False, clerk=False)
-def list_transfers(request, ev=None):
-    event = _event(request, ev)
+def list_transfers(request, event):
+    _check_access(request, event)
     transfers = (
         Receipt.objects
         .filter(type=Receipt.TYPE_TRANSFER, counter__event=event)

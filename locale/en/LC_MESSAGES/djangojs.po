@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-26 10:00+0300\n"
-"PO-Revision-Date: 2022-07-26 09:55+0300\n"
+"POT-Creation-Date: 2022-09-01 21:49+0300\n"
+"PO-Revision-Date: 2022-09-01 21:42+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 21.12.3\n"
+"X-Generator: Lokalize 22.04.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -119,9 +119,6 @@ msgstr "no. %d"
 msgid "á %s"
 msgstr "á %s"
 
-msgid "Mark the box number"
-msgstr "Mark the box number"
-
 msgid "description"
 msgstr "description"
 
@@ -146,11 +143,17 @@ msgid_plural "%i pcs"
 msgstr[0] "%i pc"
 msgstr[1] "%i pcs"
 
+msgid "Mark the box number"
+msgstr "Mark the box number"
+
 msgid "Cancel"
 msgstr "Cancel"
 
 msgid "Accept"
 msgstr "Accept"
+
+msgid "Insufficient vendor info"
+msgstr "Insufficient vendor info"
 
 msgid "Item Search"
 msgstr "Item Search"
@@ -351,6 +354,9 @@ msgstr "Item Report"
 msgid "Search terms separated by space"
 msgstr "Search terms separated by space"
 
+msgid "Add a note"
+msgstr "Add a note"
+
 msgid "Boxes"
 msgstr "Boxes"
 
@@ -370,17 +376,11 @@ msgstr "Close"
 msgid "Show"
 msgstr "Show"
 
-msgid "Mobile code"
-msgstr "Mobile code"
-
-msgid "Create new code"
-msgstr "Create new code"
-
-msgid "Creating a code will invalidate all old codes."
-msgstr "Creating a code will invalidate all old codes."
-
 msgid "Vendor Search"
 msgstr "Vendor Search"
+
+msgid "Accounts"
+msgstr "Accounts"
 
 msgid "Lost and found properties"
 msgstr "Lost and found properties"
@@ -434,6 +434,59 @@ msgstr "euros"
 msgid "No data"
 msgstr "No data"
 
+msgid "Select…"
+msgstr "Select…"
+
+msgid "Source"
+msgstr "Source"
+
+msgid "Destination"
+msgstr "Destination"
+
+msgid "Amount"
+msgstr "Amount"
+
+msgid "Reason"
+msgstr "Reason"
+
+msgid "Clerk code"
+msgstr "Clerk code"
+
+msgid "Verify…"
+msgstr "Verify…"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "Verify transfer"
+msgstr "Verify transfer"
+
+msgid "Note"
+msgstr "Note"
+
+msgid "Signature"
+msgstr "Signature"
+
+msgid "Transfers"
+msgstr "Transfers"
+
+msgid "Time"
+msgstr "Time"
+
+msgctxt "From account"
+msgid "From"
+msgstr "From"
+
+msgctxt "To account"
+msgid "To"
+msgstr "To"
+
+msgid "Account"
+msgstr "Account"
+
+msgid "Balance"
+msgstr "Balance"
+
 msgid "Total:"
 msgstr "Total:"
 
@@ -475,6 +528,25 @@ msgstr "id"
 
 msgid "terms accepted?"
 msgstr "terms accepted?"
+
+msgid "Add a note?"
+msgstr "Add a note?"
+
+msgid ""
+"Please note, that the vendor has a right to see notes attached to them on "
+"request."
+msgstr ""
+"Please note, that the vendor has a right to see notes attached to them on "
+"request."
+
+msgid "Add"
+msgstr "Add"
+
+msgid "Vendor might not be identifiable from information above."
+msgstr "Vendor might not be identifiable from information above."
+
+msgid "Notes"
+msgstr "Notes"
 
 msgid "Edit Item"
 msgstr "Edit Item"
@@ -585,11 +657,20 @@ msgstr "Show hidden items"
 msgid "Search"
 msgstr "Search"
 
-msgid "Reset"
-msgstr "Reset"
-
 msgid "state"
 msgstr "state"
+
+msgid "Mobile code"
+msgstr "Mobile code"
+
+msgid "Creating a code will invalidate all old codes."
+msgstr "Creating a code will invalidate all old codes."
+
+msgid "Expiry time (minutes)"
+msgstr "Expiry time (minutes)"
+
+msgid "Create new code"
+msgstr "Create new code"
 
 msgid "counter"
 msgstr "counter"
@@ -680,9 +761,6 @@ msgstr "Applied"
 
 msgid "Reject"
 msgstr "Reject"
-
-msgid "Notes"
-msgstr "Notes"
 
 msgid "Items"
 msgstr "Items"

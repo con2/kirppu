@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-26 10:00+0300\n"
-"PO-Revision-Date: 2022-07-26 10:01+0300\n"
+"POT-Creation-Date: 2022-09-01 21:49+0300\n"
+"PO-Revision-Date: 2022-09-01 21:56+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 21.12.3\n"
+"X-Generator: Lokalize 22.04.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -118,9 +118,6 @@ msgstr "no. %d"
 msgid "á %s"
 msgstr "á %s"
 
-msgid "Mark the box number"
-msgstr "Merkitse laatikon numero"
-
 msgid "description"
 msgstr "kuvaus"
 
@@ -145,11 +142,17 @@ msgid_plural "%i pcs"
 msgstr[0] "%i kpl"
 msgstr[1] "%i kpl"
 
+msgid "Mark the box number"
+msgstr "Merkitse laatikon numero"
+
 msgid "Cancel"
 msgstr "Peru"
 
 msgid "Accept"
 msgstr "Hyväksy"
+
+msgid "Insufficient vendor info"
+msgstr "Riittämättömät myyjän tiedot"
 
 msgid "Item Search"
 msgstr "Tuotehaku"
@@ -350,6 +353,9 @@ msgstr "Raportti myyjän tavaroista"
 msgid "Search terms separated by space"
 msgstr "Hakuehdot välilyönnillä erotettuna"
 
+msgid "Add a note"
+msgstr "Lisää muistiinpano"
+
 msgid "Boxes"
 msgstr "Laatikot"
 
@@ -369,17 +375,12 @@ msgstr "Sulje"
 msgid "Show"
 msgstr "Näytä"
 
-msgid "Mobile code"
-msgstr "Mobiilikoodi"
-
-msgid "Create new code"
-msgstr "Luo uusi koodi"
-
-msgid "Creating a code will invalidate all old codes."
-msgstr "Uuden koodin luominen mitätöi kaikki vanhat koodit."
-
 msgid "Vendor Search"
 msgstr "Myyjähaku"
+
+#| msgid "counter"
+msgid "Accounts"
+msgstr "Tilit"
 
 msgid "Lost and found properties"
 msgstr "Kadonneet ja löytyneet tavarat"
@@ -433,6 +434,66 @@ msgstr "eurot"
 msgid "No data"
 msgstr "Ei tietoja"
 
+#| msgid "Select"
+msgid "Select…"
+msgstr "Valitse…"
+
+msgid "Source"
+msgstr "Lähde"
+
+#| msgid "description"
+msgid "Destination"
+msgstr "Kohde"
+
+#| msgid "Count"
+msgid "Amount"
+msgstr "Määrä"
+
+msgid "Reason"
+msgstr "Syy"
+
+#| msgid "See clerk codes"
+msgid "Clerk code"
+msgstr "Kassahenkilökoodi"
+
+msgid "Verify…"
+msgstr "Vahvista…"
+
+msgid "Reset"
+msgstr "Tyhjennä"
+
+msgid "Verify transfer"
+msgstr "Vahvista siirto"
+
+#| msgid "Notes"
+msgid "Note"
+msgstr "Muistiinpano"
+
+msgid "Signature"
+msgstr "Allekirjoitus"
+
+msgid "Transfers"
+msgstr "Siirrot"
+
+msgid "Time"
+msgstr "Aika"
+
+msgctxt "From account"
+msgid "From"
+msgstr "Lähde"
+
+msgctxt "To account"
+msgid "To"
+msgstr "Kohde"
+
+#| msgid "counter"
+msgid "Account"
+msgstr "Tili"
+
+#| msgid "Cancel"
+msgid "Balance"
+msgstr "Saldo"
+
 msgid "Total:"
 msgstr "Yhteensä:"
 
@@ -474,6 +535,25 @@ msgstr "id"
 
 msgid "terms accepted?"
 msgstr "ehdot hyväksytty?"
+
+msgid "Add a note?"
+msgstr "Lisää muistiinpano?"
+
+msgid ""
+"Please note, that the vendor has a right to see notes attached to them on "
+"request."
+msgstr ""
+"Huomioi, että myyjällä on oikeus nähdä häneen liitetyt muistiinpanot"
+" pyydettäessä."
+
+msgid "Add"
+msgstr "Lisää"
+
+msgid "Vendor might not be identifiable from information above."
+msgstr "Myyjää ei välttämättä voida tunnistaa yllä olevista tiedoista."
+
+msgid "Notes"
+msgstr "Huomiot"
 
 msgid "Edit Item"
 msgstr "Muokkaa tavaraa"
@@ -584,11 +664,20 @@ msgstr "Näytä piilotetut tavarat"
 msgid "Search"
 msgstr "Etsi"
 
-msgid "Reset"
-msgstr "Tyhjennä"
-
 msgid "state"
 msgstr "tila"
+
+msgid "Mobile code"
+msgstr "Mobiilikoodi"
+
+msgid "Creating a code will invalidate all old codes."
+msgstr "Uuden koodin luominen mitätöi kaikki vanhat koodit."
+
+msgid "Expiry time (minutes)"
+msgstr "Vanhenemisaika (minuutteja)"
+
+msgid "Create new code"
+msgstr "Luo uusi koodi"
 
 msgid "counter"
 msgstr "kassa"
@@ -679,9 +768,6 @@ msgstr "Haettu"
 
 msgid "Reject"
 msgstr "Hylkää"
-
-msgid "Notes"
-msgstr "Huomiot"
 
 msgid "Items"
 msgstr "Tavarat"

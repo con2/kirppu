@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-26 10:00+0300\n"
-"PO-Revision-Date: 2022-07-26 09:49+0300\n"
+"POT-Creation-Date: 2022-09-01 21:49+0300\n"
+"PO-Revision-Date: 2022-09-01 21:41+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 21.12.3\n"
+"X-Generator: Lokalize 22.04.3\n"
 
 msgid "View help."
 msgstr "View help."
@@ -147,8 +147,8 @@ msgid "Only {} items of {} available for removal."
 msgstr "Only {} items of {} available for removal."
 
 #, python-brace-format
-msgid "No item found matching '{0}'"
-msgstr "No item found matching '{0}'"
+msgid "No item found matching {0}"
+msgstr "No item found matching {0}"
 
 msgid "Box #{} does not exist."
 msgstr "Box #{} does not exist."
@@ -156,6 +156,15 @@ msgstr "Box #{} does not exist."
 #, python-brace-format
 msgid "Unexpected item state: {state_name} ({state})"
 msgstr "Unexpected item state: {state_name} ({state})"
+
+msgid "You don't have permission to do this"
+msgstr "You don't have permission to do this"
+
+msgid "Source and destination cannot be the same"
+msgstr "Source and destination cannot be the same"
+
+msgid "Not allowing more loan without manage permission"
+msgstr "Not allowing more loan without manage permission"
 
 msgid "No such clerk."
 msgstr "No such clerk."
@@ -177,6 +186,10 @@ msgstr "Already compensating"
 
 msgid "No compensation started!"
 msgstr "No compensation started!"
+
+#, python-brace-format
+msgid "Not enough money in account ({1}) to give out ({2})"
+msgstr "Not enough money in account ({1}) to give out ({2})"
 
 msgid "Invalid vendor id"
 msgstr "Invalid vendor id"
@@ -404,6 +417,14 @@ msgstr "Registration identifier of the counter"
 msgid "Common name of the counter"
 msgstr "Common name of the counter"
 
+msgid ""
+"Where the cash will be stored to and received from when using this counter."
+msgstr ""
+"Where the cash will be stored to and received from when using this counter."
+
+msgid "Counter and default_store_location must be in same Event."
+msgstr "Counter and default_store_location must be in same Event."
+
 msgid "Is in use?"
 msgstr "Is in use?"
 
@@ -436,6 +457,9 @@ msgstr "Purchase"
 
 msgid "Compensation"
 msgstr "Compensation"
+
+msgid "Transfer"
+msgstr "Transfer"
 
 msgid "Provision"
 msgstr "Provision"
@@ -651,6 +675,15 @@ msgstr "Payment"
 msgid "Quick payment"
 msgstr "Quick payment"
 
+msgid "Success:"
+msgstr "Success:"
+
+msgid "Question:"
+msgstr "Question:"
+
+msgid "Error:"
+msgstr "Error:"
+
 msgid "Clerk codes"
 msgstr "Clerk codes"
 
@@ -704,6 +737,9 @@ msgstr "Actions"
 
 msgid "Item Search"
 msgstr "Item Search"
+
+msgid "Accounts"
+msgstr "Accounts"
 
 msgid "Lost and Found"
 msgstr "Lost and Found"
@@ -882,6 +918,15 @@ msgstr "95th percentile"
 
 msgid "99.7th percentile"
 msgstr "99.7th percentile"
+
+msgid "Resume live updates"
+msgstr "Resume live updates"
+
+msgid "Pause live updates"
+msgstr "Pause live updates"
+
+msgid "Transfers"
+msgstr "Transfers"
 
 msgid "Lost and found"
 msgstr "Lost and found"
@@ -1118,6 +1163,33 @@ msgstr "Barcode"
 msgid "Compensated / Returned"
 msgstr "Compensated / Returned"
 
+msgid "Checkout commands"
+msgstr "Checkout commands"
+
+msgid "Manage event"
+msgstr "Manage event"
+
+msgid "View"
+msgstr "View"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "View items"
+msgstr "View items"
+
+msgid "View items (CSV)"
+msgstr "View items (CSV)"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Mobile"
+msgstr "Mobile"
+
+msgid "People"
+msgstr "People"
+
 msgid "Returnable Items"
 msgstr "Returnable Items"
 
@@ -1163,30 +1235,6 @@ msgid ""
 msgstr ""
 "You have %(item_cnt)s items. Creating this box would cause the items to "
 "exceed the maximum number of allowed items."
-
-msgid "Home"
-msgstr "Home"
-
-msgid "Mobile"
-msgstr "Mobile"
-
-msgid "Checkout commands"
-msgstr "Checkout commands"
-
-msgid "Manage event"
-msgstr "Manage event"
-
-msgid "View"
-msgstr "View"
-
-msgid "Download"
-msgstr "Download"
-
-msgid "View items"
-msgstr "View items"
-
-msgid "View items (CSV)"
-msgstr "View items (CSV)"
 
 msgid "Ranma ½ Vol."
 msgstr "Ranma ½ Vol."
