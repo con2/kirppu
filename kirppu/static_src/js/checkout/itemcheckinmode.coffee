@@ -47,7 +47,8 @@ class @ItemCheckInMode extends ItemCheckoutMode
           vendorInfoRow = $('<tr><td colspan="4">')
           $('td', vendorInfoRow).append(Template.vendor_info(vendor: vendor))
           @receipt.body.prepend(vendorInfoRow)
-          @_onAddItem(data, jqXHR.status)
+          # Repeat checkin now with correct vendor id.
+          @_checkinItem(data.code)
       ).fail(@onResultError)
     else
       @currentVendor = newVendor

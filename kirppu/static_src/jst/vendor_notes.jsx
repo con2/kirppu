@@ -35,7 +35,7 @@ export function insufficient_vendor_info(vendor, item) {
         <div className="alert alert-info">
             {gettext("Vendor might not be identifiable from information above.")}
         </div>,
-        <AddVendorNote/>,
+        <AddVendorNote withButton={false}/>,
     ]
 }
 
