@@ -149,7 +149,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
 
     # Move just returned item to "Last returned item" part from "remaining items" list.
     returnable_item = $('#' + item.code, @remainingItems.body)
-    if returnable_item.size() == 0
+    if returnable_item.length == 0
       # Item was not in "remaining" list, but it was still returned. (Transition from state AD.)
       console.warn("Item not found in list of remaining items: " + item.code)
     else
