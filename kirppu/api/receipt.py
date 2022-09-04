@@ -89,8 +89,16 @@ def list_accounts(request, event):
 
 def _with_note(receipt, receipt_note=None):
     r = receipt.as_transfer_dict()
+    if receipt_note is None:
+        note_instance = receipt.receiptnote_set.first()
+        if note_instance is not None:
+            note = note_instance.as_dict()
+        else:
+            note = "<missing>"
+    else:
+        note = receipt_note.as_dict()
     # XXX: Unusual attribute. Assuming there is exactly one note.
-    r["note"] = receipt_note.as_dict() if receipt_note is not None else receipt.receiptnote_set.first().as_dict()
+    r["note"] = note
     return r
 
 
@@ -99,7 +107,7 @@ def list_transfers(request, event):
     _check_access(request, event)
     transfers = (
         Receipt.objects
-        .filter(type=Receipt.TYPE_TRANSFER, counter__event=event)
+        .filter(type=Receipt.TYPE_TRANSFER, status=Receipt.FINISHED, counter__event=event)
         .order_by("start_time")
     )
     return [_with_note(t) for t in transfers]
@@ -161,6 +169,8 @@ def transfer_money(request, event, src_id, dst_id, amount, note, auth, commit=Fa
             Account.objects.filter(pk=dst.pk).update(balance=F("balance") + amount_d)
 
     except AjaxError as e:
+        receipt_note.save()
+
         receipt.status = Receipt.ABORTED
         receipt.end_time = timezone.now()
         receipt.save(update_fields=("status", "end_time"))
