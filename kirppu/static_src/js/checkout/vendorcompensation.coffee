@@ -172,7 +172,8 @@ class @VendorCompensation extends CheckoutMode
   onRetryFailed: =>
     nItems = @_loopResult.length
     if nItems == 0
-      console.error("What? Nothing to retry?")
+      console.warn("Nothing to retry? Finishing...")
+      @onCompensated()
       return
     @_createProgress(nItems)
 
@@ -188,8 +189,6 @@ class @VendorCompensation extends CheckoutMode
       @onCompensated()
 
   onCompensated: ->
-    @switcher.setPrintable()
-
     # Create list of succeeded i.e. compensated items.
     items = []
     for item in @compensableItems
@@ -200,12 +199,13 @@ class @VendorCompensation extends CheckoutMode
       adjust = @compensableExtras.reduce(((acc, item) -> acc + item.value), 0)
     else
       adjust = 0
-    @compensableItems = []
 
     sum = items.reduce(((acc, item) -> acc + item.price), 0) + adjust
 
     Api.item_compensate_end()
       .done((receiptCopy) =>
+        @compensableItems = []
+        @switcher.setPrintable()
         if receiptCopy.total != sum
           safeAlert("Totals do not match: server said #{displayPrice(receiptCopy.total)}, below is #{displayPrice(sum)}")
           @buttonForm.empty().append(@buttons(continue: true))
@@ -214,4 +214,5 @@ class @VendorCompensation extends CheckoutMode
       )
       .fail((jqXHR) =>
         safeAlert("Receipt ending failed! #{jqXHR.status}: #{jqXHR.responseText}")
+        @buttonForm.empty().append(@buttons(retry: true))
       )

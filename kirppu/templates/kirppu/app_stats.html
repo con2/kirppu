@@ -1,4 +1,4 @@
-{% extends "kirppu/common.html" %}{% load i18n static %}
+{% extends "kirppu/common.html" %}{% load i18n static kirppu_tags %}
 
 {% block title %}{% trans "Stats" %} – {{ block.super }}{% endblock %}
 
@@ -244,14 +244,15 @@
     </table>
 
     <h2>{% trans "Vendors:" %}</h2>
-    <style type="text/css">
+    <style>
     @media print {
         #grouping_container button.active::before {
             content: "\02022  "
         }
     }
     </style>
-    <p>{% trans "Values in parenthesis indicate part of the value that has been abandoned." %}</p>
+    <p>{% trans "Values in parenthesis indicate extra deleted items (+) and part of the value that has been abandoned (-)." %}</p>
+    <p>{% trans "e.g. <em>5 (+3)</em> means 3 deleted items on top of 5 registered items, <em>5 (-1)</em> means 1 abandoned item in the total of 5." %}</p>
     <div id="grouping_container">
     <div class="btn-toolbar" role="toolbar" aria-label="Table content settings">
         <div class="btn-group btn-group-sm" role="group" aria-label="Grouping" id="grouping_buttons">
@@ -282,26 +283,31 @@
         {{ vendor_item_data_order|safe }}
     </script>
     <script type="application/json" id="stat_count">[{% for row in vendor_item_data_counts %}
-        ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+        {{ row.row_obj|json }}{% if not forloop.last %},{% endif %}{% endfor %}
     ]</script>
     <script type="application/json" id="stat_euros">[{% for row in vendor_item_data_euros %}
-        ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+        {{ row.row_obj|json }}{% if not forloop.last %},{% endif %}{% endfor %}
     ]</script>
 
     <script type="application/javascript"><!--
         (function() {
             const CURRENCY = ["{{ CURRENCY.0 }}", "{{ CURRENCY.1 }}"];
-            const row_length = {{ vendor_item_data_row_size }} + 0;
+            const row_length = {{ vendor_item_data_row_size }};
 
             // Indices in stat_*; there is one leading item before row contents begin.
             const indices = JSON.parse($("#stat_order").get(0).text);
+            const index_advertised = indices.indexOf("advertised");
             const index_brought = indices.indexOf("brought");
             const index_staged = indices.indexOf("staged");
             const index_sold = indices.indexOf("sold");
-            const index_abandoned_brought = indices.indexOf("abandoned_brought");
-            const index_abandoned_staged = indices.indexOf("abandoned_staged");
-            const index_abandoned_sold = indices.indexOf("abandoned_sold");
+            const index_hidden_advertised = indices.indexOf("advertised_hidden");
+            const index_abandoned_brought = indices.indexOf("brought_abandoned");
+            const index_abandoned_staged = indices.indexOf("staged_abandoned");
+            const index_abandoned_sold = indices.indexOf("sold_abandoned");
+
+            const map_hidden = {};
             const map_abandoned = {};
+            map_hidden[index_advertised] = index_hidden_advertised;
             map_abandoned[index_brought] = index_abandoned_brought;
             map_abandoned[index_staged] = index_abandoned_staged;
             map_abandoned[index_sold] = index_abandoned_sold;
@@ -324,15 +330,32 @@
                 }
                 // 1 is name, not included in row_length.
                 for (let v = 1; v <= row_length; v++) {
+                    let ab = 0
+                    let dl = 0
                     if (v in map_abandoned) {
-                        const src_col = map_abandoned[v];
-                        if (row[src_col] > 0) {
-                            hRow.append($("<td>").html(formatter(row[v]) + " (-" + formatter(row[src_col]) + ")"));
-                            continue;
-                        }
+                        const extra_col = map_abandoned[v];
+                        ab = row[extra_col]
+                    }
+                    if (v in map_hidden) {
+                        const extra_col = map_hidden[v];
+                        dl = row[extra_col]
                     }
 
-                    hRow.append($("<td>").html(formatter(row[v])));
+                    if (ab || dl) {
+                        let extra = ""
+                        if (ab) {
+                            extra += "-" + formatter(ab)
+                        }
+                        if (dl) {
+                            if (ab) {
+                                extra += " "
+                            }
+                            extra += "+" + formatter(dl)
+                        }
+                        hRow.append($("<td>").html(formatter(row[v]) + " (" + extra + ")"));
+                    } else {
+                        hRow.append($("<td>").html(formatter(row[v])));
+                    }
                 }
                 return hRow;
             };

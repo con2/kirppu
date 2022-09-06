@@ -482,6 +482,7 @@ class ClerkAdmin(admin.ModelAdmin):
 @admin.register(Counter)
 class CounterAdmin(admin.ModelAdmin):
     list_display = ("name", "identifier", "event", "is_in_use", "is_locked")
+    list_filter = ("event",)
     actions = ("lock_counter", "reset_use")
 
     @with_description(gettext("Lock Counter"))
@@ -725,3 +726,4 @@ class AccessSignupAdmin(admin.ModelAdmin):
         "user",
         "update_time",
     )
+    list_filter = ("event",)

@@ -800,47 +800,63 @@ def box_item_compensate(request, event, pk, box_code):
     return item_dict
 
 
-@ajax_func('^item/compensate/end', atomic=True)
+@ajax_func('^item/compensate/end')
 def item_compensate_end(request, event):
-    if "compensation" not in request.session:
-        raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
+    if "compensation" in request.session:
+        receipt_pk, vendor_id = request.session["compensation"]
+    else:
+        if not request.user.is_superuser or not ("receipt" in request.POST and "vendor" in request.POST):
+            raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
+        receipt_pk = int(request.POST["receipt"])
+        vendor_id = int(request.POST["vendor"])
 
-    receipt_pk, vendor_id = request.session["compensation"]
-    receipt = Receipt.objects.select_for_update().get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
-
-    provision = Provision(vendor_id=vendor_id, provision_function=event.provision_function, receipt=receipt)
-    if provision.has_provision:
-        ReceiptExtraRow.objects.create(
-            type=ReceiptExtraRow.TYPE_PROVISION,
-            value=provision.provision,
-            receipt=receipt,
-        )
-
-        if not provision.provision_fix.is_zero():
-            ReceiptExtraRow.objects.create(
-                type=ReceiptExtraRow.TYPE_PROVISION_FIX,
-                value=provision.provision_fix,
-                receipt=receipt,
-            )
-
-    receipt.status = Receipt.FINISHED
-    receipt.end_time = now()
-    receipt.calculate_total()
-
-    account_id = receipt.counter.default_store_location_id
-    total = receipt.total
-    receipt.src_account_id = account_id
-
-    receipt.save(update_fields=("status", "end_time", "total", "src_account"))
-
+    state = "init"
     try:
-        Account.objects.filter(pk=account_id).update(balance=F("balance") - total)
-    except IntegrityError:
-        account_balance = Account.objects.get(pk=account_id).balance
-        raise AjaxError(RET_CONFLICT,
-                        _("Not enough money in account ({1}) to give out ({2})").format(account_balance, total))
+        with transaction.atomic():
+            receipt = Receipt.objects.select_for_update().get(
+                pk=receipt_pk, type=Receipt.TYPE_COMPENSATION, status=Receipt.PENDING)
 
-    del request.session["compensation"]
+            provision = Provision(vendor_id=vendor_id, provision_function=event.provision_function, receipt=receipt)
+            if provision.has_provision:
+                state = "provision"
+                ReceiptExtraRow.objects.create(
+                    type=ReceiptExtraRow.TYPE_PROVISION,
+                    value=provision.provision,
+                    receipt=receipt,
+                )
+
+                if not provision.provision_fix.is_zero():
+                    ReceiptExtraRow.objects.create(
+                        type=ReceiptExtraRow.TYPE_PROVISION_FIX,
+                        value=provision.provision_fix,
+                        receipt=receipt,
+                    )
+
+            state = "receipt finish"
+            receipt.status = Receipt.FINISHED
+            receipt.end_time = now()
+            receipt.calculate_total()
+
+            account_id = receipt.counter.default_store_location_id
+            total = receipt.total
+            receipt.src_account_id = account_id
+
+            state = "receipt save"
+            receipt.save(update_fields=("status", "end_time", "total", "src_account"))
+
+            state = "account"
+            Account.objects.filter(pk=account_id).update(balance=F("balance") - total)
+
+    except IntegrityError:
+        if state == "account":
+            account_balance = Account.objects.get(pk=account_id).balance
+            raise AjaxError(RET_CONFLICT,
+                            _("Not enough money in account ({0}) to give out ({1})").format(account_balance, total))
+        else:
+            raise
+
+    if "compensation" in request.session:
+        del request.session["compensation"]
 
     return receipt.as_dict()
 

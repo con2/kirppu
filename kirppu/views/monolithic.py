@@ -794,7 +794,6 @@ def statistical_stats_view(request, event: Event):
     brought = _items.filter(state__in=brought_states).count()
     sold = _items.filter(state__in=(Item.STAGED, Item.SOLD, Item.COMPENSATED)).count()
     printed_deleted = _items.filter(hidden=True, printed=True).count()
-    deleted_brought = _items.filter(hidden=True, state__in=brought_states).count()
     printed_not_brought = _items.filter(printed=True, state=Item.ADVERTISED).count()
 
     items_in_box = _items.filter(box__isnull=False).count()
@@ -809,7 +808,6 @@ def statistical_stats_view(request, event: Event):
         "deletedOfRegistered": (deleted * 100.0 / registered) if registered > 0 else 0,
         "brought": brought,
         "broughtOfRegistered": (brought * 100.0 / registered) if registered > 0 else 0,
-        "broughtDeleted": deleted_brought,
         "printedDeleted": printed_deleted,
         "printedNotBrought": printed_not_brought,
         "sold": sold,

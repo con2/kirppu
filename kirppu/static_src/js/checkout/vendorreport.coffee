@@ -1,5 +1,5 @@
 @ItemState = (Object.freeze ? (x) -> x)(
-  advertized: "AD"
+  advertised: "AD"
   brought: "BR"
   staged: "ST"
   sold: "SO"
@@ -45,12 +45,12 @@ tables =
     states: [ItemState.missing, ItemState.returned, ItemState.compensated, ItemState.staged]
     title: -> gettext('Other Items')
   registered: Table.create
-    states: [ItemState.advertized]
+    states: [ItemState.advertised]
     title: -> gettext('Not brought to event')
     hidden: true
     filter: (i) -> @states[i.state]? and not i.hidden
   deleted: Table.create
-    states: [ItemState.advertized]
+    states: [ItemState.advertised]
     title: -> gettext('Deleted')
     hidden: true
     filter: (i) -> @states[i.state]? and i.hidden

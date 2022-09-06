@@ -194,6 +194,8 @@ To compile frontend sources for use in browser, there is two choices, which can 
     Copyright (c) 2018 Aarni Koskela, Jyrki Launonen
     Copyright (c) 2019 Jyrki Launonen
     Copyright (c) 2020 Aarni Koskela, Jyrki Launonen
+    Copyright (c) 2021 Jyrki Launonen
+    Copyright (c) 2022 Jyrki Launonen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

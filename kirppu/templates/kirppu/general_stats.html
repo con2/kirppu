@@ -122,10 +122,6 @@
                     <div class="col-xs-9">{% blocktrans with brought=general.brought broughtOfRegistered=general.broughtOfRegistered|floatformat %}{{ brought }} ({{ broughtOfRegistered }}% of registered){% endblocktrans %}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-3 info-key">{% trans "Brought while deleted" %}</div>
-                    <div class="col-xs-9">{{ general.broughtDeleted }}</div>
-                </div>
-                <div class="row">
                     <div class="col-xs-3 info-key">{% trans "Sold" %}</div>
                     <div class="col-xs-9">{% blocktrans with sold=general.sold soldOfBrought=general.soldOfBrought|floatformat %}{{ sold }} ({{ soldOfBrought }}% of brought){% endblocktrans %}</div>
                 </div>
