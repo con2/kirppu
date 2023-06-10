@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:18
 WORKDIR /usr/src/app/kirppu
 COPY kirppu/package.json kirppu/package-lock.json .
 RUN npm ci
@@ -6,7 +6,7 @@ COPY kirppu .
 RUN npm run gulp
 
 
-FROM python:3.9
+FROM python:3.11
 WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get -y install gettext && rm -rf /var/lib/apt/lists
