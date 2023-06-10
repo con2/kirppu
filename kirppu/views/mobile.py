@@ -14,7 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from ipware.ip import get_client_ip
-from ratelimit.utils import is_ratelimited
+from django_ratelimit.core import is_ratelimited
 
 from ..models import Box, Event, Item, Receipt, ReceiptExtraRow, TemporaryAccessPermit, TemporaryAccessPermitLog, Vendor
 from ..provision import Provision
