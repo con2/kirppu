@@ -17,6 +17,8 @@ __all__ = [
 ]
 
 
+ColFn = typing.Callable[[Item], typing.Any]
+
 COLUMNS = (
     (_("Vendor id"), "vendor_id"),
     (_("Barcode"), "code"),
@@ -43,10 +45,13 @@ def dump_items_view(request, event_slug):
     )
 
 
-def _process_column(item, column, as_text):
+def _process_column(item, column: typing.Tuple[str, typing.Union[str, ColFn]], as_text):
     ref = column[1]
     if isinstance(ref, str):
-        return getattr(item, ref)
+        value = getattr(item, ref)
+        if as_text:
+            return value if value is not None else ""
+        return value
     elif callable(ref):
         value = ref(item)
         if isinstance(value, bool):
