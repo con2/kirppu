@@ -1,8 +1,8 @@
 FROM node:18
 WORKDIR /usr/src/app/kirppu
-COPY kirppu/package.json kirppu/package-lock.json .
+COPY kirppu/package.json kirppu/package-lock.json ./
 RUN npm ci
-COPY kirppu .
+COPY kirppu ./
 RUN npm run gulp
 
 
@@ -14,7 +14,7 @@ RUN apt-get update && apt-get -y install gettext && rm -rf /var/lib/apt/lists
 COPY requirements.txt requirements-oauth.txt requirements-production.txt /usr/src/app/
 RUN pip install --no-cache-dir -r requirements.txt -r requirements-oauth.txt -r requirements-production.txt
 
-COPY . /usr/src/app
+COPY . /usr/src/app/
 COPY --from=0 /usr/src/app/kirppu/static /usr/src/app/kirppu/static
 
 RUN groupadd -r kirppu && useradd -r -g kirppu kirppu && \
