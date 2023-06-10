@@ -298,8 +298,10 @@ class ItemRemoveForm(forms.Form):
             raise forms.ValidationError(u"Receipt {pk} not found.".format(pk=data))
         return data
 
-    def clean_item(self):
+    def clean_code(self):
         data = self.cleaned_data["code"]
+        if not Item.is_item_barcode(data):
+            raise forms.ValidationError("Value is not an item barcode")
         if not Item.objects.filter(code=data, vendor__event=self._event).exists():
             raise forms.ValidationError(u"Item with code {code} not found.".format(code=data))
         return data

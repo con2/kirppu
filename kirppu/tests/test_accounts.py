@@ -2,7 +2,8 @@
 
 from decimal import Decimal
 
-from django.test import TestCase
+from django.conf import settings
+from django.test import TestCase, override_settings
 
 from . import ResultMixin
 from .api_access import Api
@@ -10,8 +11,11 @@ from ..models import Account
 from .factories import CounterFactory, ClerkFactory, EventFactory, EventPermissionFactory
 
 
+@override_settings(LANGUAGES=(("en", "English"),))
 class TestAccounts(TestCase, ResultMixin):
     def setUp(self) -> None:
+        self.client.cookies.load({settings.LANGUAGE_COOKIE_NAME: 'en'})
+
         self.commit = True  # Overridden in Pretend subclass.
         self.event = EventFactory()
         self.clerk = ClerkFactory(event=self.event)

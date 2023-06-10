@@ -44,6 +44,7 @@ class @ItemCheckInMode extends ItemCheckoutMode
         else
           # All ok. Add new vendor info and item checkin info.
           @currentVendor = newVendor
+          @itemIndex = 1
           vendorInfoRow = $('<tr><td colspan="4">')
           $('td', vendorInfoRow).append(Template.vendor_info(vendor: vendor))
           @receipt.body.prepend(vendorInfoRow)

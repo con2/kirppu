@@ -322,7 +322,7 @@ class @CounterMode extends ItemCheckoutMode
       safeAlert(gettext("Not enough given money!"))
       return
 
-    if input > @cfg.settings.purchaseMax * 100
+    if @cfg.settings.purchaseMax > 0 and input > @cfg.settings.purchaseMax * 100
       safeAlert(gettext("Not accepting THAT much money!"))
       return
 

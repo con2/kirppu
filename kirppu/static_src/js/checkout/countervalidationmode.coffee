@@ -27,7 +27,7 @@ class @CounterValidationMode extends CheckoutMode
 
     # If we have values for Counter in cookie storage, use them and
     # immediately switch to clerk login.
-    code = $.cookie(@constructor.COOKIE)
+    code = Cookies.get(@constructor.COOKIE)
     if code?
       data = JSON.parse(b64_to_utf8(code))
       @reValidate(data["counter"])
@@ -66,7 +66,7 @@ class @CounterValidationMode extends CheckoutMode
     console.log("Validated as #{name}.")
 
     # Store values for next time so the mode can be skipped.
-    $.cookie(@constructor.COOKIE, utf8_to_b64(JSON.stringify(
+    Cookies.set(@constructor.COOKIE, utf8_to_b64(JSON.stringify(
       counter: code
     )))
     @switcher.switchTo(ClerkLoginMode)
@@ -80,4 +80,4 @@ class @CounterValidationMode extends CheckoutMode
     return true
 
   @clearStore: ->
-    $.removeCookie(@COOKIE)
+    Cookies.remove(@COOKIE)

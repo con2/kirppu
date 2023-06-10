@@ -1,6 +1,6 @@
 # Kirppu – Second-hand sales POS and vendor signup for conventions
 
-[![Build Status](https://travis-ci.org/jlaunonen/kirppu.svg?branch=master)](https://travis-ci.org/jlaunonen/kirppu)
+[![Test](https://github.com/jlaunonen/kirppu/actions/workflows/test.yml/badge.svg)](https://github.com/jlaunonen/kirppu/actions/workflows/test.yml)
 
 ## Getting development started using Docker
 

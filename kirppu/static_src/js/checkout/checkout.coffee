@@ -41,7 +41,7 @@ class Config
     quickPayExtra: ""
     counterCode: null
     clerkName: null
-    purchaseMax: 400
+    purchaseMax: 0
 
   # Check existence of uiId values and bind their references to uiRef.
   # @return True if errors. False if all ok.

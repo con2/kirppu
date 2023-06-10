@@ -268,7 +268,7 @@
     <table id="vendor_statistics" class="table table-striped sum_table_right">
     <thead>
         <tr>
-            <th></th>
+            <th id="table_row_count"></th>
             {% with vendor_item_data_counts|first as row %}
                 {% for col in row.property_names %}
                     <th>{{ col }}</th>
@@ -367,6 +367,7 @@
             const btn_by_vendor = $("#group_by_vendor");
             const btn_filter_brought = $("#filter_has_brought");
             const btn_filter_sold = $("#filter_has_sold");
+            const th_row_count = $("#table_row_count");
 
             // Grouping (with actual output)
             const show_by_value = function(input) {
@@ -436,6 +437,8 @@
             const refresh = function() {
                 stat_table.empty();
                 const filtered = current_filter([stat_count, stat_euros]);
+                const len = filtered[0].length;
+                th_row_count.text(dPrintF(ngettext("%d vendor", "%d vendors", len), {d: len}));
                 current_group(filtered);
             };
 

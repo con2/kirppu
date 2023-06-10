@@ -28,7 +28,7 @@ def _get_ui_text_query(context, id_):
 
 
 @register.simple_tag(takes_context=True)
-def load_text(context, id_):
+def load_text(context: template.Context, id_: str) -> str:
     try:
         md = _get_ui_text_query(context, id_).get(identifier=id_).text
         return mark_safe(mark_down(md, context))
@@ -46,15 +46,13 @@ def load_text(context, id_):
 
 
 @register.simple_tag(takes_context=True)
-def load_texts(context, id_, wrap=None):
+def load_texts(context: template.Context, id_: str, wrap: typing.Optional[str] = None) -> str:
     """
     Output multiple UIText values. If id is not found, only empty string is returned.
 
+    :param context: (Context supplied by Django)
     :param id_: Start of id string to find.
-    :type id_: str | unicode
     :param wrap: Optional wrapping tag content (such as p). If whitespace, that is used instead.
-    :type wrap: str | unicode | None
-    :return: str | unicode
     """
     texts = (
         _get_ui_text_query(context, id_)
@@ -63,16 +61,16 @@ def load_texts(context, id_, wrap=None):
         .values_list("text", flat=True)
     )
     if not texts:
-        return u""
+        return ""
 
-    begin = u""
-    end = u""
-    joined = u""
+    begin = ""
+    end = ""
+    joined = ""
     if wrap is not None:
         trimmed = wrap.strip()
         if len(trimmed) > 0:
-            begin = format_html(u'<{0}>', trimmed)
-            end = format_html(u'</{0}>', trimmed.split(" ")[0])
+            begin = format_html('<{0}>', trimmed)
+            end = format_html('</{0}>', trimmed.split(" ")[0])
             joined = begin + end
         else:
             joined = wrap
@@ -106,7 +104,24 @@ def barcode_dataurl(code, ext, expect_width=143):
 
 
 @register.simple_tag
-def barcode_css(low=4, high=6, target=None, container=None, compress=False):
+def barcode_css(
+        low: int = 4, high: int = 6,
+        target: typing.Optional[str] = None, container: typing.Optional[str] = None,
+        compress: bool = False) -> str:
+    """
+    Generate CSS rules for various sizes of barcodes when using Code128.
+    Expected DOM hierarchy:
+
+       div class=container_{0}
+          img class=target_{0}
+
+    :param low: Minimum length of the code.
+    :param high: Maximum length of the code.
+    :param target: CSS selector for the img, having `{0}` in the img class.
+    :param container: CSS selector for container of the img, having `{0}` in the container class.
+    :param compress: Remove spaces from the result?
+    :return: CSS string.
+    """
     target = target or ".barcode_img.barcode_img{0}"
     container = container or ".barcode_container.barcode_container{0}"
 
@@ -115,35 +130,34 @@ def barcode_css(low=4, high=6, target=None, container=None, compress=False):
             width: {px}px;
             background-color: white;
         }}
-    """
+"""
 
-    output = []
-    for code_length in range(low, high + 1):
-        example_code = pubcode.Code128('A' * code_length, charset='B')
-        px = example_code.width(add_quiet_zone=True)
+    def gen():
+        for code_length in range(low, high + 1):
+            example_code = pubcode.Code128('A' * code_length, charset='B')
+            px = example_code.width(add_quiet_zone=True)
 
-        for multiplier in range(1, 3):
-            suffix = "_" + str(code_length) + "_" + str(multiplier)
-            mpx = px * multiplier
-            rule = css.format(
-                target=target.format(suffix),
-                container=container.format(suffix),
-                px=mpx,
-            )
-            if compress:
-                rule = re.sub(r'[\s]+', "", rule)
-            output.append(rule)
-    return "".join(output)
+            for multiplier in range(1, 3):
+                suffix = "_" + str(code_length) + "_" + str(multiplier)
+                mpx = px * multiplier
+                rule = css.format(
+                    target=target.format(suffix),
+                    container=container.format(suffix),
+                    px=mpx,
+                )
+                if compress:
+                    rule = re.sub(r'\s+', "", rule)
+                yield rule
+    return "".join(gen())
 
 
 @register.filter
-def user_adapter(user, getter):
+def user_adapter(user, getter: str):
     """
     Filter for using UserAdapter for user objects.
 
     :param user: User to filter, class of `settings.USER_MODEL`.
     :param getter: Getter function to apply to the user via adapter.
-    :type getter: str
     """
     if not isinstance(getter, str) or getter.startswith("_"):
         raise AttributeError("Invalid adapter attribute.")
