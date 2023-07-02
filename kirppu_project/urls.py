@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 from django.utils import timezone
 from django.views.i18n import JavaScriptCatalog
@@ -32,5 +33,9 @@ urlpatterns = [
         name="javascript-catalog"),
     path('m/<slug:event_slug>/', MobileRedirect.as_view()),
     path('m/', front_for_mobile_view),
-    path('', include('kompassi_oauth2.urls')),
 ]
+
+if settings.KIRPPU_USE_SSO:
+    urlpatterns.append(
+        path('', include('kompassi_oauth2.urls'))
+    )

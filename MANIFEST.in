@@ -1,0 +1,4 @@
+exclude kirppu_project/local_settings.py
+prune kirppu/static_src
+prune kirppu/node_modules
+prune private

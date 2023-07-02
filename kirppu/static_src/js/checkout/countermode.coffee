@@ -383,9 +383,12 @@ class @CounterMode extends ItemCheckoutMode
     form = Template.receipt_suspend_form()
     dialog.body.append(form)
 
-    dialog.addPositive().text(gettext("Suspend")).click(() =>
+    success = dialog.addButton("success")
+    success.text(gettext("Suspend")).click(() =>
+      success.attr("disabled", "disabled")
       Api.receipt_suspend(note: $("#suspend_note", dialog.body).val()).then(
         (receipt) =>
+          dialog.dismiss()
           @_receipt.end(receipt)
 
           @addRow(null, gettext("Suspended"), null).addClass("warning")
@@ -393,7 +396,9 @@ class @CounterMode extends ItemCheckoutMode
           @receiptSum.setEnabled(false)
           @notifySuccess()
 
-        () => safeAlert("Error suspending receipt!")
+        () =>
+          success.removeAttr("disabled")
+          safeAlert("Error suspending receipt!")
       )
     )
     dialog.addNegative().text(gettext("Cancel"))

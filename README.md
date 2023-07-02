@@ -4,9 +4,9 @@
 
 ## Getting development started using Docker
 
-Install Docker and `docker-compose` and run
+Install Docker and `docker-compose` plugin and run
 
-    docker-compose up
+    docker compose up
 
 ## Getting development started without Docker
 
@@ -16,20 +16,14 @@ It consists of a high level guide outlining the steps, example guide that has mo
 
 ### High level guide
 
-1. Install Python >= 3.7.
-    1. Install pip.
-       Pip is used for downloading and installing dependencies. It is included
-       by default in Python since 3.4.
-    2. (recommended) Install virtualenv.
-       Virtualenv is used to install Python and dependencies directly to the
-       project folder, so that any updates to the rest of the system don't
-       influence the project.
-4. Clone Kirppu.
-5. Install dependencies with pip and dependencies.txt.
-6. Install js dependencies with npm.
-7. Setup database with dev data.
-8. Run gulp to build frontend code.
-9. Run django with manage.py.
+1. Install Python >= 3.9.
+2. Clone Kirppu.
+3. Create virtualenv.
+4. Install dependencies with pip and requirements-dev.txt
+5. Install js dependencies with npm (in `kirppu` sub-folder).
+6. Setup database with dev data.
+7. Run gulp to build frontend code.
+8. Run django with manage.py.
 
 
 ### Example guide
@@ -76,7 +70,7 @@ sudo aptitude install python-dev zlib1g-dev nodejs
 sudo yum install python-devel libzip-devel nodejs
 
 # Install required python packages.
-~/kirppu$ pip install -r requirements.txt
+~/kirppu$ pip install -r requirements-dev.txt
 Successfully installed django-1.6.10 django-pipeline-1.3.27 pillow-2.4.0 pyBarcode-0.8b1
 
 # Install required js packages (defined by package.json).
@@ -85,7 +79,7 @@ Successfully installed django-1.6.10 django-pipeline-1.3.27 pillow-2.4.0 pyBarco
 # (this may take a while, and will output huge tree after it completes.)
 
 # Build frontend.
-~/kirppu/kirppu$ npm run gulp
+~/kirppu/kirppu$ npm run gulp -- --mode debug
 ```
 
 #### Add some example Data for Kirppu.
@@ -139,6 +133,15 @@ docker-compose -f docker-compose.test.yml up --exit-code-from test
           Action: "Generate missing Clerk access codes"
         - Input your access code.
           Alternatively, add `KIRPPU_AUTO_CLERK = "*"` to `kirppu_project/local_settings.py` or env file.
+
+
+### Updating dependencies
+
+Within your virtualenv where you have `pip-tools` (e.g. from `requirements-dev.txt`) installed,
+
+1. (optional) Alter `pyproject.toml`.
+2. Run `make update-constraints` to upgrade package version `constraints.txt` for total dependency tree.
+3. Run `make requirement-sets` to upgrade plain trees of different sets (dev / production).
 
 
 ## Frontend development notes
@@ -196,6 +199,7 @@ To compile frontend sources for use in browser, there is two choices, which can 
     Copyright (c) 2020 Aarni Koskela, Jyrki Launonen
     Copyright (c) 2021 Jyrki Launonen
     Copyright (c) 2022 Jyrki Launonen
+    Copyright (c) 2023 Jyrki Launonen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

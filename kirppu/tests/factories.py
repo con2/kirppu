@@ -43,6 +43,8 @@ class UserFactory(Factory):
     class Meta:
         model = User
 
+    DEFAULT_PASSWORD = "AjU2k3Pzpdpz5yf5sjZn9p56"
+
     username = factory.Faker("user_name")
     phone = factory.Faker("phone_number")
     first_name = factory.Faker("first_name")
@@ -51,15 +53,12 @@ class UserFactory(Factory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         manager = cls._get_manager(model_class)
+        kwargs.pop("DEFAULT_PASSWORD")
         obj = model_class(*args, **kwargs)
         if not obj.password:
             obj.set_password(cls.DEFAULT_PASSWORD)
         obj.save(force_insert=True, using=manager.db)
         return obj
-
-
-# Outside the class to avoid metaclass magic from sending this to _create.
-UserFactory.DEFAULT_PASSWORD = "AjU2k3Pzpdpz5yf5sjZn9p56"
 
 
 class EventFactory(Factory):

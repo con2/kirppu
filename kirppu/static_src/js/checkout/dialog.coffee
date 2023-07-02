@@ -73,6 +73,9 @@ class @Dialog
     @buttons.append(@_buttonList)
     @container.modal(modalArgs)
 
+  dismiss: ->
+    @container.modal("hide")
+
   _button: (clazz="default") ->
     $("""<button type="button" class="btn btn-#{ clazz }" data-dismiss="modal">""")
 

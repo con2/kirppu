@@ -11,8 +11,8 @@ WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get -y install gettext && rm -rf /var/lib/apt/lists
 
-COPY requirements.txt requirements-oauth.txt requirements-production.txt /usr/src/app/
-RUN pip install --no-cache-dir -r requirements.txt -r requirements-oauth.txt -r requirements-production.txt
+COPY constraints.txt requirements-production.txt /usr/src/app/
+RUN pip install --no-cache-dir -r requirements-production.txt
 
 COPY . /usr/src/app/
 COPY --from=0 /usr/src/app/kirppu/static /usr/src/app/kirppu/static

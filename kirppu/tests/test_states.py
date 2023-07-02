@@ -8,9 +8,7 @@ import faker
 from .factories import *
 from .api_access import Api
 from . import ResultMixin
-from ..models import Item, Receipt, ReceiptItem
-
-__author__ = 'codez'
+from ..models import Clerk, Item, Receipt, ReceiptItem
 
 
 class PublicTest(TestCase, ResultMixin):
@@ -74,7 +72,7 @@ class PublicTest(TestCase, ResultMixin):
             count=1,
             bundle_size=2,
         )
-        # Returns actually an html-page.. Test within context.
+        # Returns actually a html-page.. Test within context.
         result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/box/".format(self.event.slug), data=data))
         self.assertEqual(data["description"], result.context["description"])
 
@@ -83,7 +81,7 @@ class StatesTest(TestCase, ResultMixin):
     def setUp(self):
         self.event = EventFactory()
         self.vendor = VendorFactory(event=self.event)
-        self.items = ItemFactory.create_batch(10, vendor=self.vendor)
+        self.items: list[Item] = ItemFactory.create_batch(10, vendor=self.vendor)
 
         self.counter = CounterFactory(event=self.event)
         self.clerk = ClerkFactory(event=self.event)
@@ -198,3 +196,32 @@ class StatesTest(TestCase, ResultMixin):
         self.assertSuccess(self.api.box_item_release(box_number=1, box_item_count=2))
         check_count(8)
         self.assertEqual(Item.BROUGHT, Item.objects.get(pk=representative_item_id).state)
+
+    def test_suspend(self):
+        other: Clerk = ClerkFactory(event=self.event)
+        Item.objects.all().update(state=Item.BROUGHT)
+
+        receipt = self.assertSuccess(self.api.receipt_start()).json()
+
+        self.assertSuccess(self.api.item_reserve(code=self.items[0].code))
+        self.assertSuccess(self.api.receipt_suspend(note=""))
+
+        self.assertEqual(Item.STAGED, Item.objects.get(pk=self.items[0].pk).state)
+        self.assertEqual(Receipt.SUSPENDED, Receipt.objects.get(pk=receipt["id"]).status)
+
+        self.assertSuccess(self.api.clerk_logout())
+
+        self.assertSuccess(self.api.clerk_login(code=other.get_code(), counter=self.counter.private_key))
+        self.assertSuccess(self.api.clerk_logout())
+
+        self.assertSuccess(self.api.clerk_login(code=self.clerk.get_code(), counter=self.counter.private_key))
+
+        sus_item_w_receipt = self.assertResult(
+            self.api.item_find(code=self.items[0].code, available=True),
+            expect=423,
+        ).json()
+        sus_receipt = sus_item_w_receipt["receipt"]
+        res_receipt = self.assertSuccess(self.api.receipt_continue(code=self.items[0].code)).json()
+
+        self.assertEqual(sus_receipt["id"], res_receipt["id"])
+

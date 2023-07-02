@@ -90,7 +90,7 @@ def _make_alertbox(block, m, state, string: str):
 
 class CustomTagRenderer(mistune.HTMLRenderer):
     def __init__(self, context: typing.Optional[typing.Union[RequestContext, Context]]):
-        super().__init__()
+        super().__init__(escape=False)
         self._context = context
 
     @staticmethod

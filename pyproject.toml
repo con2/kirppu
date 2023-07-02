@@ -1,0 +1,78 @@
+[project]
+name = "kirppu"
+description = "Second-hand sales POS and vendor signup for conventions"
+version = "0"
+requires-python = ">=3.10"
+
+dependencies = [
+    "django-environ~=0.10.0",
+    "django-ipware~=3.0.0",
+    "django-ratelimit~=4.0.0",
+    "django~=3.2.0",
+    "pillow~=9.0",
+    "pubcode~=1.1.0",
+    "pytz~=2023.0",
+    "mistune~=2.0.0",
+    "whitenoise~=6.5.0",
+]
+
+
+[project.optional-dependencies]
+oauth = [
+    "requests~=2.30",
+    "requests-oauthlib~=1.3.0",
+    "oauthlib~=3.2.0",
+]
+production = [
+    "gunicorn~=20.1.0",
+    "psycopg2~=2.9.0",
+]
+dev = [
+    "factory-boy~=3.2.0",
+    "Faker~=18.0",
+    "pytest~=7.3.0",
+    "pytest-django~=4.5.0",
+    "pytest-env~=0.8.0",
+    "pytest-cov~=4.0",
+    "pip-tools~=6.13.0",
+]
+
+
+[tool.isort]
+profile = "black"
+atomic = true
+indent = 4
+line_length = 120
+no_sections = false
+skip_glob = [
+    "*/migrations/*",
+    "/node_modules*/*",
+    "/private/*",
+    "/KirppuVenv*/*",
+    "/venv*/*",
+]
+wrap_length = 120
+
+
+[tool.pytest.ini_options]
+addopts = "--tb=short"
+norecursedirs = "*.egg .* .git build dist node_modules* venv KirppuVenv* {arch} private kompassi*"
+DJANGO_SETTINGS_MODULE = "kirppu_project.settings"
+
+
+[build-system]
+requires = [
+    "setuptools>=61.0.0",
+]
+build-backend = "setuptools.build_meta"
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "kirppu.*",
+    "kirppu_project",
+    "kirppuauth.*",
+    "kompassi_crowd",
+    "kompassi_oauth2",
+]

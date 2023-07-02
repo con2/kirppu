@@ -37,7 +37,14 @@ apistub:  ## Create/update ajax_api stub file helping navigation from frontend c
 test:     ## Run tests
 	DEBUG=1 ${PFX}py.test -vvv
 
+update-constraints:  ## Update constraints.txt to match pyproject.toml
+	pip-compile --all-extras --output-file=constraints.txt --strip-extras --upgrade
+
+requirement-sets:  ## Generate requirements-* files.
+	scripts/generate-dep-set.py --extra dev -o "requirements-dev.txt"
+	scripts/generate-dep-set.py --extra oauth --extra production -o "requirements-production.txt"
+
 help:     ## This help.
 	@grep -F -h "#""#" $(MAKEFILE_LIST) | sed -e "s/:\\s*#""#/\n\t/" -e "s/\\s*#""#/\t/"
 
-.PHONY: apistub c cloc compile default help messages static test
+.PHONY: apistub c cloc compile default help messages requirement-sets static test update-constraints

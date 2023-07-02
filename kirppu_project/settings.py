@@ -156,11 +156,6 @@ MIDDLEWARE = [
 ]
 
 
-AUTHENTICATION_BACKENDS = (
-    'kompassi_oauth2.backends.KompassiOAuth2AuthenticationBackend',
-    'django.contrib.auth.backends.ModelBackend',
-)
-
 ROOT_URLCONF = 'kirppu_project.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
@@ -364,6 +359,11 @@ KIRPPU_COUNTER_LIST = env.bool("KIRPPU_COUNTER_LIST", default=False)
 
 CSRF_FAILURE_VIEW = "kirppu.views.kirppu_csrf_failure"
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+if KIRPPU_USE_SSO:
+    AUTHENTICATION_BACKENDS.insert(0, 'kompassi_oauth2.backends.KompassiOAuth2AuthenticationBackend')
 
 # Load local settings that are not stored in repository. This must be last at end of settings.
 try:

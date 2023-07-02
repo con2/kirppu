@@ -67,7 +67,7 @@ from .ajax_util import (
 
 # Must be imported, for part to be included at all in the API.
 # noinspection PyUnresolvedReferences
-from . import api
+from . import api  # isort: skip
 
 
 ajax_func = ajax_util.ajax_func_factory("checkout")
@@ -248,7 +248,7 @@ def counter_list(request, event, code):
 
 
 @ajax_func('^item/find$', method='GET')
-def item_find(request, event, code):
+def item_find(request, event, code, available=None):
     item = _get_item_or_404(code, event=event)
     value = item.as_dict()
     if "available" in request.GET:

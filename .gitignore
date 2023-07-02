@@ -1,6 +1,9 @@
 *.pyc
 *.mo
+/build/
+/dist/
 /static/
+/kirppu.egg-info/
 kirppu/local_settings.py
 kirppu/template-strings.js
 kirppu/tests/api_access.pyi

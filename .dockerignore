@@ -5,6 +5,7 @@ kirppu/local_settings.py
 kirppu_project/local_settings.py
 */node_modules*/
 /KirppuVenv*/
+/kirppu.egg-info/
 /venv*/
 kirppu/static/kirppu/*
 kirppu/static_src/js/api_stub.js
@@ -17,3 +18,5 @@ kirppu/static_src/js/api_stub.js
 /.idea/
 /.mypy_cache/
 /.pytest_cache/
+/build
+/dist
