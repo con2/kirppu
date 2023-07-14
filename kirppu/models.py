@@ -1231,7 +1231,8 @@ class Counter(models.Model):
 
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude=exclude)
-        if self.default_store_location.event != self.event:
+        if (exclude is None or "default_store_location" not in exclude) \
+                and self.default_store_location.event != self.event:
             msg = _("Counter and default_store_location must be in same Event.")
             if exclude and "default_store_location" in exclude:
                 raise ValidationError(msg)
@@ -1392,7 +1393,7 @@ class Receipt(models.Model):
         end_time=lambda self: format_datetime(self.end_time) if self.end_time is not None else None,
         clerk=lambda self: self.clerk.as_dict(),
         counter=lambda self: self.counter.name,
-        notes=lambda self: [note.as_dict() for note in self.receiptnote_set.order_by("timestamp")],
+        notes=lambda self: [note.as_dict() for note in self.receiptnote_set.order_by("timestamp")] if self.pk else [],
         type_display=lambda self: self.get_type_display(),
     )
 

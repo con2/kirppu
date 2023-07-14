@@ -80,7 +80,8 @@ class PersonInfo:
 
 
 def make_signup_data(signup: AccessSignup):
-    targets = [int(t) for t in signup.target_set.split(",")]
+    target_set = signup.target_set
+    targets = [int(t) for t in target_set.split(",")] if target_set else []
     return {
         "name": "%s (%s)" % (UserAdapter.full_name(signup.user), signup.user.username),
         "username": signup.user.username,

@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2022.
+# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2022, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-01 21:49+0300\n"
-"PO-Revision-Date: 2022-09-01 21:41+0300\n"
+"POT-Creation-Date: 2023-07-14 19:24+0300\n"
+"PO-Revision-Date: 2023-07-14 19:29+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 22.04.3\n"
+"X-Generator: Lokalize 23.04.2\n"
 
 msgid "View help."
 msgstr "View help."
@@ -188,8 +188,9 @@ msgid "No compensation started!"
 msgstr "No compensation started!"
 
 #, python-brace-format
-msgid "Not enough money in account ({1}) to give out ({2})"
-msgstr "Not enough money in account ({1}) to give out ({2})"
+#| msgid "Not enough money in account ({1}) to give out ({2})"
+msgid "Not enough money in account ({0}) to give out ({1})"
+msgstr "Not enough money in account ({0}) to give out ({1})"
 
 msgid "Invalid vendor id"
 msgstr "Invalid vendor id"
@@ -497,6 +498,14 @@ msgstr "Invalidate"
 msgid "Sum"
 msgstr "Sum"
 
+#, python-format
+msgid "Add %(name)s from SSO provider"
+msgstr "Add %(name)s from SSO provider"
+
+#, python-format
+msgid "Add unbound %(name)s"
+msgstr "Add unbound %(name)s"
+
 msgid "Access signup"
 msgstr "Access signup"
 
@@ -798,10 +807,21 @@ msgstr "Sum of prices:"
 msgid "Vendors:"
 msgstr "Vendors:"
 
+#| msgid ""
+#| "Values in parenthesis indicate part of the value that has been abandoned."
 msgid ""
-"Values in parenthesis indicate part of the value that has been abandoned."
+"Values in parenthesis indicate extra deleted items (+) and part of the value "
+"that has been abandoned (-)."
 msgstr ""
-"Values in parenthesis indicate part of the value that has been abandoned."
+"Values in parenthesis indicate extra deleted items (+) and part of the value "
+"that has been abandoned (-)."
+
+msgid ""
+"e.g. <em>5 (+3)</em> means 3 deleted items on top of 5 registered items, "
+"<em>5 (-1)</em> means 1 abandoned item in the total of 5."
+msgstr ""
+"e.g. <em>5 (+3)</em> means 3 deleted items on top of 5 registered items, "
+"<em>5 (-1)</em> means 1 abandoned item in the total of 5."
 
 msgid "Value type"
 msgstr "Value type"
@@ -882,9 +902,6 @@ msgstr "Brought"
 #, python-format
 msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgstr "%(brought)s (%(broughtOfRegistered)s%% of registered)"
-
-msgid "Brought while deleted"
-msgstr "Brought while deleted"
 
 #, python-format
 msgid "%(sold)s (%(soldOfBrought)s%% of brought)"
@@ -1273,13 +1290,8 @@ msgstr "User {} not found."
 msgid "Username is required."
 msgstr "Username is required."
 
-#, python-format
-msgid "Add %(name)s from SSO provider"
-msgstr "Add %(name)s from SSO provider"
-
-#, python-format
-msgid "Add unbound %(name)s"
-msgstr "Add unbound %(name)s"
+#~ msgid "Brought while deleted"
+#~ msgstr "Brought while deleted"
 
 #~ msgid "Vendor Check-Out"
 #~ msgstr "Vendor Check-Out"

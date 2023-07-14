@@ -102,7 +102,7 @@ class StaticTextWidget(django.forms.widgets.Widget):
         return self._static_text is not None
 
     def render(self, name, value, attrs=None, renderer=None):
-        return self._static_text or value or u""
+        return str(self._static_text or value or u"")
 
 
 class ButtonWidget(StaticTextWidget):

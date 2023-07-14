@@ -64,10 +64,6 @@ pytest-env
     # via kirppu (pyproject.toml)
 python-dateutil
     # via faker
-pytz
-    # via
-    #   django
-    #   kirppu (pyproject.toml)
 six
     # via python-dateutil
 sqlparse

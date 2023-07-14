@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2022.
+# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2022, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-01 21:49+0300\n"
-"PO-Revision-Date: 2022-09-01 21:53+0300\n"
+"POT-Creation-Date: 2023-07-14 19:24+0300\n"
+"PO-Revision-Date: 2023-07-14 19:31+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 22.04.3\n"
+"X-Generator: Lokalize 23.04.2\n"
 
 msgid "View help."
 msgstr "Näytä ohje."
@@ -192,8 +192,9 @@ msgid "No compensation started!"
 msgstr "Hyvitystapahtumaa ei ole aloitettu!"
 
 #, python-brace-format
-msgid "Not enough money in account ({1}) to give out ({2})"
-msgstr "Tilillä ei ole tarpeeksi rahaa ({1}) annettavaksi ({2})"
+#| msgid "Not enough money in account ({1}) to give out ({2})"
+msgid "Not enough money in account ({0}) to give out ({1})"
+msgstr "Tilillä ei ole tarpeeksi rahaa ({0}) annettavaksi ({1})"
 
 msgid "Invalid vendor id"
 msgstr "Virheellinen myyjän id"
@@ -502,6 +503,14 @@ msgstr "Mitätöinti"
 msgid "Sum"
 msgstr "Summa"
 
+#, python-format
+msgid "Add %(name)s from SSO provider"
+msgstr "Lisää %(name)s SSO-tarjoajalta"
+
+#, python-format
+msgid "Add unbound %(name)s"
+msgstr "Lisää irrallinen %(name)s"
+
 msgid "Access signup"
 msgstr "Pääsyhakemus"
 
@@ -803,9 +812,21 @@ msgstr "Hintojen summat:"
 msgid "Vendors:"
 msgstr "Myyjät:"
 
+#| msgid ""
+#| "Values in parenthesis indicate part of the value that has been abandoned."
 msgid ""
-"Values in parenthesis indicate part of the value that has been abandoned."
-msgstr "Suluissa olevat arvot ilmaisevat hylättyä määrää."
+"Values in parenthesis indicate extra deleted items (+) and part of the value "
+"that has been abandoned (-)."
+msgstr ""
+"Suluissa olevat arvot ilmaisevat poistettua (+) ja hylättyä määrää (-)."
+
+msgid ""
+"e.g. <em>5 (+3)</em> means 3 deleted items on top of 5 registered items, "
+"<em>5 (-1)</em> means 1 abandoned item in the total of 5."
+msgstr ""
+"esim. <em>5 (+3)</em> tarkoittaa 3 poistettua tavaraa 5 rekisteröidyn"
+" lisäksi, "
+"<em>5 (-1)</em> tarkoittaa 1 hylätty tavara 5 tavaran joukossa."
 
 msgid "Value type"
 msgstr "Arvon tyyppi"
@@ -886,9 +907,6 @@ msgstr "Tuotu tapahtumaan"
 #, python-format
 msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgstr "%(brought)s (%(broughtOfRegistered)s%% rekisteröidyistä)"
-
-msgid "Brought while deleted"
-msgstr "Tuotu poistettuna"
 
 #, python-format
 msgid "%(sold)s (%(soldOfBrought)s%% of brought)"
@@ -1277,13 +1295,8 @@ msgstr "Käyttäjää {} ei löytynyt."
 msgid "Username is required."
 msgstr "Käyttäjätunnus on vaadittu."
 
-#, python-format
-msgid "Add %(name)s from SSO provider"
-msgstr "Lisää %(name)s SSO-tarjoajalta"
-
-#, python-format
-msgid "Add unbound %(name)s"
-msgstr "Lisää irrallinen %(name)s"
+#~ msgid "Brought while deleted"
+#~ msgstr "Tuotu poistettuna"
 
 #~ msgid "Vendor Check-Out"
 #~ msgstr "Tavaran poisvienti"
@@ -1387,8 +1400,8 @@ msgstr "Lisää irrallinen %(name)s"
 #~ "the price tag."
 #~ msgstr ""
 #~ "Lisättävän lapun koon voi valita koko-valitsimella. Kokoa voi muuttaa "
-#~ "myöhemmin painamalla <span class=\"glyphicon glyphicon-resize-horizontal"
-#~ "\"></span> painiketta."
+#~ "myöhemmin painamalla <span class=\"glyphicon glyphicon-resize-"
+#~ "horizontal\"></span> painiketta."
 
 #~ msgid ""
 #~ "Register more than one similar items at once by adding a suffix.\n"

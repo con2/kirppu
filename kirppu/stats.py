@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
-import pytz
 from django.conf import settings
 from django.db import models
 from django.db.models import F
@@ -292,7 +291,7 @@ class ItemEurosRow(ItemCollectionRow):
 # region Statistics graphs generators.
 
 class GraphLog(object):
-    unix_epoch = datetime(1970, 1, 1, tzinfo=pytz.utc)
+    unix_epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
     def __init__(self, event: Event, as_prices=False, extra_filter=None):
         self._event = event

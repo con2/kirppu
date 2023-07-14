@@ -34,14 +34,10 @@ oauthlib
     #   requests-oauthlib
 pillow
     # via kirppu (pyproject.toml)
-psycopg2
+psycopg
     # via kirppu (pyproject.toml)
 pubcode
     # via kirppu (pyproject.toml)
-pytz
-    # via
-    #   django
-    #   kirppu (pyproject.toml)
 requests
     # via
     #   kirppu (pyproject.toml)
@@ -51,7 +47,9 @@ requests-oauthlib
 sqlparse
     # via django
 typing-extensions
-    # via asgiref
+    # via
+    #   asgiref
+    #   psycopg
 urllib3
     # via requests
 whitenoise
