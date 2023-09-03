@@ -3,6 +3,8 @@ djangoapp_admins:
   - Jyrki Launonen <codez@tracon.fi>
 
 ingress_public_hostname: kirppu.tracon.fi
+backup_ingress_public_hostnames:
+  - vara.kirppu.tracon.fi
 
 postgres_managed: false
 postgres_ssl: true

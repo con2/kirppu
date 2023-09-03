@@ -33,6 +33,12 @@ smtp_default_from_email: ''
 # Set this to the public hostname of your service.
 ingress_public_hostname: !Format "{djangoapp_name}.localhost"
 
+backup_ingress_public_hostnames: []
+
+djangoapp_allowed_hosts: !Concat
+  - [!Var ingress_public_hostname]
+  - !Var backup_ingress_public_hostnames
+
 # If you use ingress-nginx and cert-manager, TLS can be automatically configured by setting this to true.
 ingress_letsencrypt_enabled: false
 ingress_letsencrypt_cluster_issuer: letsencrypt-prod
@@ -109,7 +115,9 @@ gunicorn_environment:
         name: !Var djangoapp_name
         key: kompassiClientSecret
   - name: ALLOWED_HOSTS
-    value: !Var ingress_public_hostname
+    value: !Join
+      items: !Var djangoapp_allowed_hosts
+      separator: ' '
   - name: EMAIL_HOST
     value: !Var smtp_server
   - name: DEFAULT_FROM_EMAIL
@@ -144,6 +152,8 @@ gunicorn_environment:
         key: kompassiApiApplicationPassword
 
 # Default annotations work for nginx ingress with or without LetsEncrypt TLS. Override if you need something else.
+base_ingress_annotations: []
+
 ingress_annotations: !If
   test: !Var ingress_letsencrypt_enabled
   then:
