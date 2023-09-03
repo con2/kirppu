@@ -4,7 +4,7 @@ import typing
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import Max, TextField
+from django.db.models import Max, TextField, F
 from django.db.models.functions import Length, Cast
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _, gettext
@@ -19,14 +19,25 @@ __all__ = [
 
 ColFn = typing.Callable[[Item], typing.Any]
 
+
+def _code_or_box_number(i) -> str:
+    if i.code is not None:
+        return i.code
+    if i.box_number is not None:
+        value = str(i.box_number)
+    else:
+        value = "?"
+    return " box {0:<3}".format(value)
+
+
 COLUMNS = (
     (_("Vendor id"), "vendor_id"),
-    (_("Barcode"), "code"),
+    (_("Barcode"), "code", _code_or_box_number),
     (_("Price"), "price"),
     (_("Brought"), lambda i: i.state in (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.COMPENSATED, Item.RETURNED)),
     (_("Sold"), lambda i: i.state in (Item.SOLD, Item.COMPENSATED)),
     (_("Compensated / Returned"), lambda i: i.state in (Item.COMPENSATED, Item.RETURNED)),
-    (_("Name"), "name"),
+    (_("Name"), lambda i: i.box_description if i.box_description is not None else i.name),
 )
 
 
@@ -46,7 +57,7 @@ def dump_items_view(request, event_slug):
 
 
 def _process_column(item, column: typing.Tuple[str, typing.Union[str, ColFn]], as_text):
-    ref = column[1]
+    ref = column[-1]
     if isinstance(ref, str):
         value = getattr(item, ref)
         if as_text:
@@ -59,7 +70,9 @@ def _process_column(item, column: typing.Tuple[str, typing.Union[str, ColFn]], a
                 return "\u2612" if value else "\u2610"  # BALLOT BOX WITH X and BALLOT BOX
             return "X" if value else None
         else:
-            raise NotImplementedError(column[0] + " " + repr(value))
+            if as_text:
+                return value if value is not None else ""
+            return value
     else:
         raise NotImplementedError(column[0] + " " + repr(ref))
 
@@ -93,6 +106,10 @@ class TextWriter(object):
 
 def item_dump(output, event: typing.Union[Event, RemoteEvent], as_text):
     items = Item.objects.using(event.get_real_database_alias()).filter(vendor__event=event)
+    items = items.annotate(
+        box_description=F("box__description"),
+        box_number=F("box__box_number"),
+    )
 
     if as_text:
         straight_column_names = [c[1] for c in COLUMNS if isinstance(c[1], str)]
@@ -116,6 +133,6 @@ def item_dump(output, event: typing.Union[Event, RemoteEvent], as_text):
     # Used here and later for buffer streaming and clearing in case of StringIO.
     yield
 
-    for item in items.order_by("vendor__id", "name"):
+    for item in items.order_by("vendor__id", "name", "box", "id"):
         writer.writerow(_process_column(item, c, as_text) for c in COLUMNS)
         yield

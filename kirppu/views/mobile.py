@@ -6,7 +6,7 @@ import textwrap
 from django.conf import settings
 from django.core import signing
 from django.db import transaction, models
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponseForbidden, HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -200,7 +200,7 @@ def _data_view(request, event: Event, permit):
         .using(database)
         .filter(item__vendor=vendor)
         .values("pk", "item__price", "item__state")
-        .annotate(item_count=Count("item"),
+        .annotate(item_count=Count("item", filter=Q(item__hidden=False)),
                   box_code=models.F("representative_item__code"),
                   box_number=models.F("box_number"),
                   description=models.F("description"))

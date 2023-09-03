@@ -28,6 +28,7 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 {% if is_registration_closed_for_users %}
+                {% include "kirppu/registration_closed.html" %}
                 <div class="alert alert-warning hidden-print" role="alert">
                     <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
                     {% trans "Admin note: Registration is closed for users." %}
@@ -111,10 +112,7 @@
         </div>{# panel-body, panel #}
     </form>
     {% else %}
-    <div class="alert alert-warning hidden-print col-sm-8" role="alert">
-        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-        {% trans "Registration is closed" %}
-    </div>
+    {% include "kirppu/registration_closed.html" with classes="col-sm-8" %}
     <div class="panel panel-default hidden-print col-sm-8">
         <div class="panel-body">
             {% load_texts "box_info" %}

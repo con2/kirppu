@@ -508,10 +508,9 @@ def vendor_returnable_items(request, vendor):
 
     # Shrink boxes to single representative items with box information.
     boxes = Box.objects \
-        .exclude(item__state=Item.ADVERTISED) \
         .filter(item__vendor__id=vendor) \
         .annotate(
-            item_count=Count("item"),
+            item_count=Count("item", filter=Q(item__hidden=False)),
             returnable_count=Count(1, filter=Q(item__state=Item.BROUGHT)),
             returned_count=Count(1, Q(item__state=Item.RETURNED)),
         )
@@ -711,7 +710,7 @@ def item_checkout(request, event, code, vendor=None):
         box_info = Box.objects \
             .filter(pk=box.pk) \
             .annotate(
-                item_count=Count("item"),
+                item_count=Count("item", filter=Q(item__hidden=False)),
                 returnable_count=Count(models.Case(models.When(item__state=Item.BROUGHT, then=1),
                                                    output_field=models.IntegerField())),
                 returned_count=Count(models.Case(models.When(item__state=Item.RETURNED, then=1),

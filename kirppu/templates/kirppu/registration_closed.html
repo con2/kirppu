@@ -1,0 +1,10 @@
+{% load i18n kirppu_tags %}
+<div class="alert alert-warning hidden-print {{ classes }}" role="alert">
+    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+    {% if event.end_date|isInPastDays:7 %}
+    {% trans "Registration is closed" %}
+    {% else %}
+    {% trans "Event has ended" %}
+    {% endif %}
+    <div><em>{{ event.name }}</em></div>
+</div>

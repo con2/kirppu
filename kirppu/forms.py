@@ -512,3 +512,48 @@ class AccessSignupForm(forms.Form):
 
     def field_message(self):
         return "message", self["message"]
+
+
+class BoxAdjustForm(forms.Form):
+    code = forms.CharField()
+    vendor_id = forms.IntegerField(min_value=0)
+    item_count = forms.IntegerField(min_value=0)
+
+    def __init__(self, *args, event, **kwargs):
+        self._event = event
+        super().__init__(*args, **kwargs)
+
+    def clean_vendor_id(self):
+        data = self.cleaned_data["vendor_id"]
+        if not Vendor.objects.filter(pk=data).exists():
+            raise forms.ValidationError("Vendor {pk} not found.".format(pk=data))
+        return data
+
+    def clean_code(self):
+        data = self.cleaned_data["code"]
+        if not Item.is_item_barcode(data):
+            raise forms.ValidationError("Code is not valid")
+
+        item = Item.objects.filter(code=data)
+        if not item.exists():
+            raise forms.ValidationError("Box {code} not found.".format(code=data))
+
+        if item[0].state != Item.ADVERTISED:
+            raise forms.ValidationError("Box {code} is in an unexpected state.".format(code=data))
+
+        return data
+
+    def clean(self):
+        data = super().clean()
+
+        code = data.get("code")
+        vendor_id = data.get("vendor_id")
+        if code is None or vendor_id is None:
+            return data
+
+        item = Item.objects.get(code=code)
+        if item.vendor_id != vendor_id:
+            raise forms.ValidationError("Box {code} is not one of vendor {pk} boxes".format(
+                code=item.code, pk=vendor_id))
+
+        return data

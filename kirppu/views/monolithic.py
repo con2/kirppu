@@ -35,7 +35,7 @@ from django.views.generic import RedirectView
 
 from ..checkout_api import clerk_logout_fn
 from .. import ajax_util
-from ..forms import ItemRemoveForm, VendorItemForm, VendorBoxForm, remove_item_from_receipt as _remove_item_from_receipt
+from ..forms import BoxAdjustForm, ItemRemoveForm, VendorItemForm, VendorBoxForm, remove_item_from_receipt as _remove_item_from_receipt
 from ..fields import ItemPriceField
 from .menu import vendor_menu
 from ..models import (
@@ -93,6 +93,7 @@ __all__ = [
     "remove_item_from_receipt",
     "lost_and_found_list",
     "kirppu_csrf_failure",
+    "adjust_box_size",
 ]
 
 
@@ -938,8 +939,9 @@ def remove_item_from_receipt(request, event_slug):
             return HttpResponseRedirect(url.reverse('kirppu:remove_item_from_receipt',
                                                     kwargs={"event_slug": event.slug}))
 
-    return render(request, "kirppu/app_item_receipt_remove.html", {
-        'form': form,
+    return render(request, "kirppu/admin_edit.html", {
+        "title": "Remove item from receipt",
+        "form": form,
     })
 
 
@@ -980,3 +982,75 @@ def kirppu_csrf_failure(request, reason=""):
         )
     else:
         return django_csrf_failure(request, reason=reason)
+
+
+@login_required
+def adjust_box_size(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
+    if not request.user.is_staff:
+        raise PermissionDenied
+
+    form = get_form(BoxAdjustForm, request, event=event)
+
+    if request.method == "POST" and form.is_valid():
+        code = form.cleaned_data["code"]
+        vendor_id = form.cleaned_data["vendor_id"]
+        item_count = form.cleaned_data["item_count"]
+
+        representative_item = Item.objects.get(code=code)
+        box = representative_item.box
+
+        if representative_item.id != box.representative_item_id:
+            representative_item = box.representative_item
+
+        existing_count = box.get_item_count()
+
+        if existing_count == item_count:
+            messages.add_message(request, messages.INFO, "Nothing to do.")
+        elif existing_count < item_count:
+            to_add = item_count - existing_count
+
+            # Unhide first up to to_add items.
+            hidden_items = Item.objects.filter(box=box, hidden=True).order_by("id")
+            unhide = min(len(hidden_items), to_add)
+            for i in range(unhide):
+                item = hidden_items[i]
+                item.hidden = False
+                item.save(update_fields=["hidden"])
+
+            # If we need more items, clone them.
+            add = max(to_add - len(hidden_items), 0)
+            for i in range(add):
+                Item.new(
+                    name=representative_item.name,
+                    box=box,
+                    no_code=True,
+
+                    price=representative_item.price,
+                    vendor=representative_item.vendor,
+                    state=representative_item.state,
+                    type=representative_item.type,
+                    itemtype=representative_item.itemtype,
+                    adult=representative_item.adult,
+                    abandoned=representative_item.abandoned,
+                    printed=representative_item.printed,
+                    hidden=representative_item.hidden,
+                )
+            messages.add_message(request, messages.INFO, "Unhidden {0} and added {1} items to box {2}".format(
+                unhide, add, code))
+        else:
+            to_remove = existing_count - item_count
+
+            visible_items = Item.objects.filter(box=box, hidden=False).order_by("-id")[:to_remove]
+            for item in visible_items:
+                item.hidden = True
+                item.save(update_fields=["hidden"])
+
+            messages.add_message(request, messages.INFO, "Hide {0} items from box {1}".format(to_remove, code))
+        return HttpResponseRedirect(url.reverse("kirppu:adjust_box_size",
+                                                kwargs={"event_slug": event.slug}))
+
+    return render(request, "kirppu/admin_edit.html", {
+        "title": "Adjust box size",
+        "form": form,
+    })

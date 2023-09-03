@@ -28,6 +28,7 @@ from .views import (
     type_stats_view,
     statistical_stats_view,
     lost_and_found_list,
+    adjust_box_size,
 )
 from .views import access_signup
 from .views import accounting
@@ -38,7 +39,6 @@ from .views.mobile import index as mobile_index, logout as mobile_logout
 from .views.vendors import change_vendor, create_vendor
 from .views.item_dump import dump_items_view
 
-__author__ = 'jyrkila'
 
 app_name = "kirppu"
 
@@ -86,6 +86,8 @@ event_urls = [
     path('manage/people', event_management.PeopleManagement.as_view(), name='people_manage'),
 
     path('signup', access_signup.signup, name='signup'),
+
+    path("adjust_box", adjust_box_size, name="adjust_box_size"),
 ]
 
 common_urls = [

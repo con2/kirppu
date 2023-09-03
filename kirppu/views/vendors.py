@@ -58,7 +58,7 @@ def get_multi_vendor_values(request, event):
 
     return {
         'self_vendor': self_vendor,
-        'self_name': str(self_vendor) if self_vendor is not None else str(user),
+        'self_name': self_vendor.printable_name if self_vendor is not None else str(user),
         'multi_vendor': multi_vendor,
         'current_vendor': vendor,
         'can_create_vendor': can_create_vendor,

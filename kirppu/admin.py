@@ -542,6 +542,7 @@ class ItemAdmin(admin.ModelAdmin):
     )
     autocomplete_fields = [
         "box",
+        "vendor",
     ]
 
 

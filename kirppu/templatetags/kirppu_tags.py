@@ -1,4 +1,5 @@
 from functools import lru_cache
+import datetime
 import json
 import re
 import typing
@@ -216,3 +217,11 @@ def format_price(value, format_type="raw"):
         str(value),
         settings.KIRPPU_CURRENCY[format_type][1]
     )
+
+
+@register.filter("isInPastDays")
+def is_in_past_days(date: datetime.date, days: int) -> bool:
+    # XXX: In near past, or in the future.
+    now = datetime.date.today()
+    diff = datetime.timedelta(days=days)
+    return date + diff >= now

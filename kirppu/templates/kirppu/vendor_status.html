@@ -12,7 +12,9 @@
     {{ block.super }}
     <a href="{% url "kirppu:mobile_logout" event_slug=event_slug %}" class="pull-right btn btn-link"><span class="glyphicon glyphicon-log-out"></span></a>
 {% endblock %}
-{% block frontpage_url %}{% if user.is_authenticated %}{% url "kirppu:vendor_view" event_slug=event_slug %}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block navbar_left %}
+    {% if user.is_authenticated %}<li><a href="{% url "kirppu:vendor_view" event_slug=event_slug %}">{% trans "Home" %}</a></li>{% endif %}
+{% endblock %}
 {% block navbar_right %}
     <li><a href="{% url "kirppu:mobile_logout" event_slug=event_slug %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
 {% endblock %}

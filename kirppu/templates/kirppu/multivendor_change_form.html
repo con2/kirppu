@@ -10,7 +10,7 @@
                     {% if multi_vendor %}
                     <optgroup label="{% trans "Behalf of" %}">
                     {% for vendor in multi_vendor %}
-                        <option value="{{ vendor.id }}"{% if vendor == current_vendor %} selected="selected"{% endif %}>{{ vendor }}</option>
+                        <option value="{{ vendor.id }}"{% if vendor == current_vendor %} selected="selected"{% endif %}>{{ vendor.printable_name }}</option>
                     {% endfor %}
                     </optgroup>
                     {% endif %}

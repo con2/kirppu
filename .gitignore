@@ -24,5 +24,9 @@ htmlcov
 
 /.env
 /makevars
+
+*.crt
+*.key
+
 *.compiled.yaml
 *.local.yaml

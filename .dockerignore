@@ -20,3 +20,5 @@ kirppu/static_src/js/api_stub.js
 /.pytest_cache/
 /build
 /dist
+*.crt
+*.key
