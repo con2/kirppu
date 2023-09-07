@@ -33,6 +33,9 @@ class @ReceiptFindMode extends CheckoutMode
   _showReceiptFn: (receiptId) =>
     () =>
       dialog = new Dialog()
+      dialog.addButton("info").text(gettext("Continue receipt…")).on("click", () =>
+        @_showContinue(receiptId, () => dialog.dismiss())
+      )
       dialog.addPositive().text(gettext("Ok"))
       dialog.title.text(gettext("Receipt details"))
 
@@ -45,3 +48,24 @@ class @ReceiptFindMode extends CheckoutMode
           dialog.body.text(jqXHR.responseText)
       )
       dialog.show()
+
+  _showContinue: (receiptId, parentDismiss) =>
+    dialog = new Dialog()
+#    dialog.addDismissButton("warning").text(gettext("Just mark active")).on("click", () =>
+#      parentDismiss()
+#    )
+    resume = dialog.addPositive().text(gettext("Resume here"))
+    resume.on("click", () =>
+      resume.attr("disabled", "disabled")
+      Api.receipt_overseer_continue(receipt_id: receiptId).then(
+        () =>
+          location.href = new URL("../checkout/", location.href).href
+        (jqXHR) =>
+          dialog.body.text(jqXHR.responseText)
+          resume.removeAttr("disabled")
+      )
+    )
+    dialog.addNegative().text(gettext("Cancel"))
+    dialog.title.text(dPrintF(gettext("Continue receipt %d"), d: receiptId))
+    dialog.body.append(Template.overseer_receipt_resume())
+    dialog.show()

@@ -13,7 +13,12 @@ import item_report_table from "./item_report_table.jsx";
 import item_search_form from './item_search_form.jsx';
 import {lost_and_found_table, lost_and_found_table_item} from "./lost_and_found_table.jsx";
 import mobile_code_dialog from "./mobile_code.jsx";
-import {overseer_receipt_table, overseer_receipt_table_item, overseer_receipt_table_no_results} from "./overseer_receipt_table.jsx";
+import {
+    overseer_receipt_resume,
+    overseer_receipt_table,
+    overseer_receipt_table_item,
+    overseer_receipt_table_no_results
+} from "./overseer_receipt_table.jsx";
 import {accept_person_dialog, person_info_table, PersonRow, signup_row, signup_table} from "./people_management.jsx";
 import progress_bar from "./progress_bar.jsx";
 import receipt_info from "./receipt_info.jsx";
@@ -51,6 +56,7 @@ const Template = {
     lost_and_found_table: lost_and_found_table,
     lost_and_found_table_item: lost_and_found_table_item,
     mobile_code_dialog: mobile_code_dialog,
+    overseer_receipt_resume: overseer_receipt_resume,
     overseer_receipt_table: overseer_receipt_table,
     overseer_receipt_table_item: overseer_receipt_table_item,
     overseer_receipt_table_no_results: overseer_receipt_table_no_results,

@@ -36,3 +36,15 @@ export function overseer_receipt_table_no_results() {
         </tr>
     )
 }
+
+export function overseer_receipt_resume() {
+    return (
+        <div>
+            <div>{gettext("Resuming receipt will open it for you after next login.")}</div>
+            <ul>
+                <li>{gettext("Resume here – Logout and open receipt immediately.")}</li>
+                {/*<li>{gettext("Just mark active – Resume the receipt, but stay here.")}</li>*/}
+            </ul>
+        </div>
+    )
+}

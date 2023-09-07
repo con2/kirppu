@@ -17,7 +17,7 @@ from ..ajax_util import (
     get_counter,
     require_user_features,
 )
-from ..models import Account, Clerk, EventPermission, Item, Receipt, ReceiptItem, ReceiptNote
+from ..models import Account, Clerk, Counter, EventPermission, Item, Receipt, ReceiptItem, ReceiptNote
 
 ajax_func = ajax_func_factory("checkout")
 
@@ -50,7 +50,23 @@ def receipt_continue(request, code):
     receipt = get_object_or_404(Receipt, status=Receipt.SUSPENDED,
                                 type=Receipt.TYPE_PURCHASE,
                                 receiptitem__item=item, receiptitem__action=ReceiptItem.ADD)
+    return _receipt_continue(request, clerk, counter, receipt)
 
+
+@ajax_func("^receipt/markactive", overseer=True)  # todo: what's the word?
+def receipt_overseer_continue(request, receipt_id):
+    clerk = get_clerk(request)
+    counter = get_counter(request)
+    receipt = get_object_or_404(
+        Receipt,
+        pk=int(receipt_id),
+        status=Receipt.SUSPENDED,
+        type=Receipt.TYPE_PURCHASE,
+    )
+    return _receipt_continue(request, clerk, counter, receipt)
+
+
+def _receipt_continue(request, clerk: Clerk, counter: Counter, receipt: Receipt):
     update_fields = ["status"]
     receipt.status = Receipt.PENDING
 
