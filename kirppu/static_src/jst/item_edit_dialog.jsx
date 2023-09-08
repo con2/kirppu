@@ -223,7 +223,7 @@ export function item_edit_dialog_content({CURRENCY, item_types, item_states, ite
                 </button>
                 <button id="item-edit-print-button"
                         className="btn btn-primary btn-minwidth"
-                        onClick={onPrint}>
+                        onclick={() => onPrint()}>
                     {gettext("Print")}
                 </button>
                 <button id="item-edit-save-button"
