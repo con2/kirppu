@@ -455,7 +455,7 @@ def _item_edit(request, item, price, state):
                 Account.objects.filter(pk=account_id).update(balance=F("balance") - price)
         elif item.state == Item.RETURNED and state in Item.BROUGHT:
             # Allow this.
-            pass
+            ItemStateLog.objects.log_state(item, state, request)
         else:
             raise AjaxError(
                 RET_BAD_REQUEST,
