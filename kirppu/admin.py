@@ -553,11 +553,15 @@ class ReceiptItemAdmin(admin.TabularInline):
     model = ReceiptItem
     ordering = ["add_time"]
     exclude = ["item"]
-    readonly_fields = [_receipt_item_link, "action", "price_str"]
+    readonly_fields = [_receipt_item_link, "action", "price_str", "add_time_str"]
 
     @with_description(Item._meta.get_field("price").verbose_name)
     def price_str(self, instance: ReceiptItem):
         return instance.item.price
+
+    @with_description(ReceiptItem._meta.get_field("add_time").verbose_name)
+    def add_time_str(self, instance: ReceiptItem):
+        return instance.add_time.isoformat(sep=" ", timespec="milliseconds")
 
 
 class ReceiptExtraAdmin(admin.TabularInline):

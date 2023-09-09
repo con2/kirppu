@@ -538,9 +538,6 @@ class BoxAdjustForm(forms.Form):
         if not item.exists():
             raise forms.ValidationError("Box {code} not found.".format(code=data))
 
-        if item[0].state != Item.ADVERTISED:
-            raise forms.ValidationError("Box {code} is in an unexpected state.".format(code=data))
-
         return data
 
     def clean(self):

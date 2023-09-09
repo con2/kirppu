@@ -270,7 +270,7 @@ def item_find(request, event, code, available=None):
 
 
 @ajax_func('^item/search$', method='GET', overseer=True)
-def item_search(request, event, query, code, vendor, min_price, max_price, item_type, item_state, show_hidden):
+def item_search(request, event, query, code, vendor, min_price, max_price, item_type, item_state, is_box, show_hidden):
 
     clauses = []
     name_clauses = []
@@ -309,6 +309,9 @@ def item_search(request, event, query, code, vendor, min_price, max_price, item_
         clauses.append(Q(price__lte=float(max_price)))
     except ValueError:
         pass
+
+    if is_box:
+        clauses.append(Q(box__isnull=False if is_box == "yes" else True))
 
     if show_hidden not in ("true", "1", "on"):
         clauses.append(Q(hidden=False))

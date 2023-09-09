@@ -33,6 +33,7 @@ class @ItemSearchForm
       "item_search_type",
       "item_search_state"
     ])
+    args.push($("input[name=is_box]:checked").prop("value"))
     args.push($("#show_hidden_items", @form).prop("checked"))
     @action.apply(@, args)
 

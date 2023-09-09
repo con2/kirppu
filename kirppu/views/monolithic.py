@@ -994,7 +994,6 @@ def adjust_box_size(request, event_slug):
 
     if request.method == "POST" and form.is_valid():
         code = form.cleaned_data["code"]
-        vendor_id = form.cleaned_data["vendor_id"]
         item_count = form.cleaned_data["item_count"]
 
         representative_item = Item.objects.get(code=code)
