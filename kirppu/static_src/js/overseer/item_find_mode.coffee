@@ -22,10 +22,11 @@ class @ItemFindMode extends CheckoutMode
   glyph: -> "search"
   title: -> gettext("Item Search")
 
-  doSearch: (query, code, vendor, min_price, max_price, type, state, is_box, show_hidden) =>
+  doSearch: (query, code, box_number, vendor, min_price, max_price, type, state, is_box, show_hidden) =>
     @search =
       query: query
       code: code.toUpperCase()
+      box_number: box_number
       vendor: vendor
       min_price: min_price
       max_price: max_price

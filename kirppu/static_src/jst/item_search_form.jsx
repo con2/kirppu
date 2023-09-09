@@ -21,6 +21,13 @@ export default function render({item_types, item_states, price_step, CURRENCY}) 
                 </div>
             </div>
             <div className="form-group">
+                <label htmlFor="box_number_input"
+                       className="control-label col-sm-2">{gettext("Box number")}</label>
+                <div className="input-group col-sm-2">
+                    <input type="text" id="box_number_input" className="form-control"/>
+                </div>
+            </div>
+            <div className="form-group">
                 <label htmlFor="vendor_search_input" className="control-label col-sm-2">{gettext("Vendor ID")}</label>
                 <div className="input-group col-sm-2">
                     <input type="number" step="1" min="1" id="vendor_search_input" className="form-control"/>

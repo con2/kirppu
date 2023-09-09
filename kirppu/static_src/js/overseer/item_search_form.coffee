@@ -27,6 +27,7 @@ class @ItemSearchForm
     args = ($("#" + i, @form).val() for i in [
       "item_search_input",
       "item_code_search_input",
+      "box_number_input",
       "vendor_search_input",
       "item_search_min_price",
       "item_search_max_price",

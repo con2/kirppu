@@ -270,7 +270,7 @@ def item_find(request, event, code, available=None):
 
 
 @ajax_func('^item/search$', method='GET', overseer=True)
-def item_search(request, event, query, code, vendor, min_price, max_price, item_type, item_state, is_box, show_hidden):
+def item_search(request, event, query, code, box_number, vendor, min_price, max_price, item_type, item_state, is_box, show_hidden):
 
     clauses = []
     name_clauses = []
@@ -283,6 +283,9 @@ def item_search(request, event, query, code, vendor, min_price, max_price, item_
     code = code.strip()
     if code:
         clauses.append(Q(code__contains=code))
+
+    if box_number:
+        clauses.append(Q(box__box_number=int(box_number)))
 
     if vendor:
         clauses.append(Q(vendor=vendor))
@@ -450,6 +453,9 @@ def _item_edit(request, item, price, state):
                 remove_item_from_receipt(request, item, receipt)
                 account_id = receipt.dst_account_id
                 Account.objects.filter(pk=account_id).update(balance=F("balance") - price)
+        elif item.state == Item.RETURNED and state in Item.BROUGHT:
+            # Allow this.
+            pass
         else:
             raise AjaxError(
                 RET_BAD_REQUEST,
