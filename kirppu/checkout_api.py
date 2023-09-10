@@ -1164,8 +1164,12 @@ def receipt_activate(request):
 
 
 @ajax_func('^receipt/pending', overseer=True, method='GET')
-def receipt_pending(request):
-    receipts = Receipt.objects.filter(status__in=(Receipt.PENDING, Receipt.SUSPENDED), type=Receipt.TYPE_PURCHASE)
+def receipt_pending(request, event: Event):
+    receipts = Receipt.objects.filter(
+        clerk__event=event,
+        status__in=(Receipt.PENDING, Receipt.SUSPENDED),
+        type=Receipt.TYPE_PURCHASE,
+    )
     return [receipt.as_dict() for receipt in receipts]
 
 

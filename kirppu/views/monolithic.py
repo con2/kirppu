@@ -1004,6 +1004,10 @@ def adjust_box_size(request, event_slug):
 
         existing_count = box.get_item_count()
 
+        # If box hasn't been brought (i.e. is AD), the new items should also be AD. Parts can be hidden.
+        # If box is brought, staged, sold or compensated, the new items should be BR. Parts to hide must be BR.
+        # If box is returned or missing, abort. (Checked in form clean)
+
         if existing_count == item_count:
             messages.add_message(request, messages.INFO, "Nothing to do.")
         elif existing_count < item_count:
@@ -1017,6 +1021,8 @@ def adjust_box_size(request, event_slug):
                 item.hidden = False
                 item.save(update_fields=["hidden"])
 
+            new_state = Item.ADVERTISED if representative_item.state == Item.ADVERTISED else Item.BROUGHT
+
             # If we need more items, clone them.
             add = max(to_add - len(hidden_items), 0)
             for i in range(add):
@@ -1027,7 +1033,7 @@ def adjust_box_size(request, event_slug):
 
                     price=representative_item.price,
                     vendor=representative_item.vendor,
-                    state=representative_item.state,
+                    state=new_state,
                     type=representative_item.type,
                     itemtype=representative_item.itemtype,
                     adult=representative_item.adult,
@@ -1040,11 +1046,14 @@ def adjust_box_size(request, event_slug):
         else:
             to_remove = existing_count - item_count
 
-            visible_items = Item.objects.filter(box=box, hidden=False).order_by("-id")[:to_remove]
+            visible_items = Item.objects.filter(box=box, hidden=False,
+                                                state__in=(Item.ADVERTISED, Item.BROUGHT)).order_by("-id")[:to_remove]
             for item in visible_items:
                 item.hidden = True
                 item.save(update_fields=["hidden"])
 
+            if len(visible_items) != to_remove:
+                to_remove = "(only) {}/{}".format(len(visible_items), to_remove)
             messages.add_message(request, messages.INFO, "Hide {0} items from box {1}".format(to_remove, code))
         return HttpResponseRedirect(url.reverse("kirppu:adjust_box_size",
                                                 kwargs={"event_slug": event.slug}))

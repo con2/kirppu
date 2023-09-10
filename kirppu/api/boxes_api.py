@@ -150,8 +150,16 @@ def box_item_reserve(request, event, box_number, box_item_count="1"):
         )
         return ret
     else:
-        raise AjaxError(RET_CONFLICT,
-                        _("Only {} items of {} available for reservation.").format(len(candidates), box_item_count))
+        raise AjaxError(
+            RET_CONFLICT,
+            _("Only {available} items of {requested} available for reservation in box #{box_number}: {box_name}.")
+            .format(
+                available=len(candidates),
+                requested=box_item_count,
+                box_number=box.box_number,
+                box_name=box.description,
+            )
+        )
 
 
 @ajax_func('^box/item/release$', atomic=True)
