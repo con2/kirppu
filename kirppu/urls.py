@@ -38,6 +38,7 @@ from .checkout_api import checkout_js
 from .views.mobile import index as mobile_index, logout as mobile_logout
 from .views.vendors import change_vendor, create_vendor
 from .views.item_dump import dump_items_view
+from .views.flow_stats import flow_stats
 
 
 app_name = "kirppu"
@@ -45,6 +46,7 @@ app_name = "kirppu"
 event_urls = [
     path(r'accounting/', accounting.accounting_receipt_view, name="accounting"),
     path(r'accounting/live', accounting.live_accounts, name="live_accounts"),
+    path('accounting/flow', flow_stats),
     path(r'itemdump/', dump_items_view, name="item_dump"),
     path(r'clerks/', get_clerk_codes, name='clerks'),
     path(r'boxes/', get_boxes_codes, name="box_codes"),
