@@ -6,7 +6,7 @@ COPY kirppu ./
 RUN npm run gulp
 
 
-FROM python:3.11
+FROM python:3.12
 WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get -y install gettext && rm -rf /var/lib/apt/lists

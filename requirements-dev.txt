@@ -72,6 +72,8 @@ tomli
     # via
     #   build
     #   coverage
+    #   pip-tools
+    #   pyproject-hooks
     #   pytest
 typing-extensions
     # via asgiref

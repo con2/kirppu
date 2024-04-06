@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
 
+import factory.django
 from django.utils.timezone import now, timedelta
-from kirppuauth.models import User
+
 from kirppu.models import (
     Account,
     Box,
@@ -17,8 +18,7 @@ from kirppu.models import (
     ReceiptItem,
     Vendor,
 )
-
-import factory.django
+from kirppuauth.models import User
 
 Factory = factory.django.DjangoModelFactory
 
@@ -64,8 +64,12 @@ class UserFactory(Factory):
 class EventFactory(Factory):
     class Meta:
         model = Event
+        exclude = ("_slug", "_slug_seq")
 
-    slug = factory.Faker("slug")
+    _slug = factory.Faker("slug")
+    _slug_seq = factory.Sequence(lambda a: str(a))
+    slug = factory.LazyAttribute(lambda a: a._slug + "-" + a._slug_seq)
+
     name = factory.LazyAttribute(lambda a: a.slug.replace("-", " ").title())
     start_date = (now() + timedelta(days=2)).date()
     end_date = (now() + timedelta(days=3)).date()

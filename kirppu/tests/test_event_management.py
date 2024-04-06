@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase, override_settings
 
-from . import ResultMixin
 from ..models import Event, EventPermission
-from .factories import EventPermissionFactory, UserFactory, EventFactory
+from . import ResultMixin
+from .factories import EventFactory, EventPermissionFactory, UserFactory
 
 
 @override_settings(LANGUAGES=(("en", "English"),))

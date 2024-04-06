@@ -2,13 +2,13 @@
 
 from http import HTTPStatus
 
-from django.test import TestCase
 import faker
+from django.test import TestCase
 
-from .factories import *
-from .api_access import Api
-from . import ResultMixin
 from ..models import Clerk, Item, Receipt, ReceiptItem
+from . import ResultMixin
+from .api_access import Api
+from .factories import *
 
 
 class PublicTest(TestCase, ResultMixin):

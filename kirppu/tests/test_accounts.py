@@ -5,10 +5,10 @@ from decimal import Decimal
 from django.conf import settings
 from django.test import TestCase, override_settings
 
+from ..models import Account
 from . import ResultMixin
 from .api_access import Api
-from ..models import Account
-from .factories import CounterFactory, ClerkFactory, EventFactory, EventPermissionFactory
+from .factories import ClerkFactory, CounterFactory, EventFactory, EventPermissionFactory
 
 
 @override_settings(LANGUAGES=(("en", "English"),))

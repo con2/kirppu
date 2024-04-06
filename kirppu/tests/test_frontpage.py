@@ -3,9 +3,9 @@
 from django.test import TestCase
 from django.utils.timezone import now, timedelta
 
-from .factories import EventFactory
-from . import ResultMixin
 from ..models import Event
+from . import ResultMixin
+from .factories import EventFactory
 
 
 class _Base(TestCase, ResultMixin):

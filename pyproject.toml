@@ -2,16 +2,16 @@
 name = "kirppu"
 description = "Second-hand sales POS and vendor signup for conventions"
 version = "0"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 dependencies = [
-    "django-environ~=0.10.0",
+    "django-environ~=0.11.0",
     "django-ipware~=5.0.0",
-    "django-ratelimit~=4.0.0",
+    "django-ratelimit~=4.0",
     "django~=4.2.0",
-    "pillow~=9.0",
+    "pillow~=10.0",
     "pubcode~=1.1.0",
-    "mistune~=2.0.0",
+    "mistune~=3.0.0",
     "whitenoise~=6.5.0",
 ]
 
@@ -27,13 +27,13 @@ production = [
     "psycopg~=3.1.0",
 ]
 dev = [
-    "factory-boy~=3.2.0",
-    "Faker~=18.0",
-    "pytest~=7.3.0",
+    "factory-boy~=3.3.0",
+    "Faker~=19.0",
+    "pytest~=7.4.0",
     "pytest-django~=4.5.0",
-    "pytest-env~=0.8.0",
+    "pytest-env~=1.0.0",
     "pytest-cov~=4.0",
-    "pip-tools~=6.13.0",
+    "pip-tools~=7.3",
 ]
 
 

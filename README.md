@@ -16,7 +16,7 @@ It consists of a high level guide outlining the steps, example guide that has mo
 
 ### High level guide
 
-1. Install Python >= 3.9.
+1. Install Python >= 3.11.
 2. Clone Kirppu.
 3. Create virtualenv.
 4. Install dependencies with pip and requirements-dev.txt
@@ -200,6 +200,7 @@ To compile frontend sources for use in browser, there is two choices, which can 
     Copyright (c) 2021 Jyrki Launonen
     Copyright (c) 2022 Jyrki Launonen
     Copyright (c) 2023 Jyrki Launonen
+    Copyright (c) 2024 Jyrki Launonen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

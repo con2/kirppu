@@ -2,11 +2,10 @@ import typing
 
 import django.core.handlers.wsgi
 import django.http.request
-import django.test.client
 import django.template
 import django.template.context
+import django.test.client
 import django.urls.resolvers
-
 
 # Documentation copied and shortened from Django documentation, topics/testing/tools.html#django.test.Response
 class DjangoResponse(object):

@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-from decimal import Decimal
 import json
 import textwrap
 import typing
+from decimal import Decimal
 
-from django.test import override_settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from kirppu.provision import Provision
 
-from .factories import *
-from .api_access import Api
-from . import ResultMixin
 from ..models import Account, Item, Receipt
+from . import ResultMixin
+from .api_access import Api
+from .factories import *
 
 
 class ApiOK(Api, ResultMixin):

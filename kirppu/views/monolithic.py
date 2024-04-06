@@ -60,6 +60,7 @@ from ..utils import (
     require_vendor_open,
 )
 from ..templatetags.kirppu_tags import get_dataurl
+from .ui_text_utils import ui_text_vars
 from .vendors import get_multi_vendor_values
 import pubcode
 
@@ -891,6 +892,7 @@ def vendor_view(request, event_slug):
         'profile_url': settings.PROFILE_URL,
         'menu': vendor_menu(request, event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
+        "uiTextVars": ui_text_vars(event),
     }
     context.update(vendor_data)
     return render(request, "kirppu/app_frontpage.html", context)

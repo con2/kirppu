@@ -18,11 +18,13 @@ import typing
 
 __all__ = [
     "run",
+    "tokenize",
     "Error",
     "ErrorType",
     "Literal",
     "LiteralList",
     "Symbol",
+    "Token",
 ]
 
 TOKENS = re.compile(r"(\d+(\.\d+)?|[-.<>=!*+/\w][-.<>=!*+/\w\d]*|'?\(|\)|'\w[\w\d]*|\s+|;+[^\n]*)", re.MULTILINE)

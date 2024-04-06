@@ -4,8 +4,9 @@ import sys
 
 from django.urls import reverse
 
-from . import color
 from kirppu.ajax_util import get_all_ajax_functions
+
+from . import color
 
 
 class Api(object):

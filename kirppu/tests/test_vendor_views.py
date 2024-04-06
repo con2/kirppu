@@ -4,9 +4,9 @@ import factory
 from django.conf import settings
 from django.test import TestCase, override_settings
 
-from .factories import *
-from . import ResultMixin
 from ..models import Box, Item
+from . import ResultMixin
+from .factories import *
 
 
 class ApiFactory(factory.Factory):

@@ -38,11 +38,12 @@ test:     ## Run tests
 	DEBUG=1 ${PFX}py.test -vvv
 
 update-constraints:  ## Update constraints.txt to match pyproject.toml
-	pip-compile --all-extras --output-file=constraints.txt --strip-extras --upgrade
+	${PFX}pip-compile --all-extras --output-file=constraints.txt --strip-extras --upgrade
+	test constraints.txt -ef requirements-github.txt || ln -f constraints.txt requirements-github.txt || cp constraints.txt requirements-github.txt
 
 requirement-sets:  ## Generate requirements-* files.
-	scripts/generate-dep-set.py --extra dev -o "requirements-dev.txt"
-	scripts/generate-dep-set.py --extra oauth --extra production -o "requirements-production.txt"
+	${PFX}${PYTHON} scripts/generate-dep-set.py --extra dev -o "requirements-dev.txt"
+	${PFX}${PYTHON} scripts/generate-dep-set.py --extra oauth --extra production -o "requirements-production.txt"
 
 help:     ## This help.
 	@grep -F -h "#""#" $(MAKEFILE_LIST) | sed -e "s/:\\s*#""#/\n\t/" -e "s/\\s*#""#/\t/"
