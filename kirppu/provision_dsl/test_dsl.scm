@@ -2,6 +2,10 @@
 ()
 ;=
 
+;TEST single literal
+1
+;= 1
+
 ;TEST simple op
 (+ 5 3)
 ;= 8

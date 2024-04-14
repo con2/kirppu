@@ -48,6 +48,13 @@ class ConditionPlugin(InlinePlugin):
         child_state.src = body
         return inline.render(child_state)
 
+    @staticmethod
+    def tokenize(program: str) -> list[str]:
+        tokens = tokenize(program)
+        if tokens.count("(") != tokens.count(")"):
+            raise SyntaxError("Unbalanced parentheses")
+        return tokens
+
     @classmethod
     def parse(
         cls, inline: mistune.InlineParser, m: re.Match, state: mistune.InlineState
@@ -56,7 +63,7 @@ class ConditionPlugin(InlinePlugin):
         false_body = m.group("false_body")
 
         primary_condition_str = m.group("condition")
-        primary_program = tokenize(primary_condition_str)
+        primary_program = cls.tokenize(primary_condition_str)
         primary_children = cls._eval_children(inline, state, body)
         cases: list[cls.Condition] = [
             cls.Condition(condition=primary_program, body=primary_children),
@@ -74,7 +81,7 @@ class ConditionPlugin(InlinePlugin):
 
                 prev = match.start("elif_body")
                 cases.append(
-                    cls.Condition(condition=tokenize(match.group("elif_condition")))
+                    cls.Condition(condition=cls.tokenize(match.group("elif_condition")))
                 )
 
             if prev != 0:
@@ -101,13 +108,20 @@ class ConditionPlugin(InlinePlugin):
     def render(self, renderer: mistune.BaseRenderer, cases: list[Condition]) -> str:
         env = self._env.copy()
         env.update(self._variables)
+        stop = object()
+
         for cond in cases:
             program = cond["condition"]
             if program is not False:
                 # <if ...>
                 # <elif ...>
-                stream = next(self.read_from_tokens(program))
-                result = self.evaluate(stream, env)
+                stream = self.read_from_tokens(program)
+                # Orphan next(), as toplevel must be a single item.
+                p = next(stream)
+                if next(stream, stop) is not stop:
+                    raise ValueError("Garbage at end of program")
+
+                result = self.evaluate(p, env)
                 if result:
                     return renderer.render_tokens(cond["body"], None)
             else:
@@ -122,13 +136,13 @@ class ConditionPlugin(InlinePlugin):
     ) -> typing.Iterator[Token]:
         if isinstance(tokens, list):
             tokens = iter(tokens)
-        token = next(tokens)
-        while token != ")":
+        token = next(tokens, None)
+        while token is not None and token != ")":
             if token == "(":
                 yield [token for token in cls.read_from_tokens(tokens)]
             else:
                 yield cls.atomize(token)
-            token = next(tokens)
+            token = next(tokens, None)
 
     @staticmethod
     def atomize(token: str) -> Symbol | decimal.Decimal:

@@ -258,26 +258,38 @@ class UITextForm(forms.ModelForm):
 
     format_help = StaticText(
         label=_("Text formatting"),
-        text=_("""<div style="float: left;">The text is formatted with standard Markdown syntax. Quick reference:<br/>
-# Heading<br/>
-## Subheading<br/>
-### Sub-subheading<br/>
-- Un-ordered list item<br/>
-1. Ordered list item<br/>
-*<em>text</em>*<br/>
-**<strong>text</strong>**<br/>
-[<em>Link title</em>](<em>https://...</em>)<br/>
-&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>
-&lt;glyph <em>glyph-name</em> /&gt;<br/>
-&lt;alertbox <em>type</em>&gt;<em>alert text content</em>&lt;/alertbox&gt; Types: danger, warning, info, success<br/>
+        text='<div style="float: left; white-space: pre-line;">'
+        + _("The text is formatted with standard Markdown syntax. Quick reference:")
+        + """
+# Heading
+## Subheading
+### Sub-subheading
+- Un-ordered list item
+1. Ordered list item
+*<em>text</em>*
+**<strong>text</strong>**
+[<em>Link title</em>](<em>https://...</em>)
+&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;
+&lt;glyph <em>glyph-name</em> /&gt;
+&lt;alertbox <em>type</em>&gt;<em>alert text content</em>&lt;/alertbox&gt; Types: danger, warning, info, success
 &lt;itemlist /&gt;
-</div>""")
+&lt;var VAR /&gt; Pre-defined: event.name, event.start.date, event.end.date, event.homepage,\
+ registration.end.datetime, registration.end.date, registration.end.time
+&lt;if COND&gt;text&lt;/if&gt;
+&lt;if COND1&gt;text&lt;elif COND2&gt;text&lt;else&gt;text&lt;/if&gt;
+<pre style="padding-left: 0;">
+.. vars::
+   :VAR: VALUE
+   :VAR: VALUE
+</pre>
+</div>""",
     )
 
     def clean_text(self):
         data = self.cleaned_data["text"]
         try:
             from .text_engine import mark_down
+
             mark_down(data)
         except ValueError as e:
             raise ValidationError(e.args[0])

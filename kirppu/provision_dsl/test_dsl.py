@@ -135,6 +135,18 @@ class ProvisionDslSourceTestCase(unittest.TestCase, metaclass=SourceMetaClass):
             dsl.run("""(+ 1 2 3)""")
         self.assertEqual(ErrorType.ARGUMENT_COUNT, e.exception.code, make_ex_str(e.exception))
 
+    def test_parens_1(self):
+        with self.assertRaises(SyntaxError):
+            dsl.run("(1 1")
+
+    def test_parens_2(self):
+        with self.assertRaises(SyntaxError):
+            dsl.run("1) 1")
+
+    def test_non_single_top(self):
+        with self.assertRaises(ValueError):
+            dsl.run("1 1")
+
 
 class ProvisionDslDjangoTestCase(DjangoTestCase):
     def setUp(self):

@@ -793,15 +793,18 @@ def statistical_stats_view(request, event: Event):
 
     registered = _items.count()
     deleted = _items.filter(hidden=True).count()
-    brought = _items.filter(state__in=brought_states).count()
+    brought_q = _items.filter(state__in=brought_states)
+    brought = brought_q.count()
     sold = _items.filter(state__in=(Item.STAGED, Item.SOLD, Item.COMPENSATED)).count()
     printed_deleted = _items.filter(hidden=True, printed=True).count()
     printed_not_brought = _items.filter(printed=True, state=Item.ADVERTISED).count()
 
     items_in_box = _items.filter(box__isnull=False).count()
     items_not_in_box = _items.filter(box__isnull=True).count()
+    brought_box_items = brought_q.filter(box__isnull=False).count()
     registered_boxes = _boxes.count()
     deleted_boxes = _boxes.filter(representative_item__hidden=True).count()
+    brought_boxes = _boxes.filter(representative_item__state__in=brought_states).count()
     items_in_deleted_boxes = _items.filter(box__representative_item__hidden=True).count()
 
     general = {
@@ -810,6 +813,8 @@ def statistical_stats_view(request, event: Event):
         "deletedOfRegistered": (deleted * 100.0 / registered) if registered > 0 else 0,
         "brought": brought,
         "broughtOfRegistered": (brought * 100.0 / registered) if registered > 0 else 0,
+        "broughtBoxItems": brought_box_items,
+        "broughtBoxItemsOfRegistered": (brought_box_items * 100.0 / items_in_box) if items_in_box > 0 else 0,
         "printedDeleted": printed_deleted,
         "printedNotBrought": printed_not_brought,
         "sold": sold,
@@ -820,6 +825,8 @@ def statistical_stats_view(request, event: Event):
 
         "itemsInBox": items_in_box,
         "itemsNotInBox": items_not_in_box,
+        "broughtBoxes": brought_boxes,
+        "broughtBoxesOfRegistered": (brought_boxes * 100.0 / registered_boxes) if registered_boxes > 0 else 0,
         "registeredBoxes": registered_boxes,
         "deletedBoxes": deleted_boxes,
         "deletedOfRegisteredBoxes": (deleted_boxes * 100.0 / registered_boxes) if registered_boxes > 0 else 0,
@@ -839,10 +846,20 @@ def statistical_stats_view(request, event: Event):
     purchases = [float(e) for e in purchases]
     general["purchases"] = len(purchases)
 
+    brought_distribution = (
+        _vendors
+        .filter(item__state__in=brought_states)
+        .annotate(item_count=models.Count("item__id"))
+        .filter(item_count__gt=0)
+        .order_by("item_count")
+        .values_list("item_count", flat=True)
+    )
+
     return render(request, "kirppu/general_stats.html", {
         "event": original_event,
         "compensations": _float_array(compensations),
         "purchases": _float_array(purchases),
+        "brought": "[" + ",".join(str(e) for e in brought_distribution) + "]",
         "general": general,
         "CURRENCY": settings.KIRPPU_CURRENCY["raw"],
     })
@@ -872,6 +889,7 @@ def vendor_view(request, event_slug):
         boxed_items = Item.objects.none()
 
     box_info = boxed_items.aggregate(sum=models.Sum("price"), count=models.Count("id"))
+    is_manager = request.user.is_superuser or EventPermission.get(event, request.user).can_manage_event
 
     context = {
         'event': event,
@@ -892,6 +910,7 @@ def vendor_view(request, event_slug):
         'profile_url': settings.PROFILE_URL,
         'menu': vendor_menu(request, event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
+        "allow_preview": is_manager,
         "uiTextVars": ui_text_vars(event),
     }
     context.update(vendor_data)

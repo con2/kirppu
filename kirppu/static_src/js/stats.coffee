@@ -307,17 +307,17 @@ class Graph
     return
 
 
-initBucketGraph = (id, legend, currencyFormatter, bucket) ->
-  return new Graph(id, legend,
+initBucketGraph = (id, cfg, valueFormatter) ->
+  return new Graph(id, cfg.legend,
     labels: [gettext("Sum"), gettext("Frequency"), gettext("Normal distribution")]
-    labelsDiv: legend
+    labelsDiv: cfg.legend
     legend: 'always'
     ylabel: gettext("n")
-    xlabel: gettext("euros")
+    xlabel: if cfg.xlabel? then cfg.xlabel else gettext("euros")
     axes:
       x:
-        valueFormatter: (i) -> return currencyFormatter(i) + " – " + currencyFormatter(i + bucket)
-        axisLabelFormatter: (i) -> return currencyFormatter(i)
+        valueFormatter: (i) -> return valueFormatter(i) + " – " + valueFormatter(i + cfg.bucket)
+        axisLabelFormatter: (i) -> return valueFormatter(i)
   )
 
 createCurrencyFormatter = (fmt) ->
@@ -347,28 +347,29 @@ initGeneralStats = (options) ->
   currencyFormatter = createCurrencyFormatter(options.CURRENCY)
   for _, cfg of options.graphs
     data = getJson(cfg.content)
+
+    if cfg.unit?
+      valueFormatter = (v) -> "" + v + " " + cfg.unit
+    else
+      valueFormatter = currencyFormatter
+
     if not data? or data.length == 0
       $("#" + cfg.graph).text(gettext("No data"))
       continue
 
-    graph = initBucketGraph(cfg.graph, cfg.legend, currencyFormatter, cfg.bucket)
+    graph = initBucketGraph(cfg.graph, cfg, valueFormatter)
 
-    data = genStatsForData(data, graph,
+    stats = genStatsForData(data, graph,
       stepSize: cfg.bucket
     )
 
-    if cfg.avg?
-      $("#" + cfg.avg).text(roundTo(data.avg, 3))
-    if cfg.stdev?
-      $("#" + cfg.stdev).text(roundTo(data.pstdev, 3))
-    if cfg.median?
-      $("#" + cfg.median).text(roundTo(data.median, 3))
-    if cfg.perc68?
-      $("#" + cfg.perc68).text(data.perc68)
-    if cfg.perc95?
-      $("#" + cfg.perc95).text(data.perc95)
-    if cfg.perc997?
-      $("#" + cfg.perc997).text(data.perc997)
+    numbers = $("#" + cfg.numbers)
+    $(".graph_avg", numbers).text(valueFormatter(roundTo(stats.avg, 3)))
+    $(".graph_stdev", numbers).text(valueFormatter(roundTo(stats.pstdev, 3)))
+    $(".graph_median", numbers).text(valueFormatter(roundTo(stats.median, 3)))
+    $(".graph_perc68", numbers).text(valueFormatter(stats.perc68))
+    $(".graph_perc95", numbers).text(valueFormatter(stats.perc95))
+    $(".graph_perc997", numbers).text(valueFormatter(stats.perc997))
 
 
 $(document).ready () ->

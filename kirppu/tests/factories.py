@@ -75,6 +75,7 @@ class EventFactory(Factory):
     end_date = (now() + timedelta(days=3)).date()
 
     registration_end = now() + timedelta(days=1)
+    registration_disabled = False
     checkout_active = True
 
 

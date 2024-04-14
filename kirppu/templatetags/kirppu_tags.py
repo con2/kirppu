@@ -30,8 +30,14 @@ def _get_ui_text_query(context, id_):
 
 @register.simple_tag(takes_context=True)
 def load_text(context: template.Context, id_: str) -> str:
+    q = {"identifier": id_}
+    previews = context.get("allow_preview", False)
+    if previews:
+        preview_id = context["request"].GET.get("preview")
+        if preview_id:
+            q = {"pk": int(preview_id)}
     try:
-        md = _get_ui_text_query(context, id_).get(identifier=id_).text
+        md = _get_ui_text_query(context, id_).get(**q).text
         return mark_safe(mark_down(md, context))
     except UIText.DoesNotExist:
         if settings.DEBUG:

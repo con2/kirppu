@@ -99,6 +99,12 @@ def tokenize(program: str) -> typing.Optional[typing.List[str]]:
         return tokens
 
 
+def check_tokens(tokens: list[str]) -> list[str]:
+    if tokens.count("(") + tokens.count("'(") != tokens.count(")"):
+        raise SyntaxError("Unbalanced parentheses")
+    return tokens
+
+
 class _Repr:
     def __repr__(self):
         return self.__class__.__name__ + "(" + super().__repr__() + ")"
@@ -122,15 +128,15 @@ Token = typing.Union[decimal.Decimal, Symbol, Literal, LiteralList]
 def read_from_tokens(tokens: typing.Union[typing.Iterator[str], typing.List[str]]) -> typing.Iterator[Token]:
     if isinstance(tokens, list):
         tokens = iter(tokens)
-    token = next(tokens)
-    while token != ")":
+    token = next(tokens, None)
+    while token is not None and token != ")":
         if token == "(":
             yield [token for token in read_from_tokens(tokens)]
         elif token == "'(":
             yield LiteralList(token for token in read_from_tokens(tokens))
         else:
             yield atomize(token)
-        token = next(tokens)
+        token = next(tokens, None)
 
 
 def atomize(token: str) -> typing.Union[decimal.Decimal, Symbol, Literal]:
@@ -235,8 +241,12 @@ def _require_list(src: typing.List, length: int, error: typing.Union[ErrorType, 
 def run(program: str, **kwargs):
     """Run given program, giving additional kwargs as global variables to it."""
     from . import django_interop, extra_runtime
-    tokens = tokenize(program)
-    ast = next(read_from_tokens(tokens))
+    tokens = check_tokens(tokenize(program))
+    prog = read_from_tokens(tokens)
+    ast = next(prog)
+    stop = object()
+    if next(prog, stop) is not stop:
+        raise ValueError("Garbage at end of program")
     env = make_std_env()
     env.update(extra_runtime.make_env())
     env.update(django_interop.make_env())

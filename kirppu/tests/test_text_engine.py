@@ -261,3 +261,27 @@ def test_condition_constant_1() -> None:
 def test_condition_constant_2() -> None:
     out = mark_down("<if ()>true<else>false</if>").replace("\n", "")
     assert out == "<p>false</p>"
+
+
+def test_non_single_toplevel_1() -> None:
+    with pytest.raises(ValueError) as e:
+        mark_down("<if (1)1>true</if>")
+    assert e.value.args[0] == "Garbage at end of program"
+
+
+def test_non_single_toplevel_2() -> None:
+    with pytest.raises(ValueError) as e:
+        mark_down("<if 1 1>true</if>")
+    assert e.value.args[0] == "Garbage at end of program"
+
+
+def test_parens_1() -> None:
+    with pytest.raises(SyntaxError) as e:
+        mark_down("<if 1) 1>true</if>")
+    assert e.value.args[0] == "Unbalanced parentheses"
+
+
+def test_parens_2() -> None:
+    with pytest.raises(SyntaxError) as e:
+        mark_down("<if (1 1>true</if>")
+    assert e.value.args[0] == "Unbalanced parentheses"

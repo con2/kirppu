@@ -171,12 +171,14 @@ def is_vendor_open(request, event):
     """
     end = event.registration_end
     from .models import EventPermission
-    return (end is not None and timezone.now() <= end) or (
+    return (end is not None and timezone.now() <= end and not event.registration_disabled) or (
         EventPermission.get(event, request.user).can_register_items_outside_registration
     )
 
 
 def is_registration_closed_for_users(event):
+    if event.registration_disabled:
+        return True
     end = event.registration_end
     if end is None:
         return True
