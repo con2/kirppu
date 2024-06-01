@@ -312,6 +312,9 @@ def box_add(request, event):
     max_items = settings.KIRPPU_MAX_ITEMS_PER_VENDOR
     item_cnt = Item.objects.filter(vendor=vendor).count()
     count = data["count"]
+    if count < event.min_box_size:
+        error_msg = "Box size must be greater or equal than %(box_size)d."
+        return HttpResponseBadRequest(error_msg % {"box_size": event.min_box_size})
     if item_cnt >= max_items:
         error_msg = _(u"You have %(max_items)s items, which is the maximum. No more items can be registered.")
         return HttpResponseBadRequest(error_msg % {'max_items': max_items})
@@ -505,6 +508,7 @@ def get_boxes(request, event_slug):
         'source_event': event.get_real_event(),
         'boxes': boxes,
         'box_name_placeholder': box_name_placeholder,
+        'min_box_size_placeholder': max(event.min_box_size, 10),
 
         'profile_url': settings.PROFILE_URL,
         'terms_accepted': vendor.terms_accepted if vendor is not None else False,

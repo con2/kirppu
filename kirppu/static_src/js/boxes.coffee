@@ -120,8 +120,9 @@ parsePositiveInt = (input) ->
   s = input.val()
   v = Number.parseInt(s)
   ni = input.data("nonInitial") ? false
+  min = Number.parseInt(input.attr("min") or "1")
 
-  if Number.isNaN(v) or v <= 0
+  if Number.isNaN(v) or v < min
     if ni or s != (input.attr("value") ? "")
       input.addClass("has-error")
     null

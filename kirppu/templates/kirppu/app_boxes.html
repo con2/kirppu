@@ -72,7 +72,7 @@
                     {% trans "Items:" as tlItems %}
                     <label id="box-add-count-label" for="box-add-count" class="col-sm-2 control-label" data-tl-bundles="{{ tlBundles }}" data-tl-items="{{ tlItems }}">{{ tlItems }}</label>
                     <div class="col-sm-2">
-                        <input id="box-add-count" type="number" min="1" class="form-control" placeholder="{% trans "10" %}" />
+                        <input id="box-add-count" type="number" min="{{ event.min_box_size }}" class="form-control" placeholder="{{ min_box_size_placeholder }}" />
                     </div>
                     <div class="col-sm-3">
                         <p class="form-control-static" id="box-total-item-count">

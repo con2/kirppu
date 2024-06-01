@@ -147,6 +147,8 @@ class Event(models.Model):
         help_text=_("Should a box be considered a single item when counting max brought"
                     " items instead of considering its contents individually."),
     )
+    min_box_size = models.PositiveSmallIntegerField(null=False, default=1)
+
     # Link to another database.
     source_db = models.CharField(blank=True, max_length=250, null=True, unique=True)
 
