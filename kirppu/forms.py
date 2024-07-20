@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
@@ -8,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from .fields import ItemPriceField, SuffixField, StripField
 from .models import (
     AccessSignup,
+    Box,
     Clerk,
     Event,
     ReceiptItem,
@@ -312,6 +315,10 @@ class ItemRemoveForm(forms.Form):
 
     def clean_code(self):
         data = self.cleaned_data["code"]
+        if box_match := re.match(r"box[_ -]?(\d+)$", data):
+            if not Box.objects.filter(pk=int(box_match[1])).exists():
+                raise forms.ValidationError("Box {} not found".format(box_match[1]))
+            return data
         if not Item.is_item_barcode(data):
             raise forms.ValidationError("Value is not an item barcode")
         if not Item.objects.filter(code=data, vendor__event=self._event).exists():
@@ -320,21 +327,35 @@ class ItemRemoveForm(forms.Form):
 
 
 @transaction.atomic
-def remove_item_from_receipt(request, item_or_code, receipt_id, update_receipt=True):
-    if isinstance(item_or_code, Item):
-        item = item_or_code
-    else:
-        item = Item.objects.select_for_update().get(code=item_or_code)
-
-    if item.state not in (Item.SOLD, Item.STAGED):
-        raise ValueError("Item is not sold or staged, but {}".format(item.state))
-
+def remove_item_from_receipt(
+    request, item_or_code: str | Item, receipt_id: int | Receipt, update_receipt=True
+):
     if isinstance(receipt_id, Receipt):
         receipt = receipt_id
         assert receipt.type == Receipt.TYPE_PURCHASE, "This function cannot be used for non-purchase receipts."
     else:
         receipt = Receipt.objects.select_for_update().get(pk=receipt_id, type=Receipt.TYPE_PURCHASE)
         assert update_receipt, "Receipt must be updated if accessed by id."
+
+    if isinstance(item_or_code, Item):
+        item = item_or_code
+    else:
+        if box_match := re.match(r"box[_ -]?(\d+)$", item_or_code):
+            box_number = int(box_match[1])
+            receipt_box_item = ReceiptItem.objects.filter(
+                receipt=receipt,
+                action=ReceiptItem.ADD,
+                item__box__box_number=box_number,
+            ).order_by("-add_time")[0:1]
+            if not receipt_box_item:
+                raise ValueError("Box item not found on receipt")
+            item = receipt_box_item[0].item
+            item = Item.objects.select_for_update().get(pk=item.pk)
+        else:
+            item = Item.objects.select_for_update().get(code=item_or_code)
+
+    if item.state not in (Item.SOLD, Item.STAGED):
+        raise ValueError("Item is not sold or staged, but {}".format(item.state))
 
     last_added_item = ReceiptItem.objects \
         .filter(receipt=receipt, item=item, action=ReceiptItem.ADD) \

@@ -51,10 +51,6 @@ def ui_text_vars(event) -> dict[str, typing.Any]:
         "event.end.date": _date(event.end_date),
         "event.homepage": event.home_page,
         "registration.end.datetime": _datetime(event.registration_end),
-        "registration.end.date": _date(event.registration_end)
-        if event.registration_end
-        else "",
-        "registration.end.time": _time(event.registration_end)
-        if event.registration_end
-        else "",
+        "registration.end.date": _date(event.registration_end),
+        "registration.end.time": _time(event.registration_end),
     }

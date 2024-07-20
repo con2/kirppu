@@ -8,15 +8,15 @@ asgiref==3.8.1
     # via django
 build==1.2.1
     # via pip-tools
-certifi==2024.2.2
+certifi==2024.7.4
     # via requests
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via pip-tools
-coverage==7.5.3
+coverage==7.6.0
     # via pytest-cov
-django==4.2.13
+django==4.2.14
     # via kirppu (pyproject.toml)
 django-environ==0.11.2
     # via kirppu (pyproject.toml)
@@ -44,18 +44,18 @@ oauthlib==3.2.2
     # via
     #   kirppu (pyproject.toml)
     #   requests-oauthlib
-packaging==24.0
+packaging==24.1
     # via
     #   build
     #   gunicorn
     #   pytest
-pillow==10.3.0
+pillow==10.4.0
     # via kirppu (pyproject.toml)
 pip-tools==7.4.1
     # via kirppu (pyproject.toml)
 pluggy==1.5.0
     # via pytest
-psycopg==3.1.19
+psycopg==3.1.20
     # via kirppu (pyproject.toml)
 pubcode==1.1.0
     # via kirppu (pyproject.toml)
@@ -85,11 +85,11 @@ requests-oauthlib==2.0.0
     # via kirppu (pyproject.toml)
 six==1.16.0
     # via python-dateutil
-sqlparse==0.5.0
+sqlparse==0.5.1
     # via django
-typing-extensions==4.12.0
+typing-extensions==4.12.2
     # via psycopg
-urllib3==2.2.1
+urllib3==2.2.2
     # via requests
 wheel==0.43.0
     # via pip-tools

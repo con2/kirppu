@@ -72,6 +72,8 @@
     <h3>Examples</h3>
     <h4>0.50 per sold item</h4>
     <pre><code>(* 0.5 (.count sold_and_compensated))</code></pre>
+    <h4>5 % of sold items</h4>
+    <pre><code>(* 0.05 (.sumBy 'price sold_and_compensated))</code></pre>
     <h4>0.50 per sold item under price of 5, and 1 per sold item of and over price of 5</h4>
     <pre><code>(begin
   (define under (.count (.filter sold_and_compensated '(< price 5))))
