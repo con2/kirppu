@@ -28,6 +28,8 @@ def _date(value: datetime.datetime | None) -> Lazy:
     def wrapped(fmt: str = "SHORT_DATE_FORMAT") -> str:
         if value is None:
             return ""
+        if isinstance(value, datetime.date):
+            return defaultfilters.date(value, fmt)
         local_value = _convert_localtime(value)
         return defaultfilters.date(local_value.date(), fmt)
 
