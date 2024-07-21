@@ -37,7 +37,9 @@ User = settings.AUTH_USER_MODEL
 
 
 def decimal_to_transport(value):
-    return int(value * Item.FRACTION)
+    # round(): Database provides a rounded value anyway, so use the same
+    # to avoid having different value for database-rows and in-memory-rows (provision pre-calculation).
+    return int(round(value * Item.FRACTION))
 
 
 class UserAdapterBase(object):
@@ -1095,7 +1097,7 @@ class Item(models.Model):
         return self.price_fmt_for(self.price)
 
     @staticmethod
-    def price_fmt_for(value):
+    def price_fmt_for(value: Decimal) -> Decimal:
         # If value is exact integer, return only the integer part.
         int_value = value.to_integral_value()
         if int_value == value:

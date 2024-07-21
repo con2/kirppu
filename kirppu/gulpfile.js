@@ -2,13 +2,14 @@ const gulp = require("gulp");
 const gif = require("gulp-if");
 const concat = require("gulp-concat-util");
 const coffee = require("gulp-coffee");
-const fs = require("fs");
+const fs = require("node:fs");
 const patch = require("gulp-apply-patch");
-const path = require("path");
+const path = require("node:path");
 const rollup = require("rollup");
 const rollup_sucrase = require("@rollup/plugin-sucrase");
 const uglify = require("gulp-uglify");
-const minify = require("gulp-cssnano");
+const minify = require("gulp-postcss");
+const cssnano = require("cssnano");
 
 const args = require("minimist")(process.argv.slice(2));
 const withColor = (c) => (s) => `\x1b[${ c }m${ s }\x1b[39m`;
@@ -18,7 +19,6 @@ const colors = {
     cyan: withColor(36)
 };
 const log = require("fancy-log");
-const noop = require("through2");
 
 
 const pipeline = require("./pipeline");
@@ -84,7 +84,7 @@ const jsTasks = Object.entries(pipeline.js).map(function([name, def]) {
     gulp.task(taskName, function() {
         return gulp.src(srcPrepend(def))
             .pipe(patch("patches/*.patch"))
-            .pipe(gif(/\.coffee$/, coffee(), noop.obj()))
+            .pipe(gif(/\.coffee$/, coffee()))
             .on('error', handleError)
             .pipe(concat(def.output_filename, {process: fileHeader(jsHeader)}))
             .pipe(gif(shouldCompress && def.compress, uglify()))
@@ -99,7 +99,7 @@ const cssTasks = Object.entries(pipeline.css).map(function([name, def]) {
         return gulp.src(srcPrepend(def))
             .pipe(concat(def.output_filename, {process: fileHeader(cssHeader)}))
             .on('error', handleError)
-            .pipe(gif(shouldCompress, minify()))
+            .pipe(gif(shouldCompress, minify([cssnano()])))
             .pipe(gulp.dest(DEST + "/css/"));
     });
     return taskName;

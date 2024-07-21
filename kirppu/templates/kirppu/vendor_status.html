@@ -1,4 +1,4 @@
-{% extends "kirppu/common.html" %}{% load i18n %}{% load kirppu_login %}
+{% extends "kirppu/common.html" %}{% load i18n %}{% load kirppu_login %}{% load kirppu_tags %}
 
 {% block title %}{% trans "Item status" %} – {{ block.super }}{% endblock %}
 
@@ -69,9 +69,9 @@
         </tr>
         {% endfor %}
         {% if table.pre_sum_line %}
-        <tr><td {% if table.spec.checkable %}colspan="2"{% endif %}></td><td>{{ table.pre_sum_line.0 }}</td><td class="price" colspan="2">{{ table.pre_sum_line.1 }}</td></tr>
+        <tr><td {% if table.spec.checkable %}colspan="2"{% endif %}></td><td>{{ table.pre_sum_line.0 }}</td><td class="price" colspan="2">{{ table.pre_sum_line.1|quantize_price }}</td></tr>
         {% endif %}
-        <tr><td {% if table.spec.checkable %}colspan="2"{% endif %}></td><td>{% trans "total:" %}</td><td class="price" colspan="2">{{ table.sum }}</td></tr>
+        <tr><td {% if table.spec.checkable %}colspan="2"{% endif %}></td><td>{% trans "total:" %}</td><td class="price" colspan="2">{{ table.sum|quantize_price }}</td></tr>
         </tbody>
         </table>
         {% else %}

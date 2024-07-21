@@ -12,7 +12,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 import pubcode
-from ..models import UIText, UserAdapter, Event, RemoteEvent
+from ..models import Event, Item, RemoteEvent, UIText, UserAdapter
 from ..text_engine import mark_down
 
 register = template.Library()
@@ -223,6 +223,11 @@ def format_price(value, format_type="raw"):
         str(value),
         settings.KIRPPU_CURRENCY[format_type][1]
     )
+
+
+@register.filter
+def quantize_price(value):
+    return Item.price_fmt_for(value)
 
 
 @register.filter("isInPastDays")
