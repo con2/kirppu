@@ -132,7 +132,9 @@ const staticTasks = Object.entries(pipeline.static).map(function([name, def]) {
     const taskName = "static:" + name;
     gulp.task(taskName, function() {
         let _to = DEST;
-        const options = {};
+        const options = {
+            encoding: false,
+        };
         if (def.dest) {
             _to = path.join(_to, def.dest);
         }
