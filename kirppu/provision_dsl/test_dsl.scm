@@ -87,3 +87,35 @@
 ;TEST conditional-op
 ((if 1 + -) 2 3)
 ;= 5
+
+;TEST min regular
+(min 2 1)
+;= 1
+
+;TEST max regular
+(max 2 1)
+;= 2
+
+;TEST min va
+(min 3 2 4)
+;= 2
+
+;TEST min va 2
+(min 3 5 2 4)
+;= 2
+
+;TEST max va
+(max 3 4 5 6)
+;= 6
+
+;TEST add va
+(+ 2 3 4)
+;= 9
+
+;TEST sub va
+(- 10 2 3)
+;= 5
+
+;TEST mul va
+(* 2 2 2 2)
+;= 16

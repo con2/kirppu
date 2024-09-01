@@ -36,8 +36,10 @@ packaging
     # via gunicorn
 pillow
     # via kirppu (pyproject.toml)
-psycopg
+psycopg[c]
     # via kirppu (pyproject.toml)
+psycopg-c
+    # via psycopg
 pubcode
     # via kirppu (pyproject.toml)
 requests

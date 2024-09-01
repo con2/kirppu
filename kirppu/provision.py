@@ -65,7 +65,7 @@ class Provision(object):
 
         _r = run(provision_function, sold_and_compensated=sold_and_compensated)
 
-        assert _r is None or isinstance(_r, Decimal), "Value returned from function must be null or a number"
+        assert _r is None or isinstance(_r, (Decimal, int)), "Value returned from function must be null or a number"
         return _r
 
     def _run_function(self, items: Optional[QuerySet] = None) -> Optional[Decimal]:

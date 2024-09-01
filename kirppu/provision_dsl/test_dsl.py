@@ -132,7 +132,7 @@ class ProvisionDslSourceTestCase(unittest.TestCase, metaclass=SourceMetaClass):
 
     def test_wrong_argument_count(self):
         with self.assertRaises(Error) as e:
-            dsl.run("""(+ 1 2 3)""")
+            dsl.run("""(< 1 2 3)""")
         self.assertEqual(ErrorType.ARGUMENT_COUNT, e.exception.code, make_ex_str(e.exception))
 
     def test_parens_1(self):
@@ -146,6 +146,12 @@ class ProvisionDslSourceTestCase(unittest.TestCase, metaclass=SourceMetaClass):
     def test_non_single_top(self):
         with self.assertRaises(ValueError):
             dsl.run("1 1")
+
+    def test_wrong_vararg_type(self):
+        with self.assertRaises(Error) as e:
+            dsl.run("(min 1 2 'a)")
+        self.assertEqual(ErrorType.ARGUMENT_TYPE, e.exception.code, make_ex_str(e.exception))
+
 
 
 class ProvisionDslDjangoTestCase(DjangoTestCase):
