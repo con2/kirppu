@@ -1,0 +1,31 @@
+# https://github.com/kubernetes/kubernetes/releases
+# https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+# STABLE=https://dl.k8s.io/release/stable.txt
+# - https://dl.k8s.io/release/v1.20.4/bin/linux/amd64/kubectl
+# - https://dl.k8s.io/release/v1.20.4/bin/linux/amd64/kubectl.sha256
+
+# https://github.com/GoogleContainerTools/skaffold/releases
+# - https://storage.googleapis.com/skaffold/releases/v1.20.0/skaffold-linux-amd64
+# - https://github.com/GoogleContainerTools/skaffold/releases/download/v1.20.0/skaffold-linux-amd64.sha256
+
+runs:
+  using: composite
+  steps:
+    - id: cache-bin
+      uses: actions/cache@v3
+      with:
+        path: bin
+        key: ${{ runner.os }}-bin-v1
+    - if: steps.cache-bin.outputs.cache-hit != 'true'
+      name: Download tools
+      shell: bash
+      run: |
+        mkdir bin
+        curl -Lo bin/skaffold https://storage.googleapis.com/skaffold/releases/v1.20.0/skaffold-linux-amd64
+        echo "725b5b5b9456cb1abc26c8a7528906e27c30980cda79249d780618c3834a7aa3  bin/skaffold" | sha256sum -c -
+        curl -Lo bin/kubectl https://dl.k8s.io/release/v1.20.4/bin/linux/amd64/kubectl
+        echo "98e8aea149b00f653beeb53d4bd27edda9e73b48fed156c4a0aa1dabe4b1794c  bin/kubectl" | sha256sum -c -
+        chmod +x bin/skaffold bin/kubectl
+    - name: Add tools to PATH
+      shell: bash
+      run: echo "$PWD/bin" >> $GITHUB_PATH
