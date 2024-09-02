@@ -52,7 +52,7 @@ jobs:
           fi
 
           emskaffolden -E "$EMSKAFFOLDEN_ENV" -- build --file-output build.json
-          echo "::set-output name=build_json::$(base64 -w 0 < build.json)"
+          echo "build_json=$(base64 -w 0 < build.json)" >> "$GITHUB_OUTPUT"
     outputs:
       build_json: ${{ steps.build.outputs.build_json }}
 
