@@ -10,7 +10,7 @@ export function AddVendorNote({withButton, withConfirm}) {
         noteInput.disabled = !this.checked
     }
     return (
-        <form onSubmit={() => false}>
+        <form onsubmit={() => false}>
             {withConfirm && <div className="checkbox" style="min-width: 8em;">
                 <label>
                     <input type="checkbox" id="enable_note" onchange={toggle}/>
