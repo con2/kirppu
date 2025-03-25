@@ -43,6 +43,8 @@ djangoapp_allowed_hosts: !Concat
 ingress_letsencrypt_enabled: false
 ingress_letsencrypt_cluster_issuer: letsencrypt-prod
 
+ingress_class_name: nginx
+
 # NOTE: "managed" PostgreSQL should not be considered production-ready.
 postgres_managed: true
 postgres_image: postgres
