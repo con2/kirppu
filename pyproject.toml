@@ -23,8 +23,8 @@ oauth = [
     "oauthlib~=3.2.0",
 ]
 production = [
-    "gunicorn~=22.0",
-    "psycopg[c]~=3.1.0",
+    "gunicorn~=23.0",
+    "psycopg[c]~=3.2.0",
 ]
 dev = [
     "factory-boy~=3.3.0",

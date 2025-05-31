@@ -120,6 +120,8 @@ roundTo = (value, decimals) ->
 # Calculate percentile A from a sorted data set.
 percentile = (sorted_data, A) ->
   len = sorted_data.length
+  if len == 1
+    return sorted_data[0]
   rank = (A / 100) * (len - 1)
   pos = Math.floor(rank)
   rem = rank - pos
