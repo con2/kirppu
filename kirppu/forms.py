@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.utils.html import format_html, mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from .fields import ItemPriceField, SuffixField, StripField
@@ -261,9 +262,10 @@ class UITextForm(forms.ModelForm):
 
     format_help = StaticText(
         label=_("Text formatting"),
-        text='<div style="float: left; white-space: pre-line;">'
-        + _("The text is formatted with standard Markdown syntax. Quick reference:")
-        + """
+        text=(
+            mark_safe('<div style="float: left; white-space: pre-line;">'),
+            _("The text is formatted with standard Markdown syntax. Quick reference:"),
+            mark_safe("""
 # Heading
 ## Subheading
 ### Sub-subheading
@@ -285,7 +287,8 @@ class UITextForm(forms.ModelForm):
    :VAR: VALUE
    :VAR: VALUE
 </pre>
-</div>""",
+</div>"""),
+        ),
     )
 
     def clean_text(self):

@@ -43,9 +43,13 @@ pillow
 pip-tools
     # via kirppu (pyproject.toml)
 pluggy
-    # via pytest
+    # via
+    #   pytest
+    #   pytest-cov
 pubcode
     # via kirppu (pyproject.toml)
+pygments
+    # via pytest
 pyproject-hooks
     # via
     #   build
@@ -62,12 +66,12 @@ pytest-django
     # via kirppu (pyproject.toml)
 pytest-env
     # via kirppu (pyproject.toml)
-python-dateutil
-    # via faker
-six
-    # via python-dateutil
+python-ipware
+    # via django-ipware
 sqlparse
     # via django
+tzdata
+    # via faker
 wheel
     # via pip-tools
 whitenoise

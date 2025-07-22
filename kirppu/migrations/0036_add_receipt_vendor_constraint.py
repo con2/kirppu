@@ -10,6 +10,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddConstraint(
             model_name='receipt',
-            constraint=models.CheckConstraint(check=models.Q(models.Q(('type', 'COMPENSATION'), ('vendor__isnull', False)), models.Q(models.Q(_negated=True, type='COMPENSATION'), ('vendor__isnull', True)), _connector='OR'), name='vendor_id_nullity'),
+            constraint=models.CheckConstraint(condition=models.Q(models.Q(('type', 'COMPENSATION'), ('vendor__isnull', False)), models.Q(models.Q(_negated=True, type='COMPENSATION'), ('vendor__isnull', True)), _connector='OR'), name='vendor_id_nullity'),
         ),
     ]

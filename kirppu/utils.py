@@ -3,6 +3,8 @@ from functools import wraps
 from django.core.exceptions import PermissionDenied
 import django.forms
 from django.http.response import HttpResponseForbidden, HttpResponseBadRequest
+from django.utils.functional import Promise
+from django.utils.html import conditional_escape, format_html, mark_safe
 from django.utils.translation import gettext as _
 from django.utils import timezone
 
@@ -88,7 +90,7 @@ def format_datetime(dt):
 class StaticTextWidget(django.forms.widgets.Widget):
     """
     Static text-field widget. Text should be set with set_text().
-    Otherwise `initial`-text is used, or empty string as fallback.
+    Otherwise, `initial`-text is used, or empty string as fallback.
     The resulting text is rendered instead of any widget.
     """
     def __init__(self, **kwargs):
@@ -102,7 +104,9 @@ class StaticTextWidget(django.forms.widgets.Widget):
         return self._static_text is not None
 
     def render(self, name, value, attrs=None, renderer=None):
-        return str(self._static_text or value or u"")
+        if isinstance(self._static_text or value, (list, tuple)):
+            return mark_safe("".join(conditional_escape(p) for p in (self._static_text or value)))
+        return self._static_text or value or ""
 
 
 class ButtonWidget(StaticTextWidget):
@@ -114,13 +118,10 @@ class ButtonWidget(StaticTextWidget):
         self._click = click
 
     def render(self, name, value, attrs=None, renderer=None):
-        from django.utils.html import format_html
-        from django.utils.encoding import force_str
-
-        return format_html(u'<button type="button" onclick="{0}">{1}</button>'.format(
+        return format_html('<button type="button" onclick="{0}">{1}</button>',
             self._click,
-            force_str(self._static_text or value or u""),
-        ))
+            self._static_text or value or "",
+        )
 
 
 class StaticText(django.forms.CharField):
@@ -224,12 +225,11 @@ def barcode_view(fn):
     return inner
 
 
-def short_description(text):
+def short_description(text: str | Promise):
     """
     Decorator for property functions (or other functions) adding short_description to the function.
 
     :param text: Text to add.
-    :type text: str
     """
     def wrap(fn):
         fn.short_description = text

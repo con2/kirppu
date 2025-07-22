@@ -9,8 +9,9 @@ from django.contrib.admin.views.main import ChangeList
 from django.db import IntegrityError, models, transaction
 from django.urls import reverse, path, re_path
 from django.utils.encoding import force_str
+from django.utils.functional import Promise
 from django.utils.html import escape, format_html
-from django.utils.translation import gettext_lazy as gettext, ngettext
+from django.utils.translation import gettext_lazy as gettext, ngettext, gettext as gettext_eager
 
 from .forms import (
     ClerkGenerationForm,
@@ -45,8 +46,6 @@ from .models import (
 from .util import get_form
 from .utils import datetime_iso_human
 
-__author__ = 'jyrkila'
-
 
 def with_description(short_description):
     def decorator(action_function):
@@ -55,40 +54,32 @@ def with_description(short_description):
     return decorator
 
 
-class FieldAccessor(object):
+class FieldAccessor:
     """
     Abstract base class for field-links to be used in Admin.list_display.
-    Sub-classes must implement __call__ that is used to generate the field text / link.
+    Subclasses must implement __call__ that is used to generate the field text / link.
     """
-    def __init__(self, field_name, description):
+    def __init__(self, field_name: str, description: str | Promise) -> None:
         """
         :param field_name: Field to link to.
-        :type field_name: str
         :param description: Column description.
-        :type description: str
         """
         self._field_name = field_name
         self._description = description
 
-    def __call__(self, obj):
+    def __call__(self, obj) -> str:
         """
         :param obj: Model object from the query.
-        :rtype: str
         :return: Unsafe string containing the field value.
         """
         raise NotImplementedError
 
     @property
-    def short_description(self):
+    def short_description(self) -> str | Promise:
         return self._description
 
-    def __str__(self):
-        # Django 1.9 converts the field to string for id.
-        return self._field_name
-
     @property
-    def __name__(self):
-        # Django 1.10 lookups the field name via __name__.
+    def __name__(self) -> str:
         return self._field_name
 
 
@@ -96,7 +87,7 @@ class RefLinkAccessor(FieldAccessor):
     """
     Accessor function that returns a link to given FK-field admin.
     """
-    def __call__(self, obj):
+    def __call__(self, obj) -> str:
         field = getattr(obj, self._field_name)
         if field is None:
             return u"(None)"
@@ -235,7 +226,7 @@ admin.site.register(Account)
 
 
 class ClerkEditLink(FieldAccessor):
-    def __call__(self, obj):
+    def __call__(self, obj) -> str:
         """
         :type obj: Clerk
         :return:
@@ -381,7 +372,7 @@ class ClerkAdmin(admin.ModelAdmin):
             self.log_addition(request, clerk, {"added": {}})
 
             msg = format_html(
-                gettext("Clerk {name} added into {event}."),
+                gettext_eager("Clerk {name} added into {event}."),
                 name=form.cleaned_data["user"],
                 event=form.cleaned_data["event"],
             )
@@ -687,8 +678,8 @@ class BoxAdmin(admin.ModelAdmin):
     )
 
     class BoxChangeList(ChangeList):
-        def get_queryset(self, request):
-            qs = super().get_queryset(request)
+        def get_queryset(self, request, *args, **kwargs):
+            qs = super().get_queryset(request, *args, **kwargs)
             # Pre-calculate item count so it is not needed to be calculated per row afterwards.
             # _list_item_count is used to access this, as list_display must point to concrete fields or functions.
             return qs.annotate(item_count=models.Count("item", models.Q(item__hidden=False)))

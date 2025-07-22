@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='clerk',
-            constraint=models.CheckConstraint(check=models.Q(('user__isnull', False), ('access_key__isnull', False), _connector='OR'), name='required_values'),
+            constraint=models.CheckConstraint(condition=models.Q(('user__isnull', False), ('access_key__isnull', False), _connector='OR'), name='required_values'),
         ),
         migrations.AddConstraint(
             model_name='clerk',

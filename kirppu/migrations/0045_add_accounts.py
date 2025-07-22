@@ -100,10 +100,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='receipt',
-            constraint=models.CheckConstraint(check=models.Q(models.Q(('type', 'TRANSFER'), _negated=True), models.Q(('dst_account__isnull', False), ('src_account__isnull', False)), _connector='OR'), name='account_id_nullity'),
+            constraint=models.CheckConstraint(condition=models.Q(models.Q(('type', 'TRANSFER'), _negated=True), models.Q(('dst_account__isnull', False), ('src_account__isnull', False)), _connector='OR'), name='account_id_nullity'),
         ),
         migrations.AddConstraint(
             model_name='account',
-            constraint=models.CheckConstraint(check=models.Q(('allow_negative_balance', True), ('balance__gte', 0), _connector='OR'), name='balance_negativity'),
+            constraint=models.CheckConstraint(condition=models.Q(('allow_negative_balance', True), ('balance__gte', 0), _connector='OR'), name='balance_negativity'),
         ),
     ]

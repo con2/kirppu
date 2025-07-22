@@ -42,6 +42,8 @@ psycopg-c
     # via psycopg
 pubcode
     # via kirppu (pyproject.toml)
+python-ipware
+    # via django-ipware
 requests
     # via
     #   kirppu (pyproject.toml)

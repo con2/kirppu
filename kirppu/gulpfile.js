@@ -3,7 +3,6 @@ const gif = require("gulp-if");
 const concat = require("gulp-concat-util");
 const coffee = require("gulp-coffee");
 const fs = require("node:fs");
-const patch = require("gulp-apply-patch");
 const path = require("node:path");
 const rollup = require("rollup");
 const rollup_sucrase = require("@rollup/plugin-sucrase");
@@ -83,7 +82,6 @@ const jsTasks = Object.entries(pipeline.js).map(function([name, def]) {
     const taskName = "js:" + name;
     gulp.task(taskName, function() {
         return gulp.src(srcPrepend(def))
-            .pipe(patch("patches/*.patch"))
             .pipe(gif(/\.coffee$/, coffee()))
             .on('error', handleError)
             .pipe(concat(def.output_filename, {process: fileHeader(jsHeader)}))

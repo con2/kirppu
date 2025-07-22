@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 import enum
 import random
@@ -341,7 +342,7 @@ class Clerk(models.Model):
             # user may be null if access_key is set in case of "unbound Clerk object".
             # access_key may be null if the clerk object has been disabled for user.
             models.constraints.CheckConstraint(
-                check=models.Q(user__isnull=False) | models.Q(access_key__isnull=False),
+                condition=models.Q(user__isnull=False) | models.Q(access_key__isnull=False),
                 name="required_values",
             ),
             models.constraints.UniqueConstraint(
@@ -692,7 +693,7 @@ class Account(models.Model):
 
     class Meta:
         constraints = [
-            models.CheckConstraint(check=(
+            models.CheckConstraint(condition=(
                 models.Q(allow_negative_balance=True) | models.Q(balance__gte=0)
             ), name="balance_negativity")
         ]
@@ -1452,11 +1453,11 @@ class Receipt(models.Model):
             ("view_accounting", "View accounting data"),
         )
         constraints = [
-            models.CheckConstraint(check=(
+            models.CheckConstraint(condition=(
                 models.Q(type="COMPENSATION", vendor__isnull=False)) | (
                 ~models.Q(type="COMPENSATION") & models.Q(vendor__isnull=True)
             ), name="vendor_id_nullity"),
-            models.CheckConstraint(check=(
+            models.CheckConstraint(condition=(
                 ~models.Q(type="TRANSFER") | models.Q(src_account__isnull=False, dst_account__isnull=False)
             ), name="account_id_nullity"),
         ]
@@ -1620,7 +1621,7 @@ class ItemStateLog(models.Model):
 
 def default_temporary_access_permit_expiry(minutes: int = None):
     minutes = minutes or settings.KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES
-    return timezone.now() + timezone.timedelta(minutes=minutes)
+    return timezone.now() + datetime.timedelta(minutes=minutes)
 
 
 class TemporaryAccessPermit(models.Model):
