@@ -2,14 +2,26 @@
 {% if user.is_authenticated %}
     <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            {{ user.first_name }} {{ user.last_name }}
+            {% if user.first_name or user.last_name %}
+                {{ user.first_name }} {{ user.last_name }}
+            {% else %}
+                {{ user.email|default:user.get_username|default:"&mldr;" }}
+            {% endif %}
             <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
             {% if profile_url %}
             <li><a href="{{ profile_url }}" target="_blank">{% trans "Profile" %}</a></li>
             {% endif %}
-            <li><a href="{% kirppu_logout_url event.get_absolute_url %}">{% trans "Log out" %}</a></li>
+            <li>
+                <a class="logout-item" id="logout-menuitem">
+                    <form method="post" action="{% kirppu_logout_url event.get_absolute_url %}">
+                        {% csrf_token %}
+                        {% if logout_next %}<input type="hidden" name="next" value="{{ logout_next }}" />{% endif %}
+                        <button type="submit">{% trans "Log out" %}</button>
+                    </form>
+                </a>
+            </li>
         </ul>
     </li>
 {% else %}

@@ -10,13 +10,27 @@
 {% endblock %}
 {% block navbar_root %}
     {{ block.super }}
-    <a href="{% url "kirppu:mobile_logout" event_slug=event_slug %}" class="pull-right btn btn-link"><span class="glyphicon glyphicon-log-out"></span></a>
+    <a class="logout-item pull-right btn btn-link">
+        <form method="post" action="{% url "kirppu:mobile_logout" event_slug=event_slug %}">
+            {% csrf_token %}
+            {% if logout_next %}<input type="hidden" name="next" value="{{ logout_next }}"/>{% endif %}
+            <button type="submit"><span class="glyphicon glyphicon-log-out"> </span></button>
+        </form>
+    </a>
 {% endblock %}
 {% block navbar_left %}
     {% if user.is_authenticated %}<li><a href="{% url "kirppu:vendor_view" event_slug=event_slug %}">{% trans "Home" %}</a></li>{% endif %}
 {% endblock %}
 {% block navbar_right %}
-    <li><a href="{% url "kirppu:mobile_logout" event_slug=event_slug %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
+    <li>
+        <a class="logout-item">
+            <form method="post" action="{% url "kirppu:mobile_logout" event_slug=event_slug %}">
+                {% csrf_token %}
+                {% if logout_next %}<input type="hidden" name="next" value="{{ logout_next }}"/>{% endif %}
+                <button type="submit"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</button>
+            </form>
+        </a>
+    </li>
 {% endblock %}
 {% block body %}
 <h3>{% trans "Item status" %}</h3>
@@ -206,12 +220,14 @@
     }
 
     /* Extra button at right. */
-    a.pull-right.btn.btn-link {
+    a.pull-right.logout-item.btn {
         margin-top: 8px;
+        margin-bottom: 8px;
         margin-right: 15px;
+        padding: 5px 10px;
     }
     @media (min-width: 768px) {
-        a.pull-right.btn.btn-link {
+        a.pull-right.logout-item.btn {
             display: none;
         }
     }

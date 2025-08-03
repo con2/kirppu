@@ -42,7 +42,10 @@ export function insufficient_vendor_info(vendor, item) {
 function Note({text, erased, pk, markNote}) {
     return (
         <tr>
-            <td className={erased ? "erased" : ""}>{text}</td>
+            <td className={erased ? "erased" : ""}>
+                {text}
+                {erased ? <span className="glyphicon glyphicon-ok text-success"/> : ""}
+            </td>
             <td className="min-width"><button type="button" className="btn btn-link btn-xs" onclick={() => markNote(pk)}>
                 <span className="glyphicon glyphicon-check">{" "}</span>
             </button></td>

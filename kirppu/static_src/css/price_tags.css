@@ -1,3 +1,11 @@
+html, :root {
+    --input-focus-border-color: #66afe9;
+    --input-border-color: #44a;
+    --input-border-size: 2px;
+    --input-border-neg-size: -2px;
+    --input-border: var(--input-border-size) solid;
+}
+
 #item-add-form, #item-add-controls {
     width: 19cm;
 }
@@ -77,6 +85,7 @@
     float: left;
     width: 9.3cm;
     position: relative; /* Needed for absolute positioning of child elements. */
+    overflow: hidden;
 }
 .item_short .item_body {
     width: 100%;
@@ -91,16 +100,18 @@
 }
 
 .item_price {
+    display: inline-block;
     width: 2.5cm;
     font-size: 150%;
-    margin-top: 3px;
-    margin: 2px; /* Compensate for border not being there for locked items */
+    margin-left: var(--input-border-size);
+    margin-top: var(--input-border-neg-size);
 }
 
 @media screen, projection, handheld {
     .item_editable .item_price {
-        margin: 0px;
-        border: 2px inset;
+        margin-left: 0;
+        height: 1.6em;
+        border: var(--input-border) var(--input-border-color);
     }
 }
 
@@ -115,14 +126,30 @@
 }
 
 /* Price tag edit forms. */
-.item_editable .item_body form {
-    display: inline;
+.item_editable .item_body form:has(input:focus) {
+    border: var(--input-border) var(--input-focus-border-color);
+    position: relative;
+    z-index: 100;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 .item_editable .item_body form input {
     background: transparent;
     margin: 0;
     padding: 0;
     border: none;
+    outline: none;
+    width: 100%;
+    min-height: 0;
+}
+.item_container {
+    position: relative;
+}
+.item_container img.spinner {
+    display: inline-block;
+    position: absolute;
+    left: 46%;
+    top: 8px;
 }
 
 .item_head_price {
@@ -150,8 +177,8 @@
 
 @media screen, projection, handheld {
     .item_editable .item_name {
-        margin: 0px;
-        border: 2px inset;
+        margin: 0;
+        border: var(--input-border) var(--input-border-color);
     }
 }
 
@@ -173,7 +200,6 @@
 /* This container is for centering the barcode text on the barcode.
    So it should be the same size or bigger than the barcode img. */
 .barcode_container {
-    left: 0cm;
     width: 286px;
 }
 .item_short .barcode_container {
@@ -195,7 +221,7 @@
     margin-left: auto;
     margin-right: auto;
     width: 286px;
-    height: 1.4cm;
+    height: 1.2cm;
     image-rendering: -moz-crisp-edges;         /* Firefox */
     image-rendering:   -o-crisp-edges;         /* Opera */
     image-rendering: -webkit-optimize-contrast;/* Safari (non-standard naming) */
@@ -232,15 +258,36 @@
 .item_vendor_id:before {
     content: 'Vendor: '
 }
-.item_extra_code {
+.item_extra_info {
     position: relative;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 15px;
+    overflow: clip;
+    text-wrap: nowrap;
+    z-index: 100;
+}
+.item_extra_info .item_extra_code {
+    display: inline-block;
     width: 90px;
-    margin-top: -0.25cm;
-    background-color: white;
     text-align: center;
+}
+.item_extra_info .item_extra_type {
+    display: inline-block;
+}
+.item_extra_code.rotated {
+    position: absolute;
+    background: white;
+    transform-origin: right top;
+    transform: rotate(-90deg);
+    right: 25px;
+    top: 36px;
+    font-size: smaller;
+    z-index: 100;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.item_container button {
+    z-index: 150;
 }
 
 

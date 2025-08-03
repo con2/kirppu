@@ -62,6 +62,9 @@ td.erased {
     color: #555;
     text-decoration: line-through;
 }
+td.erased .glyphicon {
+    margin-left: 1em;
+}
 
 tr.receipt_tr_clickable:hover {
     text-decoration: underline;

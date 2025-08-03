@@ -48,7 +48,7 @@ module.exports.js = {
             "../node_modules/bootstrap/dist/js/bootstrap.js",
             "js/csrf.coffee",
             "js/customtexts_front.js",
-            "../node_modules/redom/dist/redom.js"
+            "../node_modules/redom/dist/redom.js",
         ],
         "output_filename": "general.js",
         "compress": true,
@@ -128,13 +128,6 @@ module.exports.js = {
         "output_filename": "checkout_comp.js",
         "compress": true
     },
-    'jeditable': {
-        "source_filenames": [
-            "js/jquery.jeditable.js",
-        ],
-        "output_filename": "jeditable.js",
-        "compress": true,
-    },
     'command_list': {
         "source_filenames": [
             "js/commands.coffee"
@@ -182,7 +175,12 @@ module.exports.rollup = {
             "jst/*.jsx"
         ],
         "output_name": "Template"
-    }
+    },
+    "malle": {
+        "output_filename": "js/malle.js",
+        "source_filename": "../node_modules/@deltablot/malle/dist/main.js",
+        "output_name": "Malle",
+    },
 };
 
 module.exports.static = {

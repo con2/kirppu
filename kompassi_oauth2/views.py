@@ -77,8 +77,9 @@ class CallbackView(View):
 
 
 class LogoutView(View):
-    def get(self, request):
-        next_url: str = request.GET.get("next", None)
+    @staticmethod
+    def post(request):
+        next_url: str = request.POST.get("next", None)
         next_url = get_redirect_url(request, next_url, "/")
 
         if "oauth_tokens" not in request.session:

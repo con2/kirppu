@@ -1,6 +1,6 @@
-{% load kirppu_tags %}{% load i18n %}
+{% load kirppu_tags i18n static %}
 
-    <div class="item_container item_{{ tag_type }} {{ locked|yesno:',item_editable' }}" id="{{ code }}">
+    <div class="item_container item_{{ tag_type }} {{ locked|yesno:',item_editable' }}" id="{{ code }}" data-code="{{ code }}">
         {% if tag_type != "list" %}
             <div class="item_head">
                 <span class="item_head_price price">{{ price }}</span>
@@ -12,7 +12,10 @@
             {% if tag_type != "list" %}
                 <div class="barcode_container">
                     <img class="barcode_img" src="{% barcode_dataurl code bar_type %}" alt="Barcode: {{ code }}" />
-                    <div class="item_extra_code">{{ code }}</div>
+                </div>
+                <div class="item_extra_info">
+                    <span class="item_extra_code">{{ code }}</span>
+                    <span class="item_extra_type">{{ item_type }}</span>
                 </div>
                 {% if adult == "yes" %}
                     <div class="item_adult_tag">K-18</div>
@@ -20,8 +23,10 @@
                     <div class="item_adult_tag"></div>
                 {% endif %}
                 <div class="item_vendor_id">{{ vendor_id }}</div>
+                <div class="item_extra_code rotated">{{ code }}</div>
             {% endif %}
         </div>
+        <img src="{% static "kirppu/img/roller.gif" %}" class="spinner" style="display: none;" />
 
         {% if controls_enabled %}
             <button class="item_button_hide" title="{% trans "Permanently remove the item." %}" type="button"><span class="glyphicon glyphicon-remove"></span></button>

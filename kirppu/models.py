@@ -1075,7 +1075,7 @@ class Item(models.Model):
         "name",
         "type",
         "adult",
-        price=lambda self: str(self.price).replace(".", ","),
+        price=lambda self: str(self.price_fmt).replace(".", ","),
     )
 
     def get_itemtype_display(self):

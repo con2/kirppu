@@ -5,7 +5,7 @@
 {% block head %}
     {{ block.super }}
     <link href="{% static "kirppu/css/price_tags.css" %}" rel="stylesheet">
-    <script src="{% static "kirppu/js/jeditable.js" %}"></script>
+    <script src="{% static "kirppu/js/malle.js" %}"></script>
     <script src="{% static "kirppu/js/price_tags.js" %}"></script>
     <style type="text/css">
         {% include "kirppu/currency_style.css" %}
@@ -125,18 +125,18 @@
     </form>
 
     {# Output a single item_container as a template for javascript. #}
-    {% include 'kirppu/app_items_item.html' with controls_enabled=True tag_type="template" name="" price="0" code="" vendor_id="" adult="" locked=False %}
+    {% include 'kirppu/app_items_item.html' with controls_enabled=True tag_type="template" name="" price="0" code="" vendor_id="" adult="" item_type="" locked=False %}
 
     <div id="items" data-require-terms="true">
         {# Output a template container for every non-printed item user has. #}
         {% for i in items %}
-            {% include 'kirppu/app_items_item.html' with controls_enabled=True name=i.name price=i.price_fmt code=i.code vendor_id=i.vendor_id tag_type=i.type adult=i.adult locked=i.is_locked %}
+            {% include 'kirppu/app_items_item.html' with controls_enabled=True name=i.name price=i.price_fmt code=i.code vendor_id=i.vendor_id tag_type=i.type adult=i.adult item_type=i.item_type locked=i.is_locked %}
         {% endfor %}
     </div>
     <div id="printed_items" data-require-terms="true">
         {# Output a template container for every printed item user has. #}
         {% for i in printed_items %}
-            {% include 'kirppu/app_items_item.html' with controls_enabled=True name=i.name price=i.price_fmt code=i.code vendor_id=i.vendor_id tag_type="list" adult=i.adult locked=True %}
+            {% include 'kirppu/app_items_item.html' with controls_enabled=True name=i.name price=i.price_fmt code=i.code vendor_id=i.vendor_id tag_type="list" adult=i.adult item_type=i.item_type locked=True %}
         {% endfor %}
     </div>
 {% endblock %}
@@ -151,9 +151,9 @@
         itemsConfig.urls.item_to_list = "{% url 'kirppu:item_to_printed' event_slug=event.slug code='__placeholder__' %}";
         itemsConfig.urls.size_update = "{% url 'kirppu:item_update_type' event_slug=event.slug code='__placeholder__' %}";
         itemsConfig.urls.all_to_print = "{% url 'kirppu:all_to_print' event_slug=event.slug %}";
-        itemsConfig.urls.roller = "{% static "kirppu/img/roller.gif" %}";
         itemsConfig.urls.item_to_print = "{% url 'kirppu:item_to_not_printed' event_slug=event.slug code='__placeholder__' %}";
         itemsConfig.urls.item_hide = "{% url 'kirppu:item_hide' event_slug=event.slug code='__placeholder__' %}";
+        itemsConfig.name_max_len = {{ name_max_len }};
         {% if not is_registration_open %}itemsConfig.enabled = false;{% endif %}
         {% if PRICE_MIN_MAX %}
         itemsConfig.price_min = {{ PRICE_MIN_MAX.0 }};
@@ -165,7 +165,7 @@
 
             bindFormEvents();
 
-            bindTagEvents($('#items > .item_editable'));
+            bindTagEvents('#items > .item_editable');
             bindListTagEvents($('#printed_items > .item_container'));
         });
     </script>

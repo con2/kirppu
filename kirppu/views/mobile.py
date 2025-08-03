@@ -10,9 +10,10 @@ from django.db.models import Count, Q
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponseForbidden, HttpResponse
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
+from django.urls import reverse, resolve
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_POST
 from ipware.ip import get_client_ip
 from django_ratelimit.core import is_ratelimited
 
@@ -21,8 +22,6 @@ from ..provision import Provision
 from ..templatetags.kirppu_login import login_url, logout_url
 from ..templatetags.kirppu_tags import format_price
 from ..util import first, shorten_text
-
-__author__ = 'codez'
 
 __all__ = [
     "index",
@@ -182,6 +181,7 @@ def _data_view(request, event: Event, permit):
                 "event": event,
                 "event_slug": original_event.slug,
                 "vendor": request.user,
+                "logout_next": reverse("kirppu:vendor_view", kwargs={"event_slug": event.slug}),
             })
 
     if default_database and not vendor.mobile_view_visited:
@@ -301,6 +301,7 @@ def _data_view(request, event: Event, permit):
         "tables": tables,
         "CURRENCY": settings.KIRPPU_CURRENCY,
         "vendor": vendor.id,
+        "logout_next": reverse("kirppu:vendor_view", kwargs={"event_slug": event.slug}),
     })
 
 
@@ -371,6 +372,7 @@ def index(request, event_slug):
             return _login_view(request, event)
 
 
+@require_POST
 def logout(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
     # TODO: Check session and temporary_codes, remove both.
@@ -385,7 +387,10 @@ def logout(request, event_slug):
         del request.session[_PERMIT_SESSION_KEY]
 
     if request.user.is_authenticated:
-        return HttpResponseRedirect(logout_url(event.get_absolute_url()))
+        # XXX: Call the actual logout with same request object to perform the real logout.
+        # The ?next query parameter gets passed as is.
+        func, args, kwargs = resolve(settings.LOGOUT_URL)
+        return func(request, *args, **kwargs)
     else:
         request.session.flush()
         return HttpResponseRedirect(reverse("kirppu:mobile", kwargs={"event_slug": event.slug}))

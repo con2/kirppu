@@ -29,3 +29,17 @@ code.yv8k02zi:before {
     color: #f00;
     content: "???";
 }
+
+#logout-menuitem { padding: 0; }
+#logout-menuitem form { display: flex; }
+#logout-menuitem form button {
+    flex-grow: 1;
+    padding: 3px 20px;
+}
+
+.logout-item form button {
+    background: none;
+    text-align: start;
+    border: none;
+    cursor: pointer;
+}

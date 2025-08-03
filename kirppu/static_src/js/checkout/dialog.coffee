@@ -96,6 +96,9 @@ class @Dialog2
     @_dom.append(@container)
     @_dialog.modal(modalArgs)
 
+  hide: () ->
+    @_dialog.modal("hide")
+
   setEnableAll: (enable) ->
     $(".modal-footer button", @_dialog).each(() ->
       this.disabled = !enable

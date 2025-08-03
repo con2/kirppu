@@ -119,12 +119,22 @@ class @VendorReport extends CheckoutMode
       buttons: [
         {text: gettext("Cancel"), classes: "btn-default"},
         {text: gettext("Accept"), classes: "btn-primary", click: =>
+          btn = `this`
+          note = body.find("#note").val().trim()
+          if not note
+            return
+          btn.disabled = true
+
           Api.vendor_note_add(
             vendor_id: @vendor.id
-            note: body.find("#note").val()
+            note: note
           ).then(
-            @refreshNotes,
-            => safeWarning("Add failed.", false, true)
+            () =>
+              dlg.hide()
+              @refreshNotes()
+            () =>
+              safeWarning("Add failed.", false, true)
+              btn.disabled = false
           )
         },
       ]

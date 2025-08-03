@@ -8,7 +8,6 @@
     <link href="{% static "kirppu/css/boxes.css" %}" rel="stylesheet">
     <link href="{% static "kirppu/css/price_tags.css" %}" rel="stylesheet">
     <script src="{% static "kirppu/js/general.js" %}"></script>
-    <script src="{% static "kirppu/js/jeditable.js" %}"></script>
     <script src="{% static "kirppu/js/boxes.js" %}"></script>
     <style type="text/css">
         {% include "kirppu/currency_style.css" %}
@@ -20,33 +19,23 @@
     <div id="box_content">
 
         <div class="box_content_table_page box_content_page">
-            <div class="row">
-                <div class="col-sm-8"><span class="box_description">{{ box.description }}</span></div>
+            <div class="box_content_number"></div>
+            <div class="box_content_table_page_header" style="">
+                <div class="box_description">{{ box.description }}</div>
+                <div class="box_content_table_page_instructions" ><div>{% trans "Buyer!" %}</div>{% trans "Note the ← number for checkout." %}</div>
+                <div class="box_price">{% spaceless %}
+                    {% if item.adult == "yes" or 1 %}
+                        <div class="box_adult">K-18</div>
+                    {% endif %}
+                    {% blocktrans trimmed with price=box.get_price_fmt count bundle_size=box.bundle_size %}
+                        <span class="price">{{ price }}</span> / unit
+                    {% plural %}
+                        <span class="price">{{ price }}</span> / {{ bundle_size }} pcs
+                    {% endblocktrans %}
+                {% endspaceless %}</div>
             </div>
 
-            <div class="box_content_table_page_header">
-                <div class="box_content_number" >
-                </div>
-                <div class="box_content_table_page_instructions" ><div>{% trans "Buyer!" %}</div>{% trans "Tell this number to the clerk." %}</div>
-            </div>
-
-            <div class="row">
-                <div class="col-xs-4 box_price">{% blocktrans trimmed with price=box.get_price_fmt count bundle_size=box.bundle_size %}
-                    <span class="price">{{ price }}</span> / unit
-                {% plural %}
-                    <span class="price">{{ price }}</span> / {{ bundle_size }} pcs
-                {% endblocktrans %}</div>
-            </div>
-            <div class="row">
-                {% if item.adult == "yes" %}
-                    <div class="col-xs-2 box_adult">K-18</div>
-                {% endif %}
-            </div>
-
-            <div class="row box_empty_row"></div>
-            <div class="row box_empty_row" style="height: 5em;"></div>
-
-            {% include 'kirppu/app_items_item.html' with controls_enabled=False code=item.code vendor_id=box.get_vendor_id tag_type="short" locked=True %}
+            {% include 'kirppu/app_items_item.html' with controls_enabled=False code=item.code vendor_id=box.get_vendor_id tag_type="short" item_type=item.get_itemtype_display locked=True %}
 
             <div class="row" style="height: 10cm;"></div>
             <div class="row" style="color: lightgray; border-top: 1px lightgray dashed;">

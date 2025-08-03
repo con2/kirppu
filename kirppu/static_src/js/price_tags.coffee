@@ -6,7 +6,6 @@ class PriceTagsConfig
     code: ''
 
   urls:
-    roller: ''
     name_update: ''
     price_update: ''
     item_to_list: ''
@@ -19,14 +18,15 @@ class PriceTagsConfig
   enabled: true
   price_min: 0
   price_max: 400
+  name_max_len: 50
 
   constructor: ->
 
-  name_update_url: (code) ->
+  name_update_url: (code) =>
     url = @urls.name_update
     return url.replace(@url_args.code, code)
 
-  price_update_url: (code) ->
+  price_update_url: (code) =>
     url = @urls.price_update
     return url.replace(@url_args.code, code)
 
@@ -66,7 +66,7 @@ createTag = (name, price, vendor_id, code, dataurl, type, adult) ->
 
   $('.item_vendor_id', tag).text(vendor_id)
 
-  $(tag).attr('id', code)
+  $(tag).attr('id', code).data("code", code)
   $('.item_extra_code', tag).text(code)
 
   $('.barcode_container > img', tag).attr('src', dataurl)
@@ -174,35 +174,70 @@ bindFormEvents = ->
   return
 
 
-# Bind events for item price editing.
-# @param tag [jQuery element] An '.item_container' element.
-# @param code [String] Barcode string of the item.
-bindPriceEditEvents = (tag, code) ->
-  $(".item_price", tag).editable(
-    C.price_update_url(code),
-    indicator: "<img src='" + C.urls.roller + "'>"
-    tooltip:   gettext("Click to edit...")
-    placeholder: gettext("<em>Click to edit</em>")
-    onblur:    "submit"
-    style:     "width: 2cm"
-    # Update the extra price display for long tags.
-    callback:  (value) -> $(".item_head_price", tag).text(value)
-  )
-  return
+# Get barcode from any child of the .item_container.
+getCode = (from) ->
+  return $(from).parents("[data-code]").data("code")
 
 
-# Bind events for item name editing.
-# @param tag [jQuery element] An '.item_container' element.
-# @param code [String] Barcode string of the item.
-bindNameEditEvents = (tag, code) ->
-  $(".item_name", tag).editable(
-    C.name_update_url(code),
-    indicator: "<img src='" + C.urls.roller + "'>"
-    tooltip:   gettext("Click to edit...")
-    placeholder: gettext("<em>Click to edit</em>")
-    onblur:    "submit"
-    style:     "inherit"
-  )
+# Show or hide progress spinner.
+spinner = (from, display) ->
+  s = $(from).parents(".item_container").children(".spinner")
+  if display
+    s.show()
+  else
+    s.hide(400)
+
+
+# Bind events for editing a field.
+# @param urlFn [function] Function returning url for updating this field.
+# @param classname [String] Field classname.
+# @param placeholder [String] Placeholder text for the input field.
+# @param callback [function?] Optional callback, called with .item_container and value returned.
+bindEditable = (urlFn, classname, placeholder, callback, max_len = 50) ->
+  new Malle.Malle(
+    tooltip: gettext("Click to edit...")
+    placeholder: placeholder
+
+    listenOn: ".item_editable ." + classname
+    listenNow: true
+
+    formClasses: [classname]
+
+    # Debug note: Changing this to Ignore may help inspecting the form in browser.
+    onBlur: Malle.Action.Submit
+
+    # There seems to be a bug in Malle's internal diff behavior where second blur leaves the form open.
+    # Ignore it by always entering in fun and check the diff by ourselves.
+    requireDiff: false
+
+    onEdit: (original, event, input) ->
+      input.maxLength = max_len
+
+    fun: (value, original, event, input) ->
+      code = getCode(input)
+      oval = $(original).text()
+
+      if oval == value or not value
+        # Don't submit equal or empty value.
+        return Promise.resolve(oval)
+
+      spinner(input, true)
+      return $.post(
+        url: urlFn(code)
+        data:
+          value: value
+      ).always(() ->
+        spinner(input, false)
+      ).then((rval) ->
+        if callback?
+          p = $(input).parents(".item_container").first()
+          callback(p, rval)
+        rval
+      , (e) ->
+        console.log(e.responseText)
+        oval
+      )
+    )
   return
 
 
@@ -337,17 +372,20 @@ bindItemToggleEvents = (tag, code) ->
 
 
 # Bind events for a set of '.item_container' elements.
-# @param tags [jQuery set] A set of '.item_container' elements.
+# @param tags [String] A set of '.item_container' elements.
 bindTagEvents = (tags) ->
-  tags.each((index, tag) ->
+  if C.enabled
+    bindEditable(C.name_update_url, "item_name", gettext("Name"), C.name_max_len)
+    bindEditable(C.price_update_url, "item_price", gettext("Price"), (tag, value) ->
+      $(".item_head_price", tag).text(value)
+    )
+  else
+    $(tags).removeClass("item_editable")
+
+  $(tags).each((index, tag) ->
     tag = $(tag)
     code = tag.attr('id')
 
-    if C.enabled
-      bindPriceEditEvents(tag, code)
-      bindNameEditEvents(tag, code)
-    else
-      tag.removeClass("item_editable")
     bindItemHideEvents(tag, code)
     bindItemToPrintedEvents(tag, code)
     bindItemToggleEvents(tag, code)

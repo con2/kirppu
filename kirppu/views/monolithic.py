@@ -23,6 +23,7 @@ from django.http import Http404
 from django.shortcuts import (
     redirect,
     render,
+    reverse,
     get_object_or_404,
 )
 from django.utils import timezone
@@ -98,6 +99,12 @@ __all__ = [
 ]
 
 
+class PlainResponse(HttpResponse):
+    def __init__(self, content=b"", **kwargs):
+        kwargs.setdefault("content_type", "text/plain; charset=utf-8")
+        super().__init__(content, **kwargs)
+
+
 def index(request):
     return redirect("kirppu:front_page")
 
@@ -160,7 +167,7 @@ def item_hide(request, event_slug, code):
         item.hidden = True
         item.save(update_fields=("hidden",))
 
-    return HttpResponse()
+    return PlainResponse()
 
 
 @login_required
@@ -193,15 +200,8 @@ def item_to_not_printed(request, event_slug, code):
             new_item = item
         item.save(update_fields=("hidden", "printed"))
 
-    item_dict = {
-        'vendor_id': new_item.vendor_id,
-        'code': new_item.code,
-        'barcode_dataurl': get_dataurl(item.code, 'png'),
-        'name': new_item.name,
-        'price': str(new_item.price).replace('.', ','),
-        'type': new_item.type,
-        'adult': new_item.adult,
-    }
+    item_dict = new_item.as_public_dict()
+    item_dict["barcode_dataurl"] = get_dataurl(new_item.code, "png")
 
     return HttpResponse(json.dumps(item_dict), 'application/json')
 
@@ -217,7 +217,7 @@ def item_to_printed(request, event_slug, code):
         item.printed = True
         item.save(update_fields=("printed",))
 
-    return HttpResponse()
+    return PlainResponse()
 
 
 @login_required
@@ -236,10 +236,10 @@ def item_update_price(request, event, code):
         if item.is_locked():
             return HttpResponseBadRequest("Item has been brought to event. Price can't be changed.")
 
-        item.price = str(price)
+        item.price = price
         item.save(update_fields=("price",))
 
-    return HttpResponse(str(price).replace(".", ","))
+    return PlainResponse(str(item.price_fmt).replace(".", ","))
 
 
 @login_required
@@ -263,7 +263,7 @@ def item_update_name(request, event, code):
         item.name = name
         item.save(update_fields=("name",))
 
-    return HttpResponse(name)
+    return PlainResponse(name)
 
 
 @login_required
@@ -277,7 +277,7 @@ def item_update_type(request, event_slug, code):
         item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
         item.type = tag_type
         item.save(update_fields=("type",))
-    return HttpResponse()
+    return PlainResponse()
 
 
 @login_required
@@ -289,7 +289,7 @@ def all_to_print(request, event_slug):
 
     items.update(printed=True)
 
-    return HttpResponse()
+    return PlainResponse()
 
 
 @login_required
@@ -353,7 +353,7 @@ def box_hide(request, event_slug, box_id):
 
         box.set_hidden(True)
 
-    return HttpResponse()
+    return PlainResponse()
 
 
 @login_required
@@ -373,7 +373,7 @@ def box_print(request, event_slug, box_id):
 
         box.set_printed(True)
 
-    return HttpResponse()
+    return PlainResponse()
 
 
 @login_required
@@ -438,7 +438,7 @@ def get_items(request, event_slug, bar_type):
         raise NotImplementedError  # FIXME: Decide how this should work.
 
     vendor_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
-    items = vendor_items.filter(printed=False)
+    items = vendor_items.filter(printed=False).annotate(item_type=models.F("itemtype__title"))
     printed_items = vendor_items.filter(printed=True)
 
     # Order from newest to oldest, because that way new items are added
@@ -465,6 +465,8 @@ def get_items(request, event_slug, bar_type):
         'itemTypes': ItemType.as_tuple(event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
+        'name_max_len': Item._meta.get_field('name').max_length,
+        "logout_next": reverse("kirppu:vendor_view", kwargs={"event_slug": event.slug}),
     }
     render_params.update(vendor_data)
 
@@ -519,6 +521,7 @@ def get_boxes(request, event_slug):
         'itemTypes': ItemType.as_tuple(event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
+        "logout_next": reverse("kirppu:vendor_view", kwargs={"event_slug": event.slug}),
     }
     render_params.update(vendor_data)
 
@@ -916,6 +919,7 @@ def vendor_view(request, event_slug):
         'CURRENCY': settings.KIRPPU_CURRENCY,
         "allow_preview": is_manager,
         "uiTextVars": ui_text_vars(event),
+        "logout_next": request.path,
     }
     context.update(vendor_data)
     return render(request, "kirppu/app_frontpage.html", context)

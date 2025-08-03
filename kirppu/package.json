@@ -12,6 +12,7 @@
   "license": "unknown",
   "private": true,
   "dependencies": {
+    "@deltablot/malle": "^2.7.0",
     "@rollup/plugin-sucrase": "^4.0.4",
     "bootstrap": "^3.4.1",
     "cssnano": "^7.0.4",
