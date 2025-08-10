@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-01 21:49+0300\n"
-"PO-Revision-Date: 2022-09-01 21:42+0300\n"
+"POT-Creation-Date: 2025-08-05 16:42+0300\n"
+"PO-Revision-Date: 2025-08-05 16:45+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 22.04.3\n"
+"X-Generator: Lokalize 25.04.2\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -391,11 +391,23 @@ msgstr "Barcode of Item to mark as Lost Property"
 msgid "Receipt List"
 msgstr "Receipt List"
 
+#| msgid "Compensation receipts…"
+msgid "Continue receipt…"
+msgstr "Continue receipt…"
+
 msgid "Ok"
 msgstr "Ok"
 
 msgid "Receipt details"
 msgstr "Receipt details"
+
+msgid "Resume here"
+msgstr "Resume here"
+
+#, javascript-format
+#| msgid "Compensation receipts"
+msgid "Continue receipt %d"
+msgstr "Continue receipt %d"
 
 msgid "Press Enter to view this entry"
 msgstr "Press Enter to view this entry"
@@ -413,8 +425,11 @@ msgstr ""
 msgid "Click to edit..."
 msgstr "Click to edit…"
 
-msgid "<em>Click to edit</em>"
-msgstr "<em>Click to edit</em>"
+msgid "Name"
+msgstr "Name"
+
+msgid "Price"
+msgstr "Price"
 
 msgid "Frequency"
 msgstr "Frequency"
@@ -566,12 +581,6 @@ msgstr "State"
 msgid "Count"
 msgstr "Count"
 
-msgid "Price"
-msgstr "Price"
-
-msgid "Name"
-msgstr "Name"
-
 msgid "Code"
 msgstr "Code"
 
@@ -638,11 +647,11 @@ msgstr "Bar code part"
 msgid "Vendor ID"
 msgstr "Vendor ID"
 
-msgid "Minimum price"
-msgstr "Minimum price"
+msgid "Min"
+msgstr "Min"
 
-msgid "Maximum price"
-msgstr "Maximum price"
+msgid "Max"
+msgstr "Max"
 
 msgid ""
 "To select/deselect multiple values, press <kbd>Ctrl</kbd>, <kbd>Command</"
@@ -650,6 +659,18 @@ msgid ""
 msgstr ""
 "To select/deselect multiple values, press <kbd>Ctrl</kbd>, <kbd>Command</"
 "kbd> or <kbd>Shift</kbd> keys while clicking items."
+
+msgid "Is a box?"
+msgstr "Is a box?"
+
+msgid "Don't care"
+msgstr "Don't care"
+
+msgid "Is a box"
+msgstr "Is a box"
+
+msgid "Is a regular item"
+msgstr "Is a regular item"
 
 msgid "Show hidden items"
 msgstr "Show hidden items"
@@ -683,6 +704,12 @@ msgstr "start time"
 
 msgid "total"
 msgstr "total"
+
+msgid "Resuming receipt will open it for you after next login."
+msgstr "Resuming receipt will open it for you after next login."
+
+msgid "Resume here – Logout and open receipt immediately."
+msgstr "Resume here – Logout and open receipt immediately."
 
 msgid "Edit"
 msgstr "Edit"
@@ -814,6 +841,15 @@ msgstr "Expected total:"
 
 msgid "item type"
 msgstr "item type"
+
+msgid "<em>Click to edit</em>"
+msgstr "<em>Click to edit</em>"
+
+#~ msgid "Minimum price"
+#~ msgstr "Minimum price"
+
+#~ msgid "Maximum price"
+#~ msgstr "Maximum price"
 
 #~| msgid "Compensate"
 #~ msgid "Compensate…"

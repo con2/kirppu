@@ -1,7 +1,2 @@
-*.jinja2 linguist-language=django
 **/templates/*/*.html linguist-language=django
 /DEV_README.md linguist-documentation
-dygraph-combined-dev.js linguist-vendored
-jquery.cookie*.js linguist-vendored
-jquery.jeditable*.js linguist-vendored
-

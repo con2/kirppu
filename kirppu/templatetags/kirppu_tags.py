@@ -236,3 +236,15 @@ def is_in_past_days(date: datetime.date, days: int) -> bool:
     now = datetime.date.today()
     diff = datetime.timedelta(days=days)
     return date + diff >= now
+
+
+@register.filter("replaceCurrency")
+def replace_one(value: str) -> str:
+    pre, post = settings.KIRPPU_CURRENCY["raw"]
+    pre = pre.strip(" \t\n\u00a0")
+    post = post.strip(" \t\n\u00a0")
+    if post:
+        replacement = post
+    else:
+        replacement = pre
+    return value.replace("%s", replacement)

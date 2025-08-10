@@ -375,10 +375,10 @@ bindItemToggleEvents = (tag, code) ->
 # @param tags [String] A set of '.item_container' elements.
 bindTagEvents = (tags) ->
   if C.enabled
-    bindEditable(C.name_update_url, "item_name", gettext("Name"), C.name_max_len)
+    bindEditable(C.name_update_url, "item_name", gettext("Name"), null, C.name_max_len)
     bindEditable(C.price_update_url, "item_price", gettext("Price"), (tag, value) ->
       $(".item_head_price", tag).text(value)
-    )
+    , 10)
   else
     $(tags).removeClass("item_editable")
 

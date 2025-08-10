@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-14 19:24+0300\n"
-"PO-Revision-Date: 2023-07-14 19:31+0300\n"
+"POT-Creation-Date: 2025-08-10 11:29+0300\n"
+"PO-Revision-Date: 2025-08-10 11:31+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 23.04.2\n"
+"X-Generator: Lokalize 25.04.3\n"
 
 msgid "View help."
 msgstr "Näytä ohje."
@@ -64,10 +64,6 @@ msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassahenkilölle"
 #, python-brace-format
 msgid "Access code set for '{0}' in '{1}'"
 msgstr "Käyttötunniste asetettu '{0}':lle tapahtumassa '{1}'"
-
-#, python-brace-format
-msgid "Clerk {name} added into {event}."
-msgstr "Kassahenkilö {name} lisättiin tapahtumaan {event}."
 
 msgid "Add clerk from SSO provider"
 msgstr "Lisää kassahenkilö SSO-tarjoajalta"
@@ -142,8 +138,14 @@ msgstr "Liian monta tuotua tavaraa, raja on %i!"
 msgid "Some box items ({}/{}) are in unexpected state."
 msgstr "Jotkin laatikon tavarat ({}/{}) ovat odottamattomassa tilassa."
 
-msgid "Only {} items of {} available for reservation."
-msgstr "Vain {} tuotetta {} tuotteesta on varattavissa."
+#, python-brace-format
+#| msgid "Only {} items of {} available for reservation."
+msgid ""
+"Only {available} items of {requested} available for reservation in box "
+"#{box_number}: {box_name}."
+msgstr ""
+"Vain {available} tuotetta {requested} tuotteesta on varattavissa laatikosta "
+"#{box_number}: {box_name}."
 
 msgid "Only {} items of {} available for removal."
 msgstr "Vain {} tuotetta {} tuotteesta on poistettavissa."
@@ -192,7 +194,6 @@ msgid "No compensation started!"
 msgstr "Hyvitystapahtumaa ei ole aloitettu!"
 
 #, python-brace-format
-#| msgid "Not enough money in account ({1}) to give out ({2})"
 msgid "Not enough money in account ({0}) to give out ({1})"
 msgstr "Tilillä ei ole tarpeeksi rahaa ({0}) annettavaksi ({1})"
 
@@ -249,40 +250,57 @@ msgstr "Vain yksi valinta voidaan valita kerrallaan."
 msgid "Text formatting"
 msgstr "Tekstin muotoilu"
 
+msgid "The text is formatted with standard Markdown syntax. Quick reference:"
+msgstr "Teksti muotoillaan tavallisella Markdown-syntaksilla. Lyhyt ohje:"
+
 msgid ""
-"<div style=\"float: left;\">The text is formatted with standard Markdown "
-"syntax. Quick reference:<br/>\n"
-"# Heading<br/>\n"
-"## Subheading<br/>\n"
-"### Sub-subheading<br/>\n"
-"- Un-ordered list item<br/>\n"
-"1. Ordered list item<br/>\n"
-"*<em>text</em>*<br/>\n"
-"**<strong>text</strong>**<br/>\n"
-"[<em>Link title</em>](<em>https://...</em>)<br/>\n"
-"&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>\n"
-"&lt;glyph <em>glyph-name</em> /&gt;<br/>\n"
+"# Heading\n"
+"## Subheading\n"
+"### Sub-subheading\n"
+"- Un-ordered list item\n"
+"1. Ordered list item\n"
+"*<em>text</em>*\n"
+"**<strong>text</strong>**\n"
+"[<em>Link title</em>](<em>https://...</em>)\n"
+"&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;\n"
+"&lt;glyph <em>glyph-name</em> /&gt;\n"
 "&lt;alertbox <em>type</em>&gt;<em>alert text content</em>&lt;/alertbox&gt; "
-"Types: danger, warning, info, success<br/>\n"
+"Types: danger, warning, info, success\n"
 "&lt;itemlist /&gt;\n"
-"</div>"
+"&lt;var VAR /&gt; Pre-defined: event.name, event.start.date, event.end.date, "
+"event.homepage, registration.end.datetime, registration.end.date, "
+"registration.end.time\n"
+"&lt;if COND&gt;text&lt;/if&gt;\n"
+"&lt;if COND1&gt;text&lt;elif COND2&gt;text&lt;else&gt;text&lt;/if&gt;\n"
+"<pre style=\"padding-left: 0;\">\n"
+".. vars::\n"
+"   :VAR: VALUE\n"
+"   :VAR: VALUE\n"
+"</pre>"
 msgstr ""
-"<div style=\"float: left;\">Teksti muotoillaan Markdown-syntaksilla. Lyhyt "
-"opas:<br/>\n"
-"# Otsikko<br/>\n"
-"## Alaotsikko<br/>\n"
-"### Ala-alaotsikko<br/>\n"
-"- Järjestämättömän listan elementti<br/>\n"
-"1. Järjestetyn listan elementti<br/>\n"
-"*<em>teksti</em>*<br/>\n"
-"**<strong>teksti</strong>**<br/>\n"
-"[<em>Linkin otsikko</em>](<em>https://...</em>)<br/>\n"
-"&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>\n"
-"&lt;glyph <em>glyyfin-nimi</em> /&gt;<br/>\n"
+"# Otsikko\n"
+"## Alaotsikko\n"
+"### Ala-alaotsikko\n"
+"- Järjestämättömän listan elementti\n"
+"1. Järjestetyn listan elementti\n"
+"*<em>teksti</em>*\n"
+"**<strong>teksti</strong>**\n"
+"[<em>Linkin otsikko</em>](<em>https://...</em>)\n"
+"&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;\n"
+"&lt;glyph <em>glyyfin-nimi</em> /&gt;\n"
 "&lt;alertbox <em>tyyppi</em>&gt;<em>huomautuksen tekstisisältö</em>&lt;/"
 "alertbox&gt; Tyypit: danger, warning, info, success\n"
 "&lt;itemlist /&gt;\n"
-"</div>"
+"&lt;var MUUTTUJA /&gt; Ennalta määritellyt: event.name, event.start.date, "
+"event.end.date, event.homepage, registration.end.datetime, registration.end."
+"date, registration.end.time\n"
+"&lt;if EHTO&gt;teksti&lt;/if&gt;\n"
+"&lt;if EHTO1&gt;teksti&lt;elif EHTO2&gt;teksti&lt;else&gt;teksti&lt;/if&gt;\n"
+"<pre style=\"padding-left: 0;\">\n"
+".. vars::\n"
+"   :MUUTTUJA: ARVO\n"
+"   :MUUTTUJA: ARVO\n"
+"</pre>"
 
 msgid "Name is required."
 msgstr "Nimi on vaadittu."
@@ -304,6 +322,14 @@ msgstr "sukunimi"
 
 msgid "email address"
 msgstr "sähköposti"
+
+msgid ""
+"When set, registration is disabled even if registration end is set. If not "
+"set, registration is enabled until registration end if that is set."
+msgstr ""
+"Kun asetettu, rekisteröinti on suljettu riippumatta rekisteröinnin "
+"päättymisajasta. Jos ei asetettu, rekisteröinti on avoinna päättymisaikaan "
+"asti mikäli se on asetettu."
 
 msgid ""
 "Lisp function body that gets sold_and_compensated queryset as a global and "
@@ -465,7 +491,7 @@ msgid "Compensation"
 msgstr "Hyvitys"
 
 msgid "Transfer"
-msgstr "Siirrä"
+msgstr "Siirto"
 
 msgid "Provision"
 msgstr "Provisio"
@@ -547,9 +573,6 @@ msgstr "Nippuja:"
 msgid "Items:"
 msgstr "Tavaroita:"
 
-msgid "10"
-msgstr "10"
-
 msgid "Type:"
 msgstr "Tyyppi:"
 
@@ -570,9 +593,6 @@ msgstr "Lisää laatikko"
 
 msgid "Empty"
 msgstr "Tyhjennä"
-
-msgid "Registration is closed"
-msgstr "Rekisteröinti on suljettu"
 
 msgid "Permanently remove the box."
 msgstr "Poista laatikko pysyvästi."
@@ -595,8 +615,9 @@ msgstr "Tulosta"
 msgid "Buyer!"
 msgstr "Ostaja!"
 
-msgid "Tell this number to the clerk."
-msgstr "Kerro tämä numero kassalla."
+#| msgid "Tell this number to the clerk."
+msgid "Note the ← number for checkout."
+msgstr "Ota ← numero muistiin kassalle."
 
 #, python-format
 msgid "<span class=\"price\">%(price)s</span> / unit"
@@ -812,8 +833,6 @@ msgstr "Hintojen summat:"
 msgid "Vendors:"
 msgstr "Myyjät:"
 
-#| msgid ""
-#| "Values in parenthesis indicate part of the value that has been abandoned."
 msgid ""
 "Values in parenthesis indicate extra deleted items (+) and part of the value "
 "that has been abandoned (-)."
@@ -824,9 +843,8 @@ msgid ""
 "e.g. <em>5 (+3)</em> means 3 deleted items on top of 5 registered items, "
 "<em>5 (-1)</em> means 1 abandoned item in the total of 5."
 msgstr ""
-"esim. <em>5 (+3)</em> tarkoittaa 3 poistettua tavaraa 5 rekisteröidyn"
-" lisäksi, "
-"<em>5 (-1)</em> tarkoittaa 1 hylätty tavara 5 tavaran joukossa."
+"esim. <em>5 (+3)</em> tarkoittaa 3 poistettua tavaraa 5 rekisteröidyn "
+"lisäksi, <em>5 (-1)</em> tarkoittaa 1 hylätty tavara 5 tavaran joukossa."
 
 msgid "Value type"
 msgstr "Arvon tyyppi"
@@ -870,8 +888,33 @@ msgstr "Palaa myyjätilastoihin"
 msgid "Compensations"
 msgstr "Hyvitykset"
 
+#, python-format
+#| msgid "New vendor"
+msgid "%%s / vendor"
+msgstr "%%s / myyjä"
+
 msgid "Purchases"
 msgstr "Ostokset"
+
+#, python-format
+#| msgid "Purchase"
+msgid "%%s / purchase"
+msgstr "%%s / ostos"
+
+msgid "Brought"
+msgstr "Tuotu tapahtumaan"
+
+#| msgid "New vendor"
+msgid "items / vendor"
+msgstr "tavaraa / myyjä"
+
+#| msgid "Brought boxes"
+msgid "Brought prices"
+msgstr "Tuotujen hinnat"
+
+#, python-format
+msgid "%%s / item"
+msgstr "%%s / tavara"
 
 msgid "Items in boxes"
 msgstr "Tavaroita laatikoissa"
@@ -901,12 +944,26 @@ msgstr "Tulostettu ja poistettu"
 msgid "Printed, not brought"
 msgstr "Tulostettu, tuomatta"
 
-msgid "Brought"
-msgstr "Tuotu tapahtumaan"
+#| msgid "Brought to event"
+msgid "Brought (with box items)"
+msgstr "Tuotu (laatikkotavaroiden kanssa)"
 
 #, python-format
 msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgstr "%(brought)s (%(broughtOfRegistered)s%% rekisteröidyistä)"
+
+#| msgid "Items in boxes"
+msgid "Brought items in boxes"
+msgstr "Tuotuja tavaroita laatikoissa"
+
+#, python-format
+#| msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
+msgid "%(count)s (%(percent)s%% of registered)"
+msgstr "%(count)s (%(percent)s%% rekisteröidyistä)"
+
+#| msgid "Brought"
+msgid "Brought boxes"
+msgstr "Tuotuja laatikoita"
 
 #, python-format
 msgid "%(sold)s (%(soldOfBrought)s%% of brought)"
@@ -1017,6 +1074,12 @@ msgstr "Hakemukset"
 msgid "Current people"
 msgstr "Nykyinen henkilöstö"
 
+msgid "Registration is closed"
+msgstr "Rekisteröinti on suljettu"
+
+msgid "Event has ended"
+msgstr "Tapahtuma on päättynyt"
+
 msgid "Terms of use"
 msgstr "Käyttöehdot"
 
@@ -1083,6 +1146,9 @@ msgstr "Ei rekisteröityjä tavaroita."
 
 msgid "Item status"
 msgstr "Tavaroiden tila"
+
+msgid "Home"
+msgstr "Etusivu"
 
 msgid "Click to show"
 msgstr "Näytä klikkaamalla"
@@ -1203,9 +1269,6 @@ msgstr "Näytä tavarat"
 msgid "View items (CSV)"
 msgstr "Näytä tavarat (CSV)"
 
-msgid "Home"
-msgstr "Etusivu"
-
 msgid "Mobile"
 msgstr "Mobiili"
 
@@ -1294,6 +1357,17 @@ msgstr "Käyttäjää {} ei löytynyt."
 
 msgid "Username is required."
 msgstr "Käyttäjätunnus on vaadittu."
+
+#~| msgid "Items:"
+#~ msgid "Items"
+#~ msgstr "Tavarat"
+
+#, python-brace-format
+#~ msgid "Clerk {name} added into {event}."
+#~ msgstr "Kassahenkilö {name} lisättiin tapahtumaan {event}."
+
+#~ msgid "10"
+#~ msgstr "10"
 
 #~ msgid "Brought while deleted"
 #~ msgstr "Tuotu poistettuna"

@@ -265,7 +265,8 @@ class UITextForm(forms.ModelForm):
         text=(
             mark_safe('<div style="float: left; white-space: pre-line;">'),
             _("The text is formatted with standard Markdown syntax. Quick reference:"),
-            mark_safe("""
+            "\n",
+            mark_safe(_("""\
 # Heading
 ## Subheading
 ### Sub-subheading
@@ -286,8 +287,8 @@ class UITextForm(forms.ModelForm):
 .. vars::
    :VAR: VALUE
    :VAR: VALUE
-</pre>
-</div>"""),
+</pre>""")),
+            mark_safe("</div>"),
         ),
     )
 

@@ -5,12 +5,12 @@
 /static/
 /kirppu.egg-info/
 kirppu/local_settings.py
-kirppu/template-strings.js
 kirppu/tests/api_access.pyi
 kirppu_project/local_settings.py
 node_modules*
 /KirppuVenv*
 /venv*
+/.venv*
 kirppu/static/kirppu/*
 kirppu/static_src/js/api_stub.js
 *.sqlite3

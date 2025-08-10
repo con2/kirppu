@@ -861,12 +861,18 @@ def statistical_stats_view(request, event: Event):
         .order_by("item_count")
         .values_list("item_count", flat=True)
     )
+    brought_price_distribution = (
+        _items
+        .filter(state__in=brought_states)
+        .values_list("price", flat=True)
+    )
 
     return render(request, "kirppu/general_stats.html", {
         "event": original_event,
         "compensations": _float_array(compensations),
         "purchases": _float_array(purchases),
         "brought": "[" + ",".join(str(e) for e in brought_distribution) + "]",
+        "brought_prices": "[" + ",".join(str(e) for e in brought_price_distribution) + "]",
         "general": general,
         "CURRENCY": settings.KIRPPU_CURRENCY["raw"],
     })

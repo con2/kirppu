@@ -35,9 +35,13 @@
 
 {% block body %}
 {% trans "Compensations" as tlCompensations %}
+{% trans "%s / vendor" as tlCompensationsLabel %}
 {% trans "Purchases" as tlPurchases %}
+{% trans "%s / purchase" as tlPurchasesLabel %}
 {% trans "Brought" as tlBrought %}
-{% trans "Items" as tlItems %}
+{% trans "items / vendor" as tlBroughtLabel %}
+{% trans "Brought prices" as tlBroughtPrices %}
+{% trans "%s / item" as tlBroughtPricesLabel %}
 
     <h1>
         <span id="mode_glyph" class="glyphicon glyphicon glyphicon-signal"></span>
@@ -49,33 +53,44 @@
     <script type="application/json" data-id="compensations">{{ compensations }}</script>
     <script type="application/json" data-id="purchases">{{ purchases }}</script>
     <script type="application/json" data-id="brought">{{ brought }}</script>
+    <script type="application/json" data-id="brought_prices">{{ brought_prices }}</script>
     <script type="application/json" data-id="config">{
         "stats": "general",
-        "graphs": {
-            "compensations": {
+        "graphs": [
+            {
                 "graph": "graph2",
                 "legend": "graph2_legend",
                 "numbers": "graph2_numbers",
-                "content": "compensations",
+                "data_id": "compensations",
+                "xlabel": {{ tlCompensationsLabel|replaceCurrency|json }},
                 "bucket": 50
             },
-            "purchases": {
+            {
                 "graph": "graph1",
                 "legend": "graph1_legend",
                 "numbers": "graph1_numbers",
-                "content": "purchases",
+                "data_id": "purchases",
+                "xlabel": {{ tlPurchasesLabel|replaceCurrency|json }},
                 "bucket": 2
             },
-            "brought": {
+            {
                 "graph": "graph3",
                 "legend": "graph3_legend",
                 "numbers": "graph3_numbers",
-                "content": "brought",
+                "data_id": "brought",
                 "unit": "",
-                "xlabel": {{ tlItems|json }},
+                "xlabel": {{ tlBroughtLabel|json }},
                 "bucket": 5
+            },
+            {
+                "graph": "graph4",
+                "legend": "graph4_legend",
+                "numbers": "graph4_numbers",
+                "data_id": "brought_prices",
+                "xlabel": {{ tlBroughtPricesLabel|replaceCurrency|json }},
+                "bucket": 2
             }
-        },
+        ],
         "CURRENCY": {{ CURRENCY|json }}
     }</script>
 
@@ -154,5 +169,6 @@
     {% include "kirppu/general_stats_graph.html" with id="graph1" title=tlPurchases %}
     {% include "kirppu/general_stats_graph.html" with id="graph2" title=tlCompensations %}
     {% include "kirppu/general_stats_graph.html" with id="graph3" title=tlBrought %}
+    {% include "kirppu/general_stats_graph.html" with id="graph4" title=tlBroughtPrices %}
 
 {% endblock  %}

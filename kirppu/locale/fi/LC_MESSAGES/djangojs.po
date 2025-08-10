@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-01 21:49+0300\n"
-"PO-Revision-Date: 2022-09-01 21:56+0300\n"
+"POT-Creation-Date: 2025-08-05 16:42+0300\n"
+"PO-Revision-Date: 2025-08-05 16:55+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 22.04.3\n"
+"X-Generator: Lokalize 25.04.2\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -378,7 +378,6 @@ msgstr "Näytä"
 msgid "Vendor Search"
 msgstr "Myyjähaku"
 
-#| msgid "counter"
 msgid "Accounts"
 msgstr "Tilit"
 
@@ -391,11 +390,23 @@ msgstr "Kadonneeksi merkittävän tuotteen viivakoodi"
 msgid "Receipt List"
 msgstr "Kuittilista"
 
+#| msgid "Compensation receipts…"
+msgid "Continue receipt…"
+msgstr "Jatka kuittia…"
+
 msgid "Ok"
 msgstr "Ok"
 
 msgid "Receipt details"
 msgstr "Kuitin tiedot"
+
+msgid "Resume here"
+msgstr "Jatka tässä"
+
+#, javascript-format
+#| msgid "Compensation receipts"
+msgid "Continue receipt %d"
+msgstr "Jatka kuittia %d"
 
 msgid "Press Enter to view this entry"
 msgstr "Paina Enter nähdäksesi tämän tiedot"
@@ -413,8 +424,11 @@ msgstr ""
 msgid "Click to edit..."
 msgstr "Klikkaa muokataksesi…"
 
-msgid "<em>Click to edit</em>"
-msgstr "<em>Klikkaa muokataksesi</em>"
+msgid "Name"
+msgstr "Nimi"
+
+msgid "Price"
+msgstr "Hinta"
 
 msgid "Frequency"
 msgstr "Taajuus"
@@ -434,25 +448,21 @@ msgstr "eurot"
 msgid "No data"
 msgstr "Ei tietoja"
 
-#| msgid "Select"
 msgid "Select…"
 msgstr "Valitse…"
 
 msgid "Source"
 msgstr "Lähde"
 
-#| msgid "description"
 msgid "Destination"
 msgstr "Kohde"
 
-#| msgid "Count"
 msgid "Amount"
 msgstr "Määrä"
 
 msgid "Reason"
 msgstr "Syy"
 
-#| msgid "See clerk codes"
 msgid "Clerk code"
 msgstr "Kassahenkilökoodi"
 
@@ -465,7 +475,6 @@ msgstr "Tyhjennä"
 msgid "Verify transfer"
 msgstr "Vahvista siirto"
 
-#| msgid "Notes"
 msgid "Note"
 msgstr "Muistiinpano"
 
@@ -486,11 +495,9 @@ msgctxt "To account"
 msgid "To"
 msgstr "Kohde"
 
-#| msgid "counter"
 msgid "Account"
 msgstr "Tili"
 
-#| msgid "Cancel"
 msgid "Balance"
 msgstr "Saldo"
 
@@ -543,8 +550,8 @@ msgid ""
 "Please note, that the vendor has a right to see notes attached to them on "
 "request."
 msgstr ""
-"Huomioi, että myyjällä on oikeus nähdä häneen liitetyt muistiinpanot"
-" pyydettäessä."
+"Huomioi, että myyjällä on oikeus nähdä häneen liitetyt muistiinpanot "
+"pyydettäessä."
 
 msgid "Add"
 msgstr "Lisää"
@@ -572,12 +579,6 @@ msgstr "Tila"
 
 msgid "Count"
 msgstr "Lukumäärä"
-
-msgid "Price"
-msgstr "Hinta"
-
-msgid "Name"
-msgstr "Nimi"
 
 msgid "Code"
 msgstr "Koodi"
@@ -645,11 +646,11 @@ msgstr "Viivakoodin osa"
 msgid "Vendor ID"
 msgstr "Myyjän ID"
 
-msgid "Minimum price"
-msgstr "Vähimmäishinta"
+msgid "Min"
+msgstr "Min"
 
-msgid "Maximum price"
-msgstr "Enimmäishinta"
+msgid "Max"
+msgstr "Max"
 
 msgid ""
 "To select/deselect multiple values, press <kbd>Ctrl</kbd>, <kbd>Command</"
@@ -657,6 +658,18 @@ msgid ""
 msgstr ""
 "Paina <kbd>Ctrl</kbd>, <kbd>Command</kbd> tai <kbd>Shift</kbd>-painiketta "
 "klikatessa valitaksesi useamman arvon."
+
+msgid "Is a box?"
+msgstr "On laatikko?"
+
+msgid "Don't care"
+msgstr "Älä välitä"
+
+msgid "Is a box"
+msgstr "On laatikko"
+
+msgid "Is a regular item"
+msgstr "On tavallinen tavara"
 
 msgid "Show hidden items"
 msgstr "Näytä piilotetut tavarat"
@@ -690,6 +703,12 @@ msgstr "aloitusaika"
 
 msgid "total"
 msgstr "yhteensä"
+
+msgid "Resuming receipt will open it for you after next login."
+msgstr "Kuitin jatkaminen avaa sen seuraavan kirjautumisen jälkeen."
+
+msgid "Resume here – Logout and open receipt immediately."
+msgstr "Jatka tässä – Kirjaudu ulos ja avaa kuitti välittömästi."
 
 msgid "Edit"
 msgstr "Muokkaa"
@@ -821,6 +840,15 @@ msgstr "Odotettu summa:"
 
 msgid "item type"
 msgstr "tavaran tyyppi"
+
+msgid "<em>Click to edit</em>"
+msgstr "<em>Klikkaa muokataksesi</em>"
+
+#~ msgid "Minimum price"
+#~ msgstr "Vähimmäishinta"
+
+#~ msgid "Maximum price"
+#~ msgstr "Enimmäishinta"
 
 #~| msgid "Compensate"
 #~ msgid "Compensate…"
