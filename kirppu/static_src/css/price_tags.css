@@ -289,6 +289,11 @@ html, :root {
 .item_container button {
     z-index: 150;
 }
+@media screen, projection, handheld {
+    .item_list .item_extra_info, .item_list .item_extra_code.rotated {
+        display: none;
+    }
+}
 
 
 .item_button_printed, .item_button_toggle, .item_button_hide {

@@ -24,7 +24,7 @@
                 <div class="box_description">{{ box.description }}</div>
                 <div class="box_content_table_page_instructions" ><div>{% trans "Buyer!" %}</div>{% trans "Note the ← number for checkout." %}</div>
                 <div class="box_price">{% spaceless %}
-                    {% if item.adult == "yes" or 1 %}
+                    {% if item.adult == "yes" %}
                         <div class="box_adult">K-18</div>
                     {% endif %}
                     {% blocktrans trimmed with price=box.get_price_fmt count bundle_size=box.bundle_size %}
