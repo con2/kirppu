@@ -1,3 +1,4 @@
+import datetime
 import logging
 import math
 import random
@@ -16,6 +17,7 @@ from django.http.response import (
 from django.shortcuts import (
     get_object_or_404,
     render,
+    reverse,
 )
 from django.utils.translation import gettext as _
 from django.utils.timezone import now
@@ -231,6 +233,8 @@ def counter_validate(request, event, code=None, key=None):
         "event_name": event.name,
         "name": counter.name,
         "key": counter.private_key,
+        "expires": 14,
+        "path": reverse("kirppu:vendor_view", kwargs={"event_slug": event.slug}),
     }
 
 

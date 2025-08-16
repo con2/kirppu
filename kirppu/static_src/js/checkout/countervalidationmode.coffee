@@ -61,6 +61,8 @@ class @CounterValidationMode extends CheckoutMode
   onResultSuccess: (data) =>
     code = data["key"]
     name = data["name"]
+    expires = data["expires"]
+    path = data["path"]
     @cfg.settings.counterCode = code
     @cfg.settings.counterName = name
     console.log("Validated as #{name}.")
@@ -68,7 +70,10 @@ class @CounterValidationMode extends CheckoutMode
     # Store values for next time so the mode can be skipped.
     Cookies.set(@constructor.COOKIE, utf8_to_b64(JSON.stringify(
       counter: code
-    )))
+    )),
+      expires: expires
+      path: path
+    )
     @switcher.switchTo(ClerkLoginMode)
 
   onResultError: (jqXHR) =>
