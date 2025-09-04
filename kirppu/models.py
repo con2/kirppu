@@ -1075,6 +1075,7 @@ class Item(models.Model):
         "name",
         "type",
         "adult",
+        "is_locked",
         price=lambda self: str(self.price_fmt).replace(".", ","),
     )
 

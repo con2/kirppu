@@ -270,6 +270,8 @@ moveItemToNotPrinted = (tag, code) ->
       $(new_tag).hide()
       $(new_tag).appendTo("#items")
       $(new_tag).show('slow')
+      if item.is_locked
+        new_tag.removeClass("item_editable")
       bindTagEvents($(new_tag))
 
     error: (item) ->
