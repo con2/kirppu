@@ -591,7 +591,7 @@ class BoxAdjustForm(forms.Form):
             raise forms.ValidationError("Box {code} is not one of vendor {pk} boxes".format(
                 code=item.code, pk=vendor_id))
 
-        if item[0].state in (Item.RETURNED, Item.MISSING):
+        if item.state in (Item.RETURNED, Item.MISSING):
             raise forms.ValidationError("Box {code} is returned or missing.".format(code=data))
 
         return data
