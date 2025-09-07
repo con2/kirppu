@@ -1,4 +1,5 @@
 import json
+import re
 
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
@@ -46,6 +47,8 @@ from .models import (
 from .util import get_form
 from .utils import datetime_iso_human
 
+
+BOX_RE = re.compile(r"box(?:_-)?(\d+)")
 
 def with_description(short_description):
     def decorator(action_function):
@@ -576,11 +579,13 @@ class ReceiptAdmin(admin.ModelAdmin):
     list_display = ["__str__", "status", "total", "counter", "end_time_str"]
     list_filter = [
         ("type", admin.ChoicesFieldListFilter),
+        "clerk__event",
         "clerk",
         "counter",
         "status",
     ]
     search_fields = ["items__code", "items__name"]
+    search_help_text = gettext("Item code, item name, or \"boxNN\".")
     actions = ["re_calculate_total"]
     exclude = ["end_time"]
     readonly_fields = ["start_time_str", "end_time_str"]
@@ -602,6 +607,25 @@ class ReceiptAdmin(admin.ModelAdmin):
     @with_description(Receipt._meta.get_field("end_time").verbose_name)
     def end_time_str(self, instance: Receipt):
         return datetime_iso_human(instance.end_time)
+
+    def get_search_results(self, request, queryset, search_term):
+        terms = search_term.split(" ")
+        box_term = None
+        other_terms = []
+        for term in search_term.split(" "):
+            m = BOX_RE.match(term)
+            if m is not None:
+                if box_term is not None:
+                    self.message_user(request, "Cannot have multiple box search terms.", messages.ERROR)
+                    return self.model.objects.none(), False
+                box_term = m.group(1)
+            else:
+                other_terms.append(term)
+
+        qs, may_have_duplicates = super().get_search_results(request, queryset, " ".join(other_terms))
+        if box_term is not None:
+            qs = qs.filter(items__box__box_number=box_term)
+        return qs, may_have_duplicates
 
 
 @admin.register(ItemStateLog)
