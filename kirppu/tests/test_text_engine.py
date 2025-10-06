@@ -111,7 +111,7 @@ def test_var() -> None:
 paragraph
     text: 'Value: '
     var
-    - {'var_name': 'name'}
+    - {'var_name': 'name', 'src': '<var name/>'}
 """
     )
 

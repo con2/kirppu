@@ -14,7 +14,6 @@
         "pk": 1,
         "fields": {
             "event": 1,
-            "key": "manga-finnish",
             "order": 10,
             "title": "Finnish manga book"
         }
@@ -143,12 +142,23 @@
         "pk": 1
     },
     {
+        "fields": {
+            "event": 1,
+            "name": "Default",
+            "balance": 0,
+            "allow_negative_balance": false
+        },
+        "model": "kirppu.account",
+        "pk": 1
+    },
+    {
         "pk": 1,
         "model": "kirppu.counter",
         "fields": {
             "event": 1,
             "identifier": "dev_counter",
-            "name": "Dev Counter"
+            "name": "Dev Counter",
+            "default_store_location": 1
         }
     }
 ]

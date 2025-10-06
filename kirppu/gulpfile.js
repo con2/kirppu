@@ -40,7 +40,14 @@ const cssHeader = (ctx) => `/* ================ ${ctx.index}: ${ctx.original} ==
  */
 const srcPrepend = function(def) {
     function doit(n) {
-        const resultName = path.join(SRC, n);
+        let resultName
+        if (n.startsWith("!")) {
+            // Use node machinery to find the file from modules.
+            n = n.substring(1);
+            resultName = require.resolve(n);
+        } else {
+            resultName = path.join(SRC, n);
+        }
         try {
             fs.statSync(resultName);
         }

@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get -y install gettext && rm -rf /var/lib/apt/lists
 
-COPY constraints.txt requirements-production.txt /usr/src/app/
+COPY requirements-production.txt constraints.txt /usr/src/app/
 RUN pip install --no-cache-dir -r requirements-production.txt
 
 COPY . /usr/src/app/

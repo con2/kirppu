@@ -1,8 +1,8 @@
-version: '2'
+name: kirppu
 services:
   web:
     build: .
-    command: scripts/wait-for-it.sh postgres:5432 -- python manage.py docker_start
+    command: python manage.py docker_start
     ports:
       - 8000:8000
     links:
@@ -21,6 +21,14 @@ services:
       POSTGRES_USER: kirppu
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: kirppu
+    healthcheck:
+      test: ["CMD", "pg_isready", "--user=kirppu", "--dbname=kirppu"]
+      # Docker prior 25.0 don't support start_period, so use something like 5s for it.
+      interval: ${PG_HEALTH_INTERVAL:-5m}
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+      start_interval: 2s
 volumes:
   postgres-data:
     driver: local

@@ -24,13 +24,13 @@ class VarPlugin(InlinePlugin):
         state.append_token(
             MtToken(
                 type=cls.NAME,
-                attrs={"var_name": var_name},
+                attrs={"var_name": var_name, "src": f"<var {var_name}/>"},
             )
         )
         return m.end()
 
     # noinspection PyMethodOverriding
-    def render(self, renderer: mistune.BaseRenderer, var_name: str) -> str:
+    def render(self, renderer: mistune.BaseRenderer, var_name: str, **kwargs) -> str:
         result = ""
         if var_name in self._variables:
             value = self._variables[var_name]
@@ -53,7 +53,7 @@ class VarSetterPlugin(directives.DirectivePlugin):
             md.renderer.register(self.NAME, self.render)
 
     # Overrides, but is called via registered _methods instead of base class.
-    def parse(self, block, m, state) -> MtToken:
+    def parse(self, block: mistune.BlockParser, m, state: mistune.BlockState) -> MtToken:
         options = self.parse_options(m)
         for key, value in options:
             self._variables[key] = value

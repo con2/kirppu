@@ -2,8 +2,8 @@ module.exports.css = {
     'general': {
         "source_filenames": [
             "css/general.css",
-            "../node_modules/bootstrap/dist/css/bootstrap.css",
-            "../node_modules/bootstrap/dist/css/bootstrap-theme.css",
+            "!bootstrap/dist/css/bootstrap.css",
+            "!bootstrap/dist/css/bootstrap-theme.css",
         ],
         "output_filename": "general.css",
     },
@@ -44,11 +44,11 @@ module.exports.js = {
     'general': {
         "source_filenames": [
             "js/gettext_shim.js",
-            "../node_modules/jquery/dist/jquery.js",
-            "../node_modules/bootstrap/dist/js/bootstrap.js",
+            "!jquery",
+            "!bootstrap/dist/js/bootstrap.js",
             "js/csrf.coffee",
             "js/customtexts_front.js",
-            "../node_modules/redom/dist/redom.js",
+            "!redom",
         ],
         "output_filename": "general.js",
         "compress": true,
@@ -121,9 +121,9 @@ module.exports.js = {
     },
     'checkout_compressed': {
         "source_filenames": [
-            "../node_modules/js-cookie/dist/js.cookie.js",
-            "../node_modules/moment/moment.js",
-            "../node_modules/moment/locale/fi.js",
+            "!js-cookie",
+            "!moment",
+            "!moment/locale/fi.js",
         ],
         "output_filename": "checkout_comp.js",
         "compress": true
@@ -136,8 +136,8 @@ module.exports.js = {
     },
     'dygraph': {
         "source_filenames": [
-            "../node_modules/dygraphs/dygraph-combined-dev.js",
-            "../node_modules/dygraphs/extras/smooth-plotter.js",
+            "!dygraphs/dygraph-combined-dev.js",
+            "!dygraphs/extras/smooth-plotter.js",
             "js/graph_loader.coffee",
         ],
         "output_filename": "dygraph-combined.js",
@@ -178,7 +178,7 @@ module.exports.rollup = {
     },
     "malle": {
         "output_filename": "js/malle.js",
-        "source_filename": "../node_modules/@deltablot/malle/dist/main.js",
+        "source_filename": "!@deltablot/malle",
         "output_name": "Malle",
     },
 };
@@ -195,11 +195,11 @@ module.exports.static = {
     "bootstrap": {
         "dest": "fonts",
         "source_filenames": [
-            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.eot",
-            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.ttf",
-            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.svg",
-            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.woff",
-            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.woff2"
+            "!bootstrap/fonts/glyphicons-halflings-regular.eot",
+            "!bootstrap/fonts/glyphicons-halflings-regular.ttf",
+            "!bootstrap/fonts/glyphicons-halflings-regular.svg",
+            "!bootstrap/fonts/glyphicons-halflings-regular.woff",
+            "!bootstrap/fonts/glyphicons-halflings-regular.woff2"
         ]
     }
 };

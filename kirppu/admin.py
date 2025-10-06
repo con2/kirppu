@@ -101,7 +101,7 @@ class RefLinkAccessor(FieldAccessor):
         return format_html(
             u'<a href="{0}">{1}</a>',
             reverse("admin:%s_%s_change" % info, args=(field.id,)),
-            escape(field)
+            field,
         )
 
 
@@ -124,8 +124,11 @@ class EventAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, change, **kwargs)
         field = form.base_fields["provision_function"]
         text = field.help_text
-        text += format_html(' <a href="' + reverse("admin:kirppu_lisp_help") + '" target="_blank">' + escape(
-            force_str(gettext("View help."))) + '</a>')
+        text += format_html(
+            ' <a href="{0}" target="_blank">{1}</a>',
+            reverse("admin:kirppu_lisp_help"),
+            gettext("View help."),
+        )
         field.help_text = text
 
         if obj is None:
@@ -242,7 +245,7 @@ class ClerkEditLink(FieldAccessor):
             return format_html(
                 u'<a href="{0}">{1}</a>',
                 reverse("admin:%s_%s_change" % info, args=(obj.id,)),
-                escape(value)
+                value,
             )
 
 
