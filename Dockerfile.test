@@ -5,9 +5,8 @@ WORKDIR /usr/src/app/kirppu
 COPY kirppu/package.json kirppu/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
-COPY kirppu ./
 
-RUN npm run gulp
+COPY kirppu ./
 RUN mkdir /usr/src/build && npm run gulp -- --dest /usr/src/build --type production
 
 
