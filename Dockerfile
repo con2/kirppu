@@ -28,7 +28,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements-production.txt
 
 COPY . ./
-COPY --link --from=0 /usr/src/build ./kirppu/static/kirppu
+COPY --from=0 /usr/src/build ./kirppu/static/kirppu
 
 RUN groupadd -r kirppu && useradd -r -g kirppu kirppu && \
     env DEBUG=1 python manage.py collectstatic --noinput && \
