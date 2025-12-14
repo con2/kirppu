@@ -30,8 +30,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 COPY . ./
 COPY --from=0 /usr/src/build ./kirppu/static/kirppu
 
-RUN groupadd -r kirppu && useradd -r -g kirppu kirppu && \
-    env DEBUG=1 python manage.py collectstatic --noinput && \
+RUN env DEBUG=1 python manage.py collectstatic --noinput && \
     env DEBUG=1 python manage.py compilemessages && \
     python -m compileall -q .
 
