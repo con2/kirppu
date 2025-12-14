@@ -4,9 +4,34 @@
 
 ## Getting development started using Docker
 
-Install Docker and `docker-compose` plugin and run
+Install Docker (>=25.0) and `docker-compose` plugin and run
 
-    docker compose up
+### First time database setup
+
+When the project is brought up first time (or the database volume is created),
+the database needs an initial setup, done by postgres.
+We do that by bringing the database up, letting it finish, and then stop it.
+
+```sh
+docker compose up postgres
+```
+After log flood ends with a message saying something like "database system is ready",
+stop the container with Ctrl-C
+
+
+### Start the project
+
+```sh
+docker compose up
+```
+
+This will build and start the development server on 0.0.0.0 port 8000.
+If you'd rather have it on localhost or IPv6, add the address in LISTEN_IP environment,
+like `LISTEN_IP=127.0.0.1 docker compose up`
+
+After the composition has been successfully brought up, open browser to the address
+and login with mahti:mahti credentials if needed.
+
 
 ## Getting development started without Docker
 
@@ -79,7 +104,7 @@ Successfully installed django-1.6.10 django-pipeline-1.3.27 pillow-2.4.0 pyBarco
 # (this may take a while, and will output huge tree after it completes.)
 
 # Build frontend.
-~/kirppu/kirppu$ npm run gulp -- --mode debug
+~/kirppu/kirppu$ npm run gulp -- --type debug
 ```
 
 #### Add some example Data for Kirppu.
@@ -105,7 +130,7 @@ Installed 10 object(s) from 1 fixture(s)
 Install the dependencies from `requirements-dev.txt`.
 You can then run unit tests with
 
-```
+```sh
 py.test -vvv --cov . --doctest-modules
 ```
 
@@ -201,6 +226,7 @@ To compile frontend sources for use in browser, there is two choices, which can 
     Copyright (c) 2022 Jyrki Launonen
     Copyright (c) 2023 Jyrki Launonen
     Copyright (c) 2024 Jyrki Launonen
+    Copyright (c) 2025 Jyrki Launonen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

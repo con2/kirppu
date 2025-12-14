@@ -1,0 +1,32 @@
+# NOTE: This is only intended as example for production use.
+name: kirppu-prod-example
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    links:
+      - postgres
+    environment:
+      SECRET_KEY: "django-insecure-cgfiv4i#hdn&rse##%qf*ot1ij*l+o8%&11d0j(1&y%==p0!oj"
+      DATABASE_URL: psql://kirppu:secret@postgres/kirppu
+      ALLOWED_HOSTS: "*"
+  postgres:
+    image: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: kirppu
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: kirppu
+    healthcheck:
+      test: ["CMD", "pg_isready", "--user=kirppu", "--dbname=kirppu"]
+      # Docker prior 25.0 don't support start_period, so use something like 5s for it.
+      interval: ${PG_HEALTH_INTERVAL:-5m}
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+      start_interval: 2s
+volumes:
+  postgres-data:
+    driver: local

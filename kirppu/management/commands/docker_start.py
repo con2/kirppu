@@ -39,6 +39,8 @@ class Command(BaseCommand):
                     email='mahti@example.com',
                 ),
             )
+            user.set_password("mahti")
+            user.save()
 
             logger.log(
                 logging.WARN if created else logging.DEBUG,

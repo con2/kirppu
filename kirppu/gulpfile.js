@@ -22,8 +22,12 @@ const log = require("fancy-log");
 
 const pipeline = require("./pipeline");
 const SRC = "static_src";
-const DEST = "static/kirppu";
+const DEST = args.dest || "static/kirppu";
 
+if (["debug", "production", undefined].indexOf(args.type) === -1) {
+    console.error("Invalid argument for --type")
+    require("node:process").exit(1)
+}
 // Compression enabled, if run with arguments: --type production
 const shouldCompress = args.type === "production";
 const debug = args.type === "debug";

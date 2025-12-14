@@ -1,18 +1,59 @@
+# NOTE: This is only intended for development use.
 name: kirppu
 services:
+  frontend:
+    environment:
+      NODE_PATH: /usr/src/node_modules
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM node:20-alpine
+        WORKDIR /usr/src
+        RUN addgroup -S -g 11111 build && adduser -S -u 11111 -G build build && \
+          mkdir node_modules build && \
+          chown build:build node_modules build
+        COPY --chown=build:build kirppu/package.json kirppu/package-lock.json ./
+        USER build
+        RUN --mount=type=cache,uid=11111,gid=11111,target=/home/build/.npm npm ci
+        COPY scripts/dev-frontend-entrypoint.sh ./
+        WORKDIR /usr/src/app/kirppu
+        ENTRYPOINT ["/usr/src/dev-frontend-entrypoint.sh"]
+    command: npm run -- gulp --dest /usr/src/build/kirppu --type debug default watch
+    volumes:
+      - .:/usr/src/app:ro
+      # Mounted outside app so that it can be initialized with proper access.
+      # Note, that this is mounted elsewhere in the web service.
+      - frontend:/usr/src/build
   web:
-    build: .
-    command: python manage.py docker_start
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.13
+        WORKDIR /usr/src
+        RUN groupadd -r kirppu && useradd -r -g kirppu kirppu
+        COPY requirements-production.txt requirements-dev.txt constraints.txt ./
+        RUN python -m venv venv
+        RUN --mount=type=cache,target=/root/.cache/pip venv/bin/pip install -r requirements-production.txt -r requirements-dev.txt
+        USER kirppu
+        WORKDIR /usr/src/app
+        EXPOSE 8000
+    command: /usr/src/venv/bin/python manage.py docker_start
     ports:
-      - 8000:8000
+      - "${LISTEN_IP:-0.0.0.0}:8000:8000"
+    depends_on:
+      frontend:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     links:
       - postgres
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/app:ro
+      - frontend:/usr/src/app/kirppu/static:ro
     environment:
       DEBUG: 1
       DATABASE_URL: psql://kirppu:secret@postgres/kirppu
-      ALLOWED_HOSTS: '*'
+      ALLOWED_HOSTS: "*"
   postgres:
     image: postgres
     volumes:
@@ -31,4 +72,7 @@ services:
       start_interval: 2s
 volumes:
   postgres-data:
+    driver: local
+  # Shared volume from frontend to web.
+  frontend:
     driver: local
