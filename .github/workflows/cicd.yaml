@@ -60,7 +60,7 @@ jobs:
 
   # TODO DRY
   deploy_staging:
-    runs-on: self-hosted
+    runs-on: qb-arc-runners
     needs: build
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/development' }}
     steps:
@@ -76,7 +76,7 @@ jobs:
           emskaffolden -E staging -- deploy -n kirppu-staging -a build.json
 
   deploy_production:
-    runs-on: self-hosted
+    runs-on: qb-arc-runners
     needs: build
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
     steps:
