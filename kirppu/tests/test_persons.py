@@ -8,8 +8,8 @@ class _PersonTest(TestCase):
     event_creation_args = {}
 
     def setUp(self):
-        self.user = UserFactory()
-        self.event = EventFactory(**self.event_creation_args)
+        self.user = UserFactory.create()
+        self.event = EventFactory.create(**self.event_creation_args)
         self.vendor_id = ""  # empty string, as we don't have a vendor for this user.
 
     def _assertSelected(self, name, pk=""):
@@ -25,8 +25,8 @@ class _PersonTest(TestCase):
             "phone": phone,
         })
 
-    def _createOtherUser(self, with_permission=True):
-        other = VendorFactory(event=self.event)
+    def _createOtherUser(self, with_permission=True) -> Vendor:
+        other = VendorFactory.create(event=self.event)
         if with_permission:
             EventPermissionFactory(event=self.event, user=other.user,
                                    can_create_sub_vendor=True,
@@ -100,8 +100,8 @@ class VendorSwitchWithoutSelfVendorTest(_PersonTest):
 
     def test_switchOtherPerson(self):
         # Person owned by other user
-        person = PersonFactory()
-        other = VendorFactory(event=self.event, person=person)
+        person = PersonFactory.create()
+        other = VendorFactory.create(event=self.event, person=person)
         EventPermissionFactory(event=self.event, user=other.user,
                                can_create_sub_vendor=True,
                                can_switch_sub_vendor=True)
@@ -115,7 +115,7 @@ class VendorSwitchWithoutSelfVendorTest(_PersonTest):
 class VendorSwitchTest(VendorSwitchWithoutSelfVendorTest):
     def setUp(self):
         super().setUp()
-        self.vendor = VendorFactory(user=self.user, event=self.event)
+        self.vendor = VendorFactory.create(user=self.user, event=self.event)
         self.vendor_id = self.vendor.id
 
 

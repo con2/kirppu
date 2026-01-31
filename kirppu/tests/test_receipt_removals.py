@@ -2,13 +2,13 @@ from django.test import TestCase
 
 from . import ResultMixin
 
-from ..models import ReceiptItem, Item, Receipt
+from ..models import Item, Receipt
 from .factories import BoxFactory, ReceiptItemFactory, ItemFactory, UserFactory
 
 
 class ReceiptRemovalTests(TestCase, ResultMixin):
     def setUp(self):
-        self.receipt_item: ReceiptItem = ReceiptItemFactory()
+        self.receipt_item = ReceiptItemFactory.create()
         self.item = self.receipt_item.item
         self.item.state = Item.SOLD
         self.item.save(update_fields=["state"])
@@ -17,8 +17,8 @@ class ReceiptRemovalTests(TestCase, ResultMixin):
         self.event = vendor.event
         self.receipt = self.receipt_item.receipt
 
-        self.other_item = ItemFactory(vendor=vendor, state=Item.SOLD)
-        self.other_receipt_item = ReceiptItemFactory(
+        self.other_item = ItemFactory.create(vendor=vendor, state=Item.SOLD)
+        self.other_receipt_item = ReceiptItemFactory.create(
             item=self.other_item, receipt=self.receipt
         )
 
@@ -27,7 +27,7 @@ class ReceiptRemovalTests(TestCase, ResultMixin):
         self.receipt.save(update_fields=["status", "total"])
         self.assertEqual(250, self.receipt.total_cents)
 
-        user = UserFactory(is_superuser=True, is_staff=True)
+        user = UserFactory.create(is_superuser=True, is_staff=True)
         self.client.force_login(user)
 
     def _refresh(self):
@@ -54,7 +54,7 @@ class ReceiptRemovalTests(TestCase, ResultMixin):
         self.assertEqual(125, self.receipt.total_cents)
 
     def test_box_item_removal(self):
-        box = BoxFactory(adopt=True, items=[self.item, self.other_item])
+        box = BoxFactory.create(adopt=True, items=[self.item, self.other_item])
 
         self._perform(f"box{box.box_number}")
         self._refresh()

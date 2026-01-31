@@ -5,7 +5,7 @@ from http import HTTPStatus
 import faker
 from django.test import TestCase
 
-from ..models import Clerk, Item, Receipt, ReceiptItem
+from ..models import Item, Receipt, ReceiptItem
 from . import ResultMixin
 from .api_access import Api
 from .factories import *
@@ -13,9 +13,9 @@ from .factories import *
 
 class PublicTest(TestCase, ResultMixin):
     def setUp(self):
-        self.event = EventFactory()
-        self.vendor = VendorFactory(event=self.event)
-        self.type = ItemTypeFactory(event=self.event)
+        self.event = EventFactory.create()
+        self.vendor = VendorFactory.create(event=self.event)
+        self.type = ItemTypeFactory.create(event=self.event)
 
         user = self.vendor.user
 
@@ -79,12 +79,12 @@ class PublicTest(TestCase, ResultMixin):
 
 class StatesTest(TestCase, ResultMixin):
     def setUp(self):
-        self.event = EventFactory()
-        self.vendor = VendorFactory(event=self.event)
+        self.event = EventFactory.create()
+        self.vendor = VendorFactory.create(event=self.event)
         self.items: list[Item] = ItemFactory.create_batch(10, vendor=self.vendor)
 
-        self.counter = CounterFactory(event=self.event)
-        self.clerk = ClerkFactory(event=self.event)
+        self.counter = CounterFactory.create(event=self.event)
+        self.clerk = ClerkFactory.create(event=self.event)
 
         self.api = Api(client=self.client, event=self.event)
         self.assertSuccess(self.api.clerk_login(code=self.clerk.get_code(), counter=self.counter.private_key))
@@ -129,7 +129,7 @@ class StatesTest(TestCase, ResultMixin):
         return box
 
     def test_normal_box_receipt(self):
-        box = self._register_box_brought(BoxFactory(adopt=True, items=self.items))
+        box = self._register_box_brought(BoxFactory.create(adopt=True, items=self.items))
 
         receipt = self.assertSuccess(self.api.receipt_start()).json()
         reserve_count = 3
@@ -143,7 +143,7 @@ class StatesTest(TestCase, ResultMixin):
 
     def test_double_box_reserve(self):
         # Note: This tests only two subsequent requests. Simultaneous access would behave differently.
-        box = self._register_box_brought(BoxFactory(adopt=True, items=self.items))
+        box = self._register_box_brought(BoxFactory.create(adopt=True, items=self.items))
         receipt = self.assertSuccess(self.api.receipt_start()).json()
         self.assertSuccess(self.api.box_item_reserve(box_number=box.box_number, box_item_count=3))
         self.assertSuccess(self.api.box_item_reserve(box_number=box.box_number, box_item_count=3))
@@ -153,7 +153,7 @@ class StatesTest(TestCase, ResultMixin):
         reserve_count = 3
 
         box = self._register_box_brought(
-            BoxFactory(vendor=VendorFactory(event=self.event), item_count=reserve_count - 1)
+            BoxFactory.create(vendor=VendorFactory.create(event=self.event), item_count=reserve_count - 1)
         )
 
         receipt = self.assertSuccess(self.api.receipt_start()).json()
@@ -165,7 +165,7 @@ class StatesTest(TestCase, ResultMixin):
         """Reserving and releasing box items should avoid representative item,
         as it is the one used to display item price.
         Relevant when part of box items are sold, and price of rest of its items are changed."""
-        box = BoxFactory(adopt=True, items=self.items, box_number=1)
+        box = BoxFactory.create(adopt=True, items=self.items, box_number=1)
         Item.objects.all().update(state=Item.BROUGHT)
 
         representative_item_id = box.representative_item_id
@@ -198,7 +198,7 @@ class StatesTest(TestCase, ResultMixin):
         self.assertEqual(Item.BROUGHT, Item.objects.get(pk=representative_item_id).state)
 
     def test_suspend(self):
-        other: Clerk = ClerkFactory(event=self.event)
+        other = ClerkFactory.create(event=self.event)
         Item.objects.all().update(state=Item.BROUGHT)
 
         receipt = self.assertSuccess(self.api.receipt_start()).json()

@@ -8,11 +8,11 @@ dependencies = [
     "django-environ~=0.12.0",
     "django-ipware~=7.0.0",
     "django-ratelimit~=4.0",
-    "django~=5.1.0",
-    "pillow~=11.0",
+    "django~=5.2.0",
+    "pillow~=12.0",
     "pubcode~=1.1.0",
-    "mistune~=3.1.0",
-    "whitenoise~=6.9.0",
+    "mistune~=3.2.0",
+    "whitenoise~=6.11.0",
 ]
 
 
@@ -20,20 +20,19 @@ dependencies = [
 oauth = [
     "requests~=2.30",
     "requests-oauthlib~=2.0.0",
-    "oauthlib~=3.2.0",
+    "oauthlib~=3.3.0",
 ]
 production = [
-    "gunicorn~=23.0",
-    "psycopg[c]~=3.2.0",
+    "gunicorn~=24.0",
+    "psycopg[c]~=3.3.0",
 ]
 dev = [
     "factory-boy~=3.3.0",
-    "Faker~=37.0",
-    "pytest~=8.4.0",
+    "Faker~=40.1",
+    "pytest~=9.0.0",
     "pytest-django~=4.11.0",
-    "pytest-env~=1.1.0",
-    "pytest-cov~=6.0",
-    "pip-tools~=7.3",
+    "pytest-env~=1.2.0",
+    "pytest-cov~=7.0",
 ]
 
 
@@ -75,3 +74,6 @@ include = [
     "kompassi_crowd",
     "kompassi_oauth2",
 ]
+
+[tool.uv]
+package = false

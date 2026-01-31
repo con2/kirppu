@@ -35,7 +35,7 @@ class FrontPageTest(_Base):
         self.assertContains(result, self.NO_CURRENT_EVENTS)
 
     def test_single_event(self):
-        event = EventFactory()
+        event = EventFactory.create()
         result = self.assertSuccess(self.client.get("/kirppu/"))
         self.assertContains(result, self.CURRENT_EVENT % event.slug)
 
@@ -51,7 +51,7 @@ class FrontPageTest(_Base):
         self.assertContains(result, self.OLD_EVENT % event.slug)
 
     def test_new_and_old_event(self):
-        event = EventFactory()
+        event = EventFactory.create()
         old_event = self._make_old_event()
         result = self.assertSuccess(self.client.get("/kirppu/"))
         self.assertContains(result, self.CURRENT_EVENT % event.slug)
@@ -66,7 +66,7 @@ class FrontPageTest(_Base):
         self.assertNotContains(result, self.CURRENT_EVENT_ATTR)
 
     def test_hidden_event(self):
-        event = EventFactory(visibility=Event.VISIBILITY_NOT_LISTED)
+        event = EventFactory.create(visibility=Event.VISIBILITY_NOT_LISTED)
         result = self.assertSuccess(self.client.get("/kirppu/"))
         self.assertContains(result, self.NO_CURRENT_EVENTS)
         self.assertNotContains(result, self.OLD_EVENT_ATTR)
@@ -79,7 +79,7 @@ class MobileFrontPageTest(_Base):
         self.assertContains(result, self.NO_CURRENT_EVENTS)
 
     def test_single_event(self):
-        event = EventFactory()
+        event = EventFactory.create()
         result = self.assertSuccess(self.client.get("/m/"))
         self.assertContains(result, self.CURRENT_EVENT % event.slug)
 
@@ -95,7 +95,7 @@ class MobileFrontPageTest(_Base):
         self.assertNotContains(result, self.OLD_EVENT_ATTR)
 
     def test_new_and_old_event(self):
-        event = EventFactory()
+        event = EventFactory.create()
         old_event = self._make_old_event()
         result = self.assertSuccess(self.client.get("/m/"))
         self.assertContains(result, self.CURRENT_EVENT % event.slug)
@@ -110,7 +110,7 @@ class MobileFrontPageTest(_Base):
         self.assertNotContains(result, self.CURRENT_EVENT_ATTR)
 
     def test_hidden_event(self):
-        event = EventFactory(visibility=Event.VISIBILITY_NOT_LISTED)
+        event = EventFactory.create(visibility=Event.VISIBILITY_NOT_LISTED)
         result = self.assertSuccess(self.client.get("/m/"))
         self.assertContains(result, self.NO_CURRENT_EVENTS)
         self.assertNotContains(result, self.OLD_EVENT_ATTR)

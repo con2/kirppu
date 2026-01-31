@@ -1,14 +1,16 @@
 PYTHON := python
 LANGUAGES := fi en
+PYTEST_ARGS := -vvv
+UV := uv
 
 # Optionally include user variables.
 sinclude makevars
 
-MM_ARGS = $(foreach lang, ${LANGUAGES}, -l ${lang}) -i KirppuVenv -i node_modules --no-location $(foreach ignore, ${MM_IGNORES}, -i ${ignore})
+MM_ARGS = $(foreach lang, ${LANGUAGES}, -l ${lang}) -i KirppuVenv -i .venv -i node_modules --no-location $(foreach ignore, ${MM_IGNORES}, -i ${ignore})
 
 # Prefix for some commands to use when not run in activated virtualenv.
 ifeq ($(origin VIRTUAL_ENV), undefined)
-PFX := ./KirppuVenv/bin/
+PFX := ./.venv/bin/
 endif
 
 default: help
@@ -35,17 +37,21 @@ apistub:  ## Create/update ajax_api stub file helping navigation from frontend c
 	find kirppu -! -path "kirppu/node_modules*" -name \*.py -exec python3 make_api_stub.py --js kirppu/static_src/js/api_stub.js --py kirppu/tests/api_access.pyi -- {} +
 
 test:     ## Run tests
-	DEBUG=1 ${PFX}py.test -vvv
+	DEBUG=1 ${PFX}py.test ${PYTEST_ARGS}
 
-update-constraints:  ## Update constraints.txt to match pyproject.toml
-	${PFX}pip-compile --all-extras --output-file=constraints.txt --strip-extras --upgrade
-	test constraints.txt -ef requirements-github.txt || ln -f constraints.txt requirements-github.txt || cp constraints.txt requirements-github.txt
+update: update-sync update-requirements  ## Update packages and export requirements
 
-requirement-sets:  ## Generate requirements-* files.
-	${PFX}${PYTHON} scripts/generate-dep-set.py --extra dev -o "requirements-dev.txt"
-	${PFX}${PYTHON} scripts/generate-dep-set.py --extra oauth --extra production -o "requirements-production.txt"
+update-sync:  ## Update packages and lockfile
+	${UV} sync --all-extras -U
+
+update-requirements:  ## Generate requirements-* files.
+	${UV} export --extra dev -o requirements-dev.txt
+	${UV} export --extra oauth --extra production -o requirements-production.txt
+
+venv:  ## Create virtualenv (.venv) using uv
+	${UV} sync --extra dev --frozen --no-python-downloads --verbose
 
 help:     ## This help.
-	@grep -F -h "#""#" $(MAKEFILE_LIST) | sed -e "s/:\\s*#""#/\n\t/" -e "s/\\s*#""#/\t/"
+	@grep -F -h "#""#" $(MAKEFILE_LIST) | sed -e "s/:.*#""#/\n\t/" -e "s/\\s*#""#/\t/"
 
 .PHONY: apistub c cloc compile default help messages requirement-sets static test update-constraints

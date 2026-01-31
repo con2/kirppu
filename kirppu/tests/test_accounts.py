@@ -17,11 +17,11 @@ class TestAccounts(TestCase, ResultMixin):
         self.client.cookies.load({settings.LANGUAGE_COOKIE_NAME: 'en'})
 
         self.commit = True  # Overridden in Pretend subclass.
-        self.event = EventFactory()
-        self.clerk = ClerkFactory(event=self.event)
+        self.event = EventFactory.create()
+        self.clerk = ClerkFactory.create(event=self.event)
         EventPermissionFactory(event=self.event, user=self.clerk.user, can_perform_overseer_actions=True)
 
-        self.counter = CounterFactory(event=self.event)
+        self.counter = CounterFactory.create(event=self.event)
         self.api = Api(client=self.client, event=self.event)
         self.default = Account.objects.create(
             event=self.event,
@@ -55,7 +55,7 @@ class TestAccounts(TestCase, ResultMixin):
         self.default.save()
 
         # Regular user cannot authorize transfer.
-        regular = ClerkFactory(event=self.event)
+        regular = ClerkFactory.create(event=self.event)
 
         def doit():
             self.assertContains(self.api.transfer_money(
@@ -147,7 +147,7 @@ class TestAccounts(TestCase, ResultMixin):
         self.default.allow_negative_balance = True
         self.default.save()
 
-        manager = ClerkFactory(event=self.event)
+        manager = ClerkFactory.create(event=self.event)
         EventPermissionFactory(event=self.event, user=manager.user,
                                can_perform_overseer_actions=True, can_manage_event=True)
 

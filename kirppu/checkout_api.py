@@ -1,7 +1,7 @@
-import datetime
 import logging
 import math
 import random
+import re
 import typing
 
 from django.conf import settings
@@ -190,7 +190,7 @@ def clerk_logout(request):
     """
     # Does not matter which event is being used, the logout shall always succeed.
     clerk_logout_fn(request)
-    return HttpResponse()
+    return HttpResponse(content_type="application/json", content=b"{}")
 
 
 def clerk_logout_fn(request):
@@ -897,10 +897,26 @@ def vendor_get(request, event, id: typing.Optional[int] = None, code: typing.Opt
 @ajax_func('^vendor/find$', method='GET')
 def vendor_find(request, event, q):
     clauses = [Q(event=event)]
+    box_pat = re.compile("box[=:_-]?(\d+)")
+    id_pat = re.compile("id[=:]?(\d+)")
+    mail_pat = re.compile("e?mail[=:](.+)")
     for part in q.split():
-        try:
+        if part.isdigit():
             clause = Q(id=int(part))
-        except ValueError:
+            clause |= Q(item__box__box_number=part)
+        elif match := box_pat.match(part):
+            clause = Q(item__box__box_number=match.group(1))
+            clauses.append(clause)
+            continue
+        elif match := id_pat.match(part):
+            clause = Q(id=match.group(1))
+            clauses.append(clause)
+            continue
+        elif match := mail_pat.match(part):
+            clause = Q(user__email__icontains=match.group(1)) | Q(person__email__icontains=match.group(1))
+            clauses.append(clause)
+            continue
+        else:
             clause = Q()
 
         clause = clause | (
@@ -922,6 +938,7 @@ def vendor_find(request, event, q):
         for v in (
             Vendor.objects
             .filter(*clauses)
+            .distinct()
             .select_related("user", "person")
             .all()
         )

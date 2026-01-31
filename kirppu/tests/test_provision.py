@@ -34,7 +34,7 @@ class SoldItemFactory(ItemFactory):
 class ProvisionTest(TestCase):
     """Provision tests running without compensable items."""
     def setUp(self):
-        self.vendor = VendorFactory()
+        self.vendor = VendorFactory.create()
 
     def test_no_items_no_provision(self):
         p = Provision(self.vendor.id, provision_function="null")
@@ -65,7 +65,7 @@ class ProvisionTest(TestCase):
 class BeforeProvisionTest(TestCase):
     """Tests running before a provision has been paid; having items to compensate."""
     def setUp(self):
-        self.vendor = VendorFactory()
+        self.vendor = VendorFactory.create()
         self.items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
     def test_no_provision_before_compensation(self):
@@ -114,8 +114,8 @@ class BeforeProvisionTest(TestCase):
 @override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class FinishingProvisionTest(TestCase):
     def setUp(self):
-        self.vendor = VendorFactory()
-        self.receipt = ReceiptFactory(type=Receipt.TYPE_COMPENSATION, vendor=self.vendor)
+        self.vendor = VendorFactory.create()
+        self.receipt = ReceiptFactory.create(type=Receipt.TYPE_COMPENSATION, vendor=self.vendor)
         self.items = ReceiptItemFactory.create_batch(
             10, receipt=self.receipt, item__vendor=self.vendor, item__state=Item.COMPENSATED)
 
@@ -153,17 +153,17 @@ class FinishingProvisionTest(TestCase):
 # noinspection PyPep8Naming,PyAttributeOutsideInit
 class _ApiProvisionTest(TestCase):
     def _setUp_Event(self):
-        self.event = EventFactory()
+        self.event = EventFactory.create()
 
     def setUp(self):
         self._setUp_Event()
 
-        self.vendor = VendorFactory(event=self.event)
+        self.vendor = VendorFactory.create(event=self.event)
         self.items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
-        self.account = AccountFactory(event=self.event, balance=Decimal(100))
-        self.counter = CounterFactory(event=self.event, default_store_location=self.account)
-        self.clerk = ClerkFactory(event=self.event)
+        self.account = AccountFactory.create(event=self.event, balance=Decimal(100))
+        self.counter = CounterFactory.create(event=self.event, default_store_location=self.account)
+        self.clerk = ClerkFactory.create(event=self.event)
 
         self.apiOK = ApiOK(client=self.client, event=self.event.slug)
 
@@ -240,7 +240,7 @@ class ApiNoProvisionTest(_ApiProvisionTest):
 @override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class ApiLinearProvisionTest(_ApiProvisionTest):
     def _setUp_Event(self):
-        self.event = EventFactory(
+        self.event = EventFactory.create(
             provision_function="""(* 0.10 (.count sold_and_compensated))"""
         )
 
@@ -282,7 +282,7 @@ class ApiLinearProvisionTest(_ApiProvisionTest):
 @override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class ApiStepProvisionTest(_ApiProvisionTest):
     def _setUp_Event(self):
-        self.event = EventFactory(
+        self.event = EventFactory.create(
             provision_function="""(* 0.50 (// (.count sold_and_compensated) 4))"""
         )
 
@@ -317,7 +317,7 @@ class ApiStepProvisionTest(_ApiProvisionTest):
 @override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class ApiRoundingProvisionTest(_ApiProvisionTest):
     def _setUp_Event(self):
-        self.event = EventFactory(
+        self.event = EventFactory.create(
             provision_function=textwrap.dedent("""
             (/ (ceil (* 2 (* 0.20 (.count sold_and_compensated)))) 2)
             """)

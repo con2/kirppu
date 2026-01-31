@@ -39,7 +39,7 @@ __all__ = [
 ]
 
 
-class UserFactory(Factory):
+class UserFactory(Factory[User]):
     class Meta:
         model = User
 
@@ -61,7 +61,7 @@ class UserFactory(Factory):
         return obj
 
 
-class EventFactory(Factory):
+class EventFactory(Factory[Event]):
     class Meta:
         model = Event
         exclude = ("_slug", "_slug_seq")
@@ -79,12 +79,12 @@ class EventFactory(Factory):
     checkout_active = True
 
 
-class EventPermissionFactory(Factory):
+class EventPermissionFactory(Factory[EventPermission]):
     class Meta:
         model = EventPermission
 
 
-class VendorFactory(Factory):
+class VendorFactory(Factory[Vendor]):
     class Meta:
         model = Vendor
 
@@ -94,7 +94,7 @@ class VendorFactory(Factory):
 
 
 # Monetary account, not related to user.
-class AccountFactory(Factory):
+class AccountFactory(Factory[Account]):
     class Meta:
         model = Account
 
@@ -102,7 +102,7 @@ class AccountFactory(Factory):
     name = factory.Faker("sentence", nb_words=2)
 
 
-class CounterFactory(Factory):
+class CounterFactory(Factory[Counter]):
     class Meta:
         model = Counter
     event = factory.SubFactory(EventFactory)
@@ -112,7 +112,7 @@ class CounterFactory(Factory):
     default_store_location = factory.SubFactory(AccountFactory)
 
 
-class ClerkFactory(Factory):
+class ClerkFactory(Factory[Clerk]):
     class Meta:
         model = Clerk
 
@@ -128,7 +128,7 @@ class ClerkFactory(Factory):
         return obj
 
 
-class ItemTypeFactory(Factory):
+class ItemTypeFactory(Factory[ItemType]):
     class Meta:
         model = ItemType
     event = factory.SubFactory(EventFactory)
@@ -136,7 +136,7 @@ class ItemTypeFactory(Factory):
     title = factory.Faker("sentence", nb_words=2)
 
 
-class ItemFactory(Factory):
+class ItemFactory(Factory[Item]):
     class Meta:
         model = Item
     vendor = factory.SubFactory(VendorFactory)
@@ -146,7 +146,7 @@ class ItemFactory(Factory):
     itemtype = factory.SubFactory(ItemTypeFactory)
 
 
-class PersonFactory(Factory):
+class PersonFactory(Factory[Person]):
     class Meta:
         model = Person
     first_name = factory.Faker("first_name")
@@ -155,7 +155,7 @@ class PersonFactory(Factory):
     email = factory.Faker("email")
 
 
-class ReceiptFactory(Factory):
+class ReceiptFactory(Factory[Receipt]):
     class Meta:
         model = Receipt
 
@@ -163,7 +163,7 @@ class ReceiptFactory(Factory):
     clerk = factory.SubFactory(ClerkFactory)
 
 
-class ReceiptItemFactory(Factory):
+class ReceiptItemFactory(Factory[ReceiptItem]):
     class Meta:
         model = ReceiptItem
 
@@ -171,7 +171,7 @@ class ReceiptItemFactory(Factory):
     receipt = factory.SubFactory(ReceiptFactory)
 
 
-class BoxFactory(Factory):
+class BoxFactory(Factory[Box]):
     """
     Can be used in two forms:
         BoxFactory(vendor=..., item_count=...)
@@ -206,7 +206,7 @@ class BoxFactory(Factory):
         vendor = kwargs.pop("vendor")
         item_count = kwargs.pop("item_count")
 
-        representative_item = ItemFactory(vendor=vendor)
+        representative_item = ItemFactory.create(vendor=vendor)
 
         kwargs["representative_item"] = representative_item
         obj = manager.create(*args, **kwargs)

@@ -43,8 +43,11 @@ It consists of a high level guide outlining the steps, example guide that has mo
 
 1. Install Python >= 3.11.
 2. Clone Kirppu.
-3. Create virtualenv.
-4. Install dependencies with pip and requirements-dev.txt
+3. Create virtualenv and install Python dependencies with `make venv`,
+   OR running [uv](https://github.com/astral-sh/uv/) with `uv sync --extra dev --frozen`,
+   OR manually:
+   1. Create virtualenv.
+   2. Install dependencies with pip and requirements-dev.txt
 5. Install js dependencies with npm (in `kirppu` sub-folder).
 6. Setup database with dev data.
 7. Run gulp to build frontend code.
@@ -57,7 +60,7 @@ Windows:
 
 - If pip or virtualenv are missing from PATH, even though they are installed, call them through python
     - `python -m pip install virtualenv`
-    - `python -m virtualenv venv`
+    - `python -m virtualenv .venv`
 
 Syntax:
 
@@ -79,13 +82,13 @@ $ cd kirppu
 
 # Activate virtualenv. After this point all modules installed with pip
 # are local to the project.
-~/kirppu$ source venv/bin/activate
-> venv\Scripts\activate.bat
+~/kirppu$ source .venv/bin/activate
+> .venv\Scripts\activate.bat
 
 # (optional) Check that python and pip point to the venv folder.
 (venv) ~/kirppu$ which python pip
-/home/ari/kirppu/venv/bin/python
-/home/ari/kirppu/venv/bin/pip
+/home/ari/kirppu/.venv/bin/python
+/home/ari/kirppu/.venv/bin/pip
 
 # Install packages needed to build the requirements from source.
 # On Windows pip might download actual binaries, or you might need to
@@ -132,6 +135,8 @@ You can then run unit tests with
 
 ```sh
 py.test -vvv --cov . --doctest-modules
+# or
+make test
 ```
 
 Or using Docker Compose:
@@ -162,11 +167,10 @@ docker-compose -f docker-compose.test.yml up --exit-code-from test
 
 ### Updating dependencies
 
-Within your virtualenv where you have `pip-tools` (e.g. from `requirements-dev.txt`) installed,
+Note: Updating requires [UV](https://github.com/astral-sh/uv/) management tool to be installed in system.
 
 1. (optional) Alter `pyproject.toml`.
-2. Run `make update-constraints` to upgrade package version `constraints.txt` for total dependency tree.
-3. Run `make requirement-sets` to upgrade plain trees of different sets (dev / production).
+2. Run `make update` to upgrade package versions and export `requirements-*.txt` files.
 
 
 ## Frontend development notes
@@ -227,6 +231,7 @@ To compile frontend sources for use in browser, there is two choices, which can 
     Copyright (c) 2023 Jyrki Launonen
     Copyright (c) 2024 Jyrki Launonen
     Copyright (c) 2025 Jyrki Launonen
+    Copyright (c) 2026 Jyrki Launonen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

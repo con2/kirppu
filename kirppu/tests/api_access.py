@@ -8,6 +8,8 @@ from kirppu.ajax_util import get_all_ajax_functions
 
 from . import color
 
+_print = functools.partial(print, file=sys.stderr)
+
 
 class Api(object):
     def __init__(self, client, event, debug=False):
@@ -15,20 +17,16 @@ class Api(object):
         :param client: Client to use.
         :param debug: If True, print when sending a request and received result.
         """
-        if debug:
-            _print = functools.partial(print, file=sys.stderr)
-        else:
-            def _print(*args):
-                pass
-
         def gen(method, view):
             url = reverse(view, kwargs={"event_slug": event.slug if hasattr(event, "slug") else event})
 
             def callback(**data):
-                _print(color(36, "---> " + method), color(36, url), repr(data))
+                if debug:
+                    _print(color(36, f"---> {method} {url}"), repr(data))
                 ret = getattr(client, method)(url, data=data)
                 self._check_response(ret)
-                _print(color(36, "<--- " + str(ret.status_code)), self._opt_json(ret))
+                if debug:
+                    _print(color(36, f"<--- {ret.status_code}"), self._response_json(ret))
                 return ret
             callback.url = url
             callback.method = method
@@ -45,11 +43,12 @@ class Api(object):
         return self._end_points[function]
 
     @staticmethod
-    def _opt_json(response):
+    def _response_json(response) -> str:
         try:
             return repr(response.json())
-        except:
-            return ""
+        except ValueError:
+            content = response.content
+            return repr(content[:256]) + ("..." if len(content) > 256 else "")
 
     def _check_response(self, response):
         pass

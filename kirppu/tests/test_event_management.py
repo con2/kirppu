@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase, override_settings
 
-from ..models import Event, EventPermission
 from . import ResultMixin
 from .factories import EventFactory, EventPermissionFactory, UserFactory
 
@@ -9,11 +8,11 @@ from .factories import EventFactory, EventPermissionFactory, UserFactory
 @override_settings(LANGUAGES=(("en", "English"),))
 class SubmitTest(TestCase, ResultMixin):
     def setUp(self):
-        self.event: Event = EventFactory(access_signup=True)
-        self.clerk_user = UserFactory()
+        self.event = EventFactory.create(access_signup=True)
+        self.clerk_user = UserFactory.create()
 
-        self.manager = UserFactory()
-        self.manager_perm: EventPermission = EventPermissionFactory(
+        self.manager = UserFactory.create()
+        self.manager_perm = EventPermissionFactory.create(
             event=self.event,
             user=self.manager,
             can_manage_event=True,

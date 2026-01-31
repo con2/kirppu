@@ -9,8 +9,8 @@ class ItemDumpTest(TestCase):
         EventPermissionFactory(event=self.event, user=self.user, can_see_accounting=True)
 
     def _addItems(self, count=5):
-        vendor = VendorFactory(user=self.user, event=self.event)
-        itemtype = ItemTypeFactory()
+        vendor = VendorFactory.create(user=self.user, event=self.event)
+        itemtype = ItemTypeFactory.create()
         for _ in range(count):
             ItemFactory(vendor=vendor, itemtype=itemtype, state=Item.BROUGHT)
 
@@ -18,8 +18,8 @@ class ItemDumpTest(TestCase):
         return self.client.get("/kirppu/%s/itemdump/" % self.event.slug + "?" + query)
 
     def setUp(self):
-        self.user = UserFactory()
-        self.event = EventFactory()
+        self.user = UserFactory.create()
+        self.event = EventFactory.create()
         self.client.force_login(self.user)
 
     def test_defaultState(self):

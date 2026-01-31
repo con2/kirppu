@@ -31,9 +31,9 @@ services:
         FROM python:3.13
         WORKDIR /usr/src
         RUN groupadd -r kirppu && useradd -r -g kirppu kirppu
-        COPY requirements-production.txt requirements-dev.txt constraints.txt ./
+        COPY requirements-production.txt requirements-dev.txt ./
         RUN python -m venv venv
-        RUN --mount=type=cache,target=/root/.cache/pip venv/bin/pip install -r requirements-production.txt -r requirements-dev.txt
+        RUN --mount=type=cache,target=/root/.cache/pip venv/bin/pip install --require-hashes -r requirements-production.txt -r requirements-dev.txt
         USER kirppu
         WORKDIR /usr/src/app
         EXPOSE 8000
@@ -57,7 +57,7 @@ services:
   postgres:
     image: postgres
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     environment:
       POSTGRES_USER: kirppu
       POSTGRES_PASSWORD: secret

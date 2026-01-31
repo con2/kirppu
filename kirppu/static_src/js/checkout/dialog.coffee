@@ -93,7 +93,7 @@ class @Dialog2
     )
 
   show: (modalArgs=keyboard: false) ->
-    @_dom.append(@container)
+    @_dom.append(@_dialog)
     @_dialog.modal(modalArgs)
 
   hide: () ->

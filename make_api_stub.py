@@ -125,7 +125,7 @@ class PyWriter(Writer):
         self.print("""    def __init__(self, client, event, debug=False):
         self._event = event
     @staticmethod
-    def _opt_json(response): pass
+    def _response_json(response): pass
     def _check_response(self, response): pass
 """)
 

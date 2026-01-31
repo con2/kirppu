@@ -2,6 +2,8 @@ import ResultTable from "./result_table.jsx";
 
 export function vendor_list() {
     return (
+        <div>
+        <p>Specifiers: <code>id:###</code> <code>email:###</code> <code>box:###</code></p>
         <ResultTable head={
             <tr>
                 <th className="badged_index">#</th>
@@ -12,6 +14,7 @@ export function vendor_list() {
                 <th className="receipt_phone">{gettext("phone")}</th>
             </tr>
         }/>
+        </div>
     )
 }
 
