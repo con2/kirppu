@@ -45,8 +45,8 @@ update-sync:  ## Update packages and lockfile
 	${UV} sync --all-extras -U
 
 update-requirements:  ## Generate requirements-* files.
-	${UV} export --extra dev -o requirements-dev.txt
-	${UV} export --extra oauth --extra production -o requirements-production.txt
+	${UV} export -q --extra dev -o requirements-dev.txt
+	${UV} export -q --extra oauth --extra production -o requirements-production.txt
 
 venv:  ## Create virtualenv (.venv) using uv
 	${UV} sync --extra dev --frozen --no-python-downloads --verbose
