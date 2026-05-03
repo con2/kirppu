@@ -897,9 +897,9 @@ def vendor_get(request, event, id: typing.Optional[int] = None, code: typing.Opt
 @ajax_func('^vendor/find$', method='GET')
 def vendor_find(request, event, q):
     clauses = [Q(event=event)]
-    box_pat = re.compile("box[=:_-]?(\d+)")
-    id_pat = re.compile("id[=:]?(\d+)")
-    mail_pat = re.compile("e?mail[=:](.+)")
+    box_pat = re.compile(r"box[=:_-]?(\d+)")
+    id_pat = re.compile(r"id[=:]?(\d+)")
+    mail_pat = re.compile(r"e?mail[=:](.+)")
     for part in q.split():
         if part.isdigit():
             clause = Q(id=int(part))
