@@ -21,8 +21,8 @@ jobs:
       DOCKER_BUILDKIT: "1"
       COMPOSE_DOCKER_CLI_BUILD: "1"
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: &checkout-action actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: &buildx-action docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
       - run: docker compose -f docker-compose.test.yml up --exit-code-from test
 
   build:
@@ -30,18 +30,18 @@ jobs:
     env:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: *checkout-action
+      - uses: &python-action actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.11'
       - uses: ./.github/cache-tools
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
         if: ${{ github.event_name == 'push' }}
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/setup-buildx-action@v3
+      - uses: *buildx-action
       - id: build
         run: |
           python3 -m pip install emskaffolden
@@ -64,8 +64,8 @@ jobs:
     needs: build
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/development' }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: *checkout-action
+      - uses: *python-action
         with:
           python-version: '3.11'
       - uses: ./.github/cache-tools
@@ -79,8 +79,8 @@ jobs:
     needs: build
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: *checkout-action
+      - uses: *python-action
         with:
           python-version: '3.11'
       - uses: ./.github/cache-tools
