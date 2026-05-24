@@ -95,8 +95,3 @@ class SuffixField(Field):
         if value is None:
             raise ValidationError(self.error_messages['max_items'], params={"count": self.max_total})
         super(SuffixField, self).validate(value)
-
-
-class StripField(CharField):
-    def to_python(self, value):
-        return value.strip()

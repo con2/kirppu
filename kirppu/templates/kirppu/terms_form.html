@@ -27,50 +27,12 @@
         </div>
     </div>
 
-    {#<!--suppress ThisExpressionReferencesGlobalObjectJS -->#}
-    <script type="text/javascript"><!--
-        (function() {
-            var cb = $("#terms-accepted");
-            var btn = $("#terms-accept");
-
-            cb.change(function () {
-                if ($(this).prop("checked")) {
-                    btn.prop("disabled", "");
-                } else {
-                    btn.prop("disabled", "disabled");
-                }
-            });
-            btn.click(function () {
-                cb.prop("disabled", "disabled");
-                btn.prop("disabled", "disabled");
-
-                $.post("{% url "kirppu:accept_terms" event_slug=event.slug %}"
-                ).done(function(data) {
-                    if (data.result == "ok") {
-                        btn.addClass("hidden");
-                        var tpl = $("#terms-template").removeClass("hidden");
-                        tpl.text(tpl.text().replace("%s", data.time));
-                        $("#terms-style").text("");
-                    } else {
-                        $("#terms-message").text("error 1");
-                        console.error(data);
-                    }
-                }).fail(function(jqXHR) {
-                    var text;
-                    if (jqXHR.responseJSON) {
-                        text = jqXHR.responseJSON.message || "error 2";
-                    } else {
-                        text = "error 3";
-                    }
-                    $("#terms-message").text(text);
-                });
-            });
-            $("#terms-form").removeClass("hidden");
-        }).call(this);
-    //--></script>
+    <script>
+        termsApp("{% url "kirppu:accept_terms" event_slug=event.slug %}");
+    </script>
 </form>
 {% if not terms_accepted %}
-<style type="text/css" id="terms-style">
+<style id="terms-style">
     *[data-require-terms=true] {
         display: none;
     }

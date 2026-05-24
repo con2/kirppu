@@ -5,10 +5,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.utils.html import format_html, mark_safe
+from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from .fields import ItemPriceField, SuffixField, StripField
+from .fields import ItemPriceField, SuffixField
 from .models import (
     AccessSignup,
     Box,
@@ -421,7 +421,7 @@ class VendorSetSelfForm(forms.ModelForm):
 
 
 class VendorItemForm(forms.Form):
-    name = StripField(error_messages={"required": _("Name is required.")}, max_length=256)
+    name = forms.CharField(error_messages={"required": _("Name is required.")}, max_length=256, strip=True)
     price = ItemPriceField()
     tag_type = forms.ChoiceField(
         required=False,
@@ -470,7 +470,7 @@ class VendorItemForm(forms.Form):
 
 
 class VendorBoxForm(VendorItemForm):
-    description = StripField(max_length=256)
+    description = forms.CharField(max_length=256, strip=True)
     name = None
     tag_type = None
     suffixes = None

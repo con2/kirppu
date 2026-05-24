@@ -92,6 +92,13 @@ class @Dialog2
       @_dialog.remove()
     )
 
+  autofocus: (id) ->
+    if not id.startsWith("#")
+      id = "#" + id
+    @_dialog.on("shown.bs.modal", () =>
+      $(id).focus()
+    )
+
   show: (modalArgs=keyboard: false) ->
     @_dom.append(@_dialog)
     @_dialog.modal(modalArgs)

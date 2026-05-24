@@ -1,38 +1,12 @@
 # -*- coding: utf-8 -*-
 import typing
 
-import factory
 from django.conf import settings
 from django.test import TestCase, override_settings
 
 from ..models import Box, Item
 from . import ResultMixin
 from .factories import *
-
-
-class ApiFactory(factory.Factory[dict]):
-    # Factory that can be used to generate data dicts for django's test Client.
-    class Meta:
-        abstract = True
-        model = dict
-        strategy = factory.CREATE_STRATEGY
-
-
-class ApiItemFactory(ApiFactory):
-    name = factory.Faker("sentence", nb_words=3)
-    price = "1.50"
-    tag_type = "short"
-    suffixes = ""
-    item_type = ""
-    adult = False
-
-
-class ApiBoxFactory(ApiItemFactory):
-    count = 5
-    bundle_size = 1
-
-    class Meta:
-        rename = {"name": "description"}
 
 
 @override_settings(LANGUAGES=(("en", "English"),))

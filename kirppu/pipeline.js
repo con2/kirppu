@@ -53,6 +53,13 @@ module.exports.js = {
         "output_filename": "general.js",
         "compress": true,
     },
+    'terms': {
+        "source_filenames": [
+            "js/terms.js",
+        ],
+        "output_filename": "terms.js",
+        "compress": true,
+    },
     'price_tags': {
         "source_filenames": [
             "js/number_test.coffee",

@@ -23,6 +23,8 @@ from kirppuauth.models import User
 Factory = factory.django.DjangoModelFactory
 
 __all__ = [
+    "ApiItemFactory",
+    "ApiBoxFactory",
     "AccountFactory",
     "UserFactory",
     "EventFactory",
@@ -37,6 +39,31 @@ __all__ = [
     "ReceiptItemFactory",
     "BoxFactory",
 ]
+
+
+class ApiFactory(factory.Factory[dict]):
+    # Factory that can be used to generate data dicts for django's test Client.
+    class Meta:
+        abstract = True
+        model = dict
+        strategy = factory.CREATE_STRATEGY
+
+
+class ApiItemFactory(ApiFactory):
+    name = factory.Faker("sentence", nb_words=3)
+    price = "1.50"
+    tag_type = "short"
+    suffixes = ""
+    item_type = ""
+    adult = False
+
+
+class ApiBoxFactory(ApiItemFactory):
+    count = 5
+    bundle_size = 1
+
+    class Meta:
+        rename = {"name": "description"}
 
 
 class UserFactory(Factory[User]):

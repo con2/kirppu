@@ -110,6 +110,10 @@ def _validate_provision_function(fn):
         raise ValidationError(e)
 
 
+def tz_now() -> datetime.datetime:
+    return timezone.now()
+
+
 class Event(models.Model):
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=250)
@@ -117,12 +121,13 @@ class Event(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
 
+    registration_start = models.DateTimeField(null=True, blank=True)
     registration_end = models.DateTimeField(null=True, blank=True)
     registration_disabled = models.BooleanField(
         default=True,
         help_text=_(
-            "When set, registration is disabled even if registration end is set."
-            " If not set, registration is enabled until registration end if that is set."
+            "When set, registration is disabled."
+            " If not set, registration is enabled between start and end, blank being an open end."
         ),
     )
     checkout_active = models.BooleanField(default=False)
@@ -234,6 +239,23 @@ class Event(models.Model):
         for event, db in events.items():
             result.append(db + ":" + event)
         return result
+
+    def is_registration_enabled(self) -> bool:
+        if self.registration_disabled:
+            return False
+
+        start = self.registration_start
+        end = self.registration_end
+        now = tz_now()
+
+        if start is not None and end is not None:
+            return start <= now < end
+        if start is not None:
+            return start <= now
+        if end is not None:
+            return now < end
+
+        return True
 
 
 class RemoteEvent(Event):

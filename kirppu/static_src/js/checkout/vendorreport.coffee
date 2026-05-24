@@ -139,6 +139,7 @@ class @VendorReport extends CheckoutMode
         },
       ]
     )
+    dlg.autofocus("note")
     dlg.show()
 
   onCompleteNote: (id) =>
