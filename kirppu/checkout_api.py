@@ -289,7 +289,8 @@ def item_search(request, event, query, code, box_number, vendor, min_price, max_
         clauses.append(Q(code__contains=code))
 
     if box_number:
-        clauses.append(Q(box__box_number=int(box_number)))
+        if match := re.match(r"(?:box[ _-]*)?(\d+)", box_number, re.I):
+            clauses.append(Q(box__box_number=int(match.group(1))))
 
     if vendor:
         clauses.append(Q(vendor=vendor))

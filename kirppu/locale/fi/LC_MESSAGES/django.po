@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2022, 2023.
+# SPDX-FileCopyrightText: 2014-2020, 2022-2023, 2025-2026 Jyrki Launonen
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-10 11:29+0300\n"
-"PO-Revision-Date: 2025-08-10 11:31+0300\n"
+"POT-Creation-Date: 2026-06-29 12:06+0300\n"
+"PO-Revision-Date: 2026-06-29 12:19+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 25.04.3\n"
+"X-Generator: Lokalize 26.04.2\n"
 
 msgid "View help."
 msgstr "Näytä ohje."
@@ -35,6 +35,9 @@ msgstr "Henkilö"
 
 msgid "Event"
 msgstr "Tapahtuma"
+
+msgid "Reset signup info (terms, bank info)"
+msgstr "Pyyhi ilmoittautumistiedot (ehdot, pankkitiedot)"
 
 msgid "ID"
 msgstr "ID"
@@ -92,6 +95,9 @@ msgstr "Myyjä"
 msgid "Item"
 msgstr "Tavara"
 
+msgid "Item code, item name, or \"boxNN\"."
+msgstr "Tavaran koodi, tavaran nimi, tai \"boxNN\""
+
 msgid "Clerk"
 msgstr "Kassahenkilö"
 
@@ -139,7 +145,6 @@ msgid "Some box items ({}/{}) are in unexpected state."
 msgstr "Jotkin laatikon tavarat ({}/{}) ovat odottamattomassa tilassa."
 
 #, python-brace-format
-#| msgid "Only {} items of {} available for reservation."
 msgid ""
 "Only {available} items of {requested} available for reservation in box "
 "#{box_number}: {box_name}."
@@ -292,8 +297,8 @@ msgstr ""
 "alertbox&gt; Tyypit: danger, warning, info, success\n"
 "&lt;itemlist /&gt;\n"
 "&lt;var MUUTTUJA /&gt; Ennalta määritellyt: event.name, event.start.date, "
-"event.end.date, event.homepage, registration.end.datetime, registration.end."
-"date, registration.end.time\n"
+"event.end.date, event.homepage, registration.end.datetime, "
+"registration.end.date, registration.end.time\n"
 "&lt;if EHTO&gt;teksti&lt;/if&gt;\n"
 "&lt;if EHTO1&gt;teksti&lt;elif EHTO2&gt;teksti&lt;else&gt;teksti&lt;/if&gt;\n"
 "<pre style=\"padding-left: 0;\">\n"
@@ -314,6 +319,30 @@ msgstr "Virheellinen tavaran tyyppi."
 msgid "Message (optional)"
 msgstr "Viesti (valinnainen)"
 
+msgid "Business Identifier Code, usually you don't need to write this"
+msgstr "Bank Identifier Code, ei yleensä tarvitse täyttää"
+
+msgid "Part of the number is omitted for security"
+msgstr "Osa numerosta on piilotettu tietoturvan vuoksi"
+
+#| msgid "Invalidate"
+msgid "Invalid IBAN"
+msgstr "Virheellinen IBAN"
+
+msgid "Country is not allowed"
+msgstr "Maa ei ole sallittu"
+
+#| msgid "Invalidate"
+msgid "Invalid BIC"
+msgstr "Virheellinen BIC"
+
+#| msgid "Name is required."
+msgid "BIC is required"
+msgstr "BIC on vaadittu"
+
+msgid "BIC does not match the IBAN"
+msgstr "BIC ei vastaa IBANia"
+
 msgid "first name"
 msgstr "etunimi"
 
@@ -323,13 +352,17 @@ msgstr "sukunimi"
 msgid "email address"
 msgstr "sähköposti"
 
+#| msgid ""
+#| "When set, registration is disabled even if registration end is set. If "
+#| "not set, registration is enabled until registration end if that is set."
 msgid ""
-"When set, registration is disabled even if registration end is set. If not "
-"set, registration is enabled until registration end if that is set."
+"When set, registration is disabled. If not set, registration is enabled "
+"between start and end, blank being an open end."
 msgstr ""
-"Kun asetettu, rekisteröinti on suljettu riippumatta rekisteröinnin "
-"päättymisajasta. Jos ei asetettu, rekisteröinti on avoinna päättymisaikaan "
-"asti mikäli se on asetettu."
+"Kun asetettu, rekisteröinti on suljettu. Jos ei asetettu, rekisteröinti on avo"
+"inna "
+"alkuajan ja päättymisajan välisen ajan. Tyhjä alku- tai päättymisaika tarkoitt"
+"aa rajoittamatonta."
 
 msgid ""
 "Lisp function body that gets sold_and_compensated queryset as a global and "
@@ -351,6 +384,14 @@ msgid ""
 msgstr ""
 "Lasketaanko laatikko yksittäiseksi tuotteeksi laskettaessa tapahtumaan "
 "tuotujen myymättömien tuotteiden rajaa."
+
+msgid ""
+"Comma-separated list of uppercase 2-letter country codes to restrict "
+"accepted IBANs. Leave empty to allow all."
+msgstr ""
+"Pilkulla eroteltu lista sallituista isoilla kirjaimilla kirjoitettuista 2-kirj"
+"aimisista "
+"maakoodeista IBAN-numeroissa. Jätä tyhjäksi salliaksesi kaikki."
 
 msgid "Visible"
 msgstr "Näkyvillä"
@@ -615,7 +656,6 @@ msgstr "Tulosta"
 msgid "Buyer!"
 msgstr "Ostaja!"
 
-#| msgid "Tell this number to the clerk."
 msgid "Note the ← number for checkout."
 msgstr "Ota ← numero muistiin kassalle."
 
@@ -889,7 +929,6 @@ msgid "Compensations"
 msgstr "Hyvitykset"
 
 #, python-format
-#| msgid "New vendor"
 msgid "%%s / vendor"
 msgstr "%%s / myyjä"
 
@@ -897,18 +936,15 @@ msgid "Purchases"
 msgstr "Ostokset"
 
 #, python-format
-#| msgid "Purchase"
 msgid "%%s / purchase"
 msgstr "%%s / ostos"
 
 msgid "Brought"
 msgstr "Tuotu tapahtumaan"
 
-#| msgid "New vendor"
 msgid "items / vendor"
 msgstr "tavaraa / myyjä"
 
-#| msgid "Brought boxes"
 msgid "Brought prices"
 msgstr "Tuotujen hinnat"
 
@@ -944,7 +980,6 @@ msgstr "Tulostettu ja poistettu"
 msgid "Printed, not brought"
 msgstr "Tulostettu, tuomatta"
 
-#| msgid "Brought to event"
 msgid "Brought (with box items)"
 msgstr "Tuotu (laatikkotavaroiden kanssa)"
 
@@ -952,16 +987,13 @@ msgstr "Tuotu (laatikkotavaroiden kanssa)"
 msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgstr "%(brought)s (%(broughtOfRegistered)s%% rekisteröidyistä)"
 
-#| msgid "Items in boxes"
 msgid "Brought items in boxes"
 msgstr "Tuotuja tavaroita laatikoissa"
 
 #, python-format
-#| msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgid "%(count)s (%(percent)s%% of registered)"
 msgstr "%(count)s (%(percent)s%% rekisteröidyistä)"
 
-#| msgid "Brought"
 msgid "Brought boxes"
 msgstr "Tuotuja laatikoita"
 
@@ -1093,8 +1125,30 @@ msgstr ""
 "Kaikki tuotteet ovat kirpputorilla myyjien omalla vastuulla, eikä tapahtuma "
 "vastaa kadonneista tai vaurioituneista tuotteista."
 
+msgid "Bank account information"
+msgstr "Pankkitilin tiedot"
+
+msgid "IBAN"
+msgstr "IBAN"
+
+msgid "BIC"
+msgstr "BIC"
+
+msgid ""
+"I am not able to receive wire transfers and ask for an exception to receive "
+"possible payment in cash"
+msgstr ""
+"En voi vastaanottaa voittoja sähköisesti ja pyydän poikkeuksellisesti tilityst"
+"ä käteisenä"
+
+msgid "Reason"
+msgstr "Syy"
+
 msgid "Accept"
 msgstr "Hyväksy"
+
+msgid "Update"
+msgstr "Päivitä"
 
 #, python-format
 msgid "Accepted at %(terms_time)s."
@@ -1333,6 +1387,9 @@ msgstr "Kassan komennot"
 #, python-format
 msgid "Vendor %i"
 msgstr "Myyjä %i"
+
+msgid "Terms need to be accepted."
+msgstr "Ehdot täytyy hyväksyä."
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "CSRF-tarkistus epäonnistui. Pyyntö keskeytetty."

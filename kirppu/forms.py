@@ -1,3 +1,4 @@
+import logging
 import re
 
 from django import forms
@@ -7,6 +8,8 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
+
+import schwifty
 
 from .fields import ItemPriceField, SuffixField
 from .models import (
@@ -25,6 +28,8 @@ from .models import (
 )
 from .util import shorten_text
 from .utils import StaticText, ButtonWidget, model_dict_fn
+
+LOG = logging.getLogger(__name__)
 
 
 class ClerkGenerationForm(forms.Form):
@@ -595,3 +600,118 @@ class BoxAdjustForm(forms.Form):
             raise forms.ValidationError("Box {code} is returned or missing.".format(code=data))
 
         return data
+
+
+def try_or_default(fn, value, formatted=False):
+    if not value:
+        return ""
+    try:
+        if formatted:
+            return fn(value).formatted
+        return fn(value)
+    except ValueError:
+        return value
+
+
+def hide_part(value: str, keep_before: int, keep_after: int) -> str:
+    if not value:
+        return ""
+    return (
+        value[:keep_before]
+        + re.sub(r"\w", "x", value[keep_before:-keep_after])
+        + value[-keep_after:]
+    )
+
+
+class BankAccountForm(forms.Form):
+    with_account = forms.BooleanField(required=False, initial=True)
+
+    # up to 34 alphanum plus spaces
+    iban = forms.CharField(max_length=45, strip=True, required=False)
+    # 8 or 11 alphanum
+    bic = forms.CharField(
+        max_length=16,
+        strip=True,
+        required=False,
+        help_text=_("Business Identifier Code, usually you don't need to write this"),
+    )
+    reason = forms.CharField(max_length=160, strip=True, required=False)
+
+    def __init__(self, *args, initial=None, restrict_countries: list[str] | None = None, **kwargs):
+        if initial:
+            initial["iban"] = hide_part(
+                try_or_default(schwifty.IBAN, initial["iban"], formatted=True), 2, 5
+            )
+            initial["bic"] = hide_part(
+                try_or_default(schwifty.BIC, initial["bic"]), 0, 2
+            )
+        super().__init__(*args, initial=initial, **kwargs)
+        self._restrict_countries = restrict_countries
+        if initial and initial["iban"]:
+            self.fields["iban"].help_text = _(
+                "Part of the number is omitted for security"
+            )
+
+    def full_clean(self):
+        # Change required flags per with_account selection before any other validation is done.
+        wa_bound = self["with_account"]
+        with_account = wa_bound.field.clean(wa_bound.data)
+        if with_account:
+            self["iban"].field.required = True
+        else:
+            self["reason"].field.required = True
+        super().full_clean()
+
+    def clean_iban(self):
+        if not self["iban"].field.required:
+            return None
+        data = self.cleaned_data["iban"]
+        try:
+            iban = schwifty.IBAN(data, validate_bban=True)
+        except ValueError as e:
+            LOG.info("Iban validation error: %s", str(e))
+            raise forms.ValidationError(_("Invalid IBAN"))
+        if self._restrict_countries and iban.country_code not in self._restrict_countries:
+            raise forms.ValidationError(_("Country is not allowed"))
+        return iban
+
+    def clean_bic(self):
+        # Only iban is required; bic is optional.
+        if not self["iban"].field.required:
+            return None
+        data = self.cleaned_data["bic"]
+
+        if data:
+            try:
+                return schwifty.BIC(data)
+            except ValueError as e:
+                LOG.info("Bic validation error: %s", str(e))
+                raise forms.ValidationError(_("Invalid BIC"))
+
+        return None
+
+    def clean_reason(self):
+        if not self["reason"].field.required:
+            return None
+        data: str | None = self.cleaned_data["reason"]
+        # Require some kind of text.
+        if not data or len(data) < 5 or not any(c.isalpha() for c in data[:10]):
+            raise forms.ValidationError(
+                self["reason"].field.error_messages["required"], code="required"
+            )
+        return data
+
+    def clean(self):
+        iban: schwifty.IBAN | None = self.cleaned_data.get("iban")
+        if iban:
+            clean_bic: schwifty.BIC | None = self.cleaned_data.get("bic")
+            if not iban.bic and not clean_bic:
+                self.add_error("bic", _("BIC is required"))
+                return None
+            elif iban.bic and clean_bic and iban.bic != clean_bic:
+                self.add_error("bic", _("BIC does not match the IBAN"))
+                return None
+            else:
+                self.cleaned_data["bic"] = iban.bic or clean_bic
+
+        return self.cleaned_data

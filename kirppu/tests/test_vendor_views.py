@@ -40,8 +40,11 @@ class InitialAddTest(_VendorTest):
         if not self.client.login(username=vendor.user.username, password=UserFactory.DEFAULT_PASSWORD):
             raise RuntimeError("Could not log in.")
 
+        obj = {
+            "terms-accepted": "true",
+        }
         self.assertEqual("ok", self.assertSuccess(
-            self.client.post("/kirppu/%s/vendor/accept_terms" % self.event.slug)).json()["result"])
+            self.client.post("/kirppu/%s/vendor/accept_terms" % self.event.slug, data=obj)).json()["result"])
 
         data = ApiItemFactory.create(item_type=self.type.id)
         result = self.assertSuccess(

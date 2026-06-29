@@ -36,7 +36,7 @@ from django.views.generic import RedirectView
 
 from ..checkout_api import clerk_logout_fn
 from .. import ajax_util
-from ..forms import BoxAdjustForm, ItemRemoveForm, VendorItemForm, VendorBoxForm, remove_item_from_receipt as _remove_item_from_receipt
+from ..forms import BankAccountForm, BoxAdjustForm, ItemRemoveForm, VendorItemForm, VendorBoxForm, remove_item_from_receipt as _remove_item_from_receipt
 from ..fields import ItemPriceField
 from .menu import vendor_menu
 from ..models import (
@@ -447,6 +447,16 @@ def get_items(request, event_slug, bar_type):
     items = items.order_by('-id')
 
     item_name_placeholder = UIText.get_text(event, "item_placeholder", _("Ranma ½ Vol."))
+    bank_info = BankAccountForm(
+        initial=None
+        if vendor is None
+        else {
+            "with_account": vendor.bank_skip is None,
+            "iban": vendor.bank_iban,
+            "bic": vendor.bank_bic,
+            "reason": vendor.bank_skip,
+        }
+    )
 
     render_params = {
         'event': event,
@@ -458,6 +468,7 @@ def get_items(request, event_slug, bar_type):
 
         'profile_url': settings.PROFILE_URL,
         'terms_accepted': vendor.terms_accepted if vendor is not None else False,
+        "bank_info": bank_info,
 
         'is_registration_open': is_vendor_open(request, event),
         'is_registration_closed_for_users': is_registration_closed_for_users(event=event),
@@ -504,6 +515,16 @@ def get_boxes(request, event_slug):
     boxes = boxes.order_by('-id')
 
     box_name_placeholder = UIText.get_text(event, "box_placeholder", _("Box full of Ranma"))
+    bank_info = BankAccountForm(
+        initial=None
+        if vendor is None
+        else {
+            "with_account": vendor.bank_skip is None,
+            "iban": vendor.bank_iban,
+            "bic": vendor.bank_bic,
+            "reason": vendor.bank_skip,
+        }
+    )
 
     render_params = {
         'event': event,
@@ -514,6 +535,7 @@ def get_boxes(request, event_slug):
 
         'profile_url': settings.PROFILE_URL,
         'terms_accepted': vendor.terms_accepted if vendor is not None else False,
+        "bank_info": bank_info,
 
         'is_registration_open': is_vendor_open(request, event),
         'is_registration_closed_for_users': is_registration_closed_for_users(event),
@@ -934,21 +956,59 @@ def vendor_view(request, event_slug):
 @login_required
 @require_http_methods(["POST"])
 def accept_terms(request, event_slug):
+    # POST from terms_form.html
     event = get_object_or_404(Event, slug=event_slug)
     event.require_default_db()
 
+    errors: dict = {}
+    update_fields: list[str] = []
+    extra_values: dict = {}
     vendor = Vendor.get_or_create_vendor(request, event)
-    if vendor.terms_accepted is None:
-        vendor.terms_accepted = timezone.now()
-        vendor.save(update_fields=("terms_accepted",))
+    if event.collect_bank_information:
+        form = get_form(BankAccountForm, request, restrict_countries=event.restricted_bank_countries)
+        if form.is_valid():
+            extra_values["with_account"] = form.cleaned_data["with_account"]
+            if form.cleaned_data["with_account"]:
+                vendor.bank_iban = form.cleaned_data["iban"]
+                vendor.bank_bic = form.cleaned_data["bic"]
+                vendor.bank_skip = None
+            else:
+                vendor.bank_iban = None
+                vendor.bank_bic = None
+                vendor.bank_skip = form.cleaned_data["reason"]
+            # .formatted assumes that above Form provides schwifty.IBAN instance.
+            # That is not the case in a row fetched from database.
+            extra_values["iban"] = vendor.bank_iban.formatted if vendor.bank_iban else ""
+            extra_values["bic"] = vendor.bank_bic or ""
+            extra_values["reason"] = vendor.bank_skip or ""
+            update_fields += ["bank_iban", "bank_bic", "bank_skip"]
+        else:
+            errors.update(form.errors.get_json_data())
 
-    result = timezone.template_localtime(vendor.terms_accepted)
-    result = localize(result)
+    if vendor.terms_accepted is None:
+        if request.POST.get("terms-accepted") == "true":
+            if not errors:
+                vendor.terms_accepted = timezone.now()
+                update_fields += ["terms_accepted"]
+        else:
+            # Unlikely, as the form should disable submit if terms-accepted is not set.
+            errors.setdefault("__all__", []).append(
+                dict(message=_("Terms need to be accepted."), code=""),
+            )
+
+    result = None
+    if vendor.terms_accepted is not None:
+        result = timezone.template_localtime(vendor.terms_accepted)
+        result = localize(result)
+
+    vendor.save(update_fields=update_fields)
 
     return HttpResponse(json.dumps({
-        "result": "ok",
+        "result": "ok" if not errors else "error",
         "time": result,
-    }), "application/json")
+        "errors": errors,
+        **extra_values,
+    }), "application/json", status=200 if not errors else 400)
 
 
 @login_required

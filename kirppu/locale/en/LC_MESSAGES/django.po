@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2022, 2023.
+# SPDX-FileCopyrightText: 2014-2020, 2022-2023, 2025-2026 Jyrki Launonen
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-10 11:29+0300\n"
-"PO-Revision-Date: 2025-08-10 11:30+0300\n"
+"POT-Creation-Date: 2026-06-29 12:06+0300\n"
+"PO-Revision-Date: 2026-06-29 12:09+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 25.04.3\n"
+"X-Generator: Lokalize 26.04.2\n"
 
 msgid "View help."
 msgstr "View help."
@@ -35,6 +35,9 @@ msgstr "Person"
 
 msgid "Event"
 msgstr "Event"
+
+msgid "Reset signup info (terms, bank info)"
+msgstr "Reset signup info (terms, bank info)"
 
 msgid "ID"
 msgstr "ID"
@@ -90,6 +93,9 @@ msgstr "Vendor"
 msgid "Item"
 msgstr "Item"
 
+msgid "Item code, item name, or \"boxNN\"."
+msgstr "Item code, item name, or \"boxNN\"."
+
 msgid "Clerk"
 msgstr "Clerk"
 
@@ -137,7 +143,6 @@ msgid "Some box items ({}/{}) are in unexpected state."
 msgstr "Some box items ({}/{}) are in unexpected state."
 
 #, python-brace-format
-#| msgid "Only {} items of {} available for reservation."
 msgid ""
 "Only {available} items of {requested} available for reservation in box "
 "#{box_number}: {box_name}."
@@ -310,6 +315,30 @@ msgstr "Invalid item type."
 msgid "Message (optional)"
 msgstr "Message (optional)"
 
+msgid "Business Identifier Code, usually you don't need to write this"
+msgstr "Business Identifier Code, usually you don't need to write this"
+
+msgid "Part of the number is omitted for security"
+msgstr "Part of the number is omitted for security"
+
+#| msgid "Invalidate"
+msgid "Invalid IBAN"
+msgstr "Invalid IBAN"
+
+msgid "Country is not allowed"
+msgstr "Country is not allowed"
+
+#| msgid "Invalidate"
+msgid "Invalid BIC"
+msgstr "Invalid BIC"
+
+#| msgid "Name is required."
+msgid "BIC is required"
+msgstr "BIC is required"
+
+msgid "BIC does not match the IBAN"
+msgstr "BIC does not match the IBAN"
+
 msgid "first name"
 msgstr "first name"
 
@@ -319,12 +348,15 @@ msgstr "last name"
 msgid "email address"
 msgstr "email address"
 
+#| msgid ""
+#| "When set, registration is disabled even if registration end is set. If "
+#| "not set, registration is enabled until registration end if that is set."
 msgid ""
-"When set, registration is disabled even if registration end is set. If not "
-"set, registration is enabled until registration end if that is set."
+"When set, registration is disabled. If not set, registration is enabled "
+"between start and end, blank being an open end."
 msgstr ""
-"When set, registration is disabled even if registration end is set. If not "
-"set, registration is enabled until registration end if that is set."
+"When set, registration is disabled. If not set, registration is enabled "
+"between start and end, blank being an open end."
 
 msgid ""
 "Lisp function body that gets sold_and_compensated queryset as a global and "
@@ -346,6 +378,13 @@ msgid ""
 msgstr ""
 "Should a box be considered a single item when counting max brought items "
 "instead of considering its contents individually."
+
+msgid ""
+"Comma-separated list of uppercase 2-letter country codes to restrict "
+"accepted IBANs. Leave empty to allow all."
+msgstr ""
+"Comma-separated list of uppercase 2-letter country codes to restrict "
+"accepted IBANs. Leave empty to allow all."
 
 msgid "Visible"
 msgstr "Visible"
@@ -609,7 +648,6 @@ msgstr "Print"
 msgid "Buyer!"
 msgstr "Buyer!"
 
-#| msgid "Tell this number to the clerk."
 msgid "Note the ← number for checkout."
 msgstr "Note the ← number for checkout."
 
@@ -884,7 +922,6 @@ msgid "Compensations"
 msgstr "Compensations"
 
 #, python-format
-#| msgid "New vendor"
 msgid "%%s / vendor"
 msgstr "%%s / vendor"
 
@@ -892,18 +929,15 @@ msgid "Purchases"
 msgstr "Purchases"
 
 #, python-format
-#| msgid "Purchase"
 msgid "%%s / purchase"
 msgstr "%%s / purchase"
 
 msgid "Brought"
 msgstr "Brought"
 
-#| msgid "New vendor"
 msgid "items / vendor"
 msgstr "items / vendor"
 
-#| msgid "Brought boxes"
 msgid "Brought prices"
 msgstr "Brought prices"
 
@@ -939,7 +973,6 @@ msgstr "Printed and deleted"
 msgid "Printed, not brought"
 msgstr "Printed, not brought"
 
-#| msgid "Brought to event"
 msgid "Brought (with box items)"
 msgstr "Brought (with box items)"
 
@@ -947,16 +980,13 @@ msgstr "Brought (with box items)"
 msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgstr "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 
-#| msgid "Items in boxes"
 msgid "Brought items in boxes"
 msgstr "Brought items in boxes"
 
 #, python-format
-#| msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgid "%(count)s (%(percent)s%% of registered)"
 msgstr "%(count)s (%(percent)s%% of registered)"
 
-#| msgid "Brought"
 msgid "Brought boxes"
 msgstr "Brought boxes"
 
@@ -1088,8 +1118,30 @@ msgstr ""
 "All items in the market are at own risk of vendor. The event is not "
 "responsible for lost nor damaged items."
 
+msgid "Bank account information"
+msgstr "Bank account information"
+
+msgid "IBAN"
+msgstr "IBAN"
+
+msgid "BIC"
+msgstr "BIC"
+
+msgid ""
+"I am not able to receive wire transfers and ask for an exception to receive "
+"possible payment in cash"
+msgstr ""
+"I am not able to receive wire transfers and ask for an exception to receive "
+"possible payment in cash"
+
+msgid "Reason"
+msgstr "Reason"
+
 msgid "Accept"
 msgstr "Accept"
+
+msgid "Update"
+msgstr "Update"
 
 #, python-format
 msgid "Accepted at %(terms_time)s."
@@ -1328,6 +1380,9 @@ msgstr "Counter commands"
 #, python-format
 msgid "Vendor %i"
 msgstr "Vendor %i"
+
+msgid "Terms need to be accepted."
+msgstr "Terms need to be accepted."
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "CSRF verification failed. Request aborted."

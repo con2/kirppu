@@ -238,6 +238,11 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'propagate': True
         },
+        'kirppu': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'propagate': False,
+        }
     },
 }
 
@@ -322,6 +327,9 @@ KIRPPU_USE_SSO = env.bool('KIRPPU_USE_SSO', default=False)
 
 # If True, admin can change identity.
 KIRPPU_SU_AS_USER = "kirppuauth" in INSTALLED_APPS
+
+# Flag to enable some extra features that should not be used in production but may be beneficial in staging testing.
+KIRPPU_STAGING_FEATURES = env.bool("KIRPPU_STAGING_FEATURES", default=False)
 
 # Automatic checkout login. May not be enabled in non-dev environments!
 # If "*", first enabled Clerk is automatically used.

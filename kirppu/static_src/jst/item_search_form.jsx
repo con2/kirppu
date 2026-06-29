@@ -24,7 +24,7 @@ export default function render({item_types, item_states, price_step, CURRENCY}) 
                 <label htmlFor="box_number_input"
                        className="control-label col-sm-3">{gettext("Box number")}</label>
                 <div className="input-group col-sm-2">
-                    <input type="text" id="box_number_input" className="form-control"/>
+                    <input type="text" pattern="(box[ _\-]*)?\d+" title="NN / boxNN / box-NN" id="box_number_input" className="form-control"/>
                 </div>
             </div>
             <div className="form-group">

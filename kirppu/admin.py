@@ -48,7 +48,7 @@ from .util import get_form
 from .utils import datetime_iso_human
 
 
-BOX_RE = re.compile(r"box(?:_-)?(\d+)")
+BOX_RE = re.compile(r"box[_-]?(\d+)")
 
 def with_description(short_description):
     def decorator(action_function):
@@ -110,7 +110,7 @@ class EventAdmin(admin.ModelAdmin):
     ordering = ("-start_date", "name")
 
     def get_list_display(self, request):
-        list_display = ["name", "slug", "start_date", "end_date", "registration_end", "checkout_active"]
+        list_display = ["name", "slug", "start_date", "end_date", "registration_start", "registration_end", "checkout_active"]
         if settings.KIRPPU_EXTRA_DATABASES or settings.KIRPPU_EXTRA_EVENTS:
             return list_display + ["source_db"]
         return list_display
@@ -196,7 +196,7 @@ class VendorAdmin(admin.ModelAdmin):
     ordering = ('user__first_name', 'user__last_name')
     search_fields = ['id', 'user__first_name', 'user__last_name', 'user__username',
                      'person__first_name', 'person__last_name']
-    list_display = ['id', _user_link, _person_link, "terms_accepted", "event"]
+    list_display = ['id', _user_link, _person_link, "terms_accepted", _event_link]
     list_filter = (
         "event",
     )
@@ -226,9 +226,36 @@ class VendorAdmin(admin.ModelAdmin):
             fields.append("person")
         return fields
 
+    def get_actions(self, request):
+        s = super().get_actions(request)
+        if settings.KIRPPU_STAGING_FEATURES:
+            s["reset_signup"] = (
+                VendorAdmin._reset_signup,
+                "reset_signup",
+                gettext("Reset signup info (terms, bank info)"),
+            )
+            return s
+        return s
+
+    # noinspection PyMethodMayBeStatic
+    def _reset_signup(self, request, queryset) -> None:
+        if not settings.KIRPPU_STAGING_FEATURES:
+            raise RuntimeError("Feature not available")
+        queryset.update(
+            terms_accepted=None,
+            bank_iban=None,
+            bank_bic=None,
+            bank_skip=None,
+        )
+
 
 admin.site.register(Person)
-admin.site.register(Account)
+
+
+@admin.register(Account)
+class AccountAdmin(admin.ModelAdmin):
+    list_display = ("name", "balance", _event_link)
+    list_filter = ("event",)
 
 
 class ClerkEditLink(FieldAccessor):

@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019, 2020, 2022.
+# SPDX-FileCopyrightText: 2014-2015, 2017-2020, 2022, 2025-2026 Jyrki Launonen
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-05 16:42+0300\n"
-"PO-Revision-Date: 2025-08-05 16:45+0300\n"
+"POT-Creation-Date: 2026-06-29 12:06+0300\n"
+"PO-Revision-Date: 2026-06-29 12:07+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 25.04.2\n"
+"X-Generator: Lokalize 26.04.2\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -391,7 +391,6 @@ msgstr "Barcode of Item to mark as Lost Property"
 msgid "Receipt List"
 msgstr "Receipt List"
 
-#| msgid "Compensation receipts…"
 msgid "Continue receipt…"
 msgstr "Continue receipt…"
 
@@ -405,7 +404,6 @@ msgid "Resume here"
 msgstr "Resume here"
 
 #, javascript-format
-#| msgid "Compensation receipts"
 msgid "Continue receipt %d"
 msgstr "Continue receipt %d"
 
@@ -448,6 +446,9 @@ msgstr "euros"
 
 msgid "No data"
 msgstr "No data"
+
+msgid "Update"
+msgstr "Update"
 
 msgid "Select…"
 msgstr "Select…"
@@ -842,8 +843,8 @@ msgstr "Expected total:"
 msgid "item type"
 msgstr "item type"
 
-msgid "<em>Click to edit</em>"
-msgstr "<em>Click to edit</em>"
+#~ msgid "<em>Click to edit</em>"
+#~ msgstr "<em>Click to edit</em>"
 
 #~ msgid "Minimum price"
 #~ msgstr "Minimum price"

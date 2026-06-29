@@ -43,3 +43,11 @@ code.yv8k02zi:before {
     border: none;
     cursor: pointer;
 }
+
+.pre-nl {
+    white-space: pre-wrap;
+}
+.required:before {
+    content: "* ";
+    color: #e25;
+}

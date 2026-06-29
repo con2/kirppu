@@ -1,3 +1,10 @@
+optTrim = (v) ->
+  # select's return arrays, so do only for strings.
+  if typeof(v) == "string"
+    v.trim()
+  else
+    v
+
 class @ItemSearchForm
 
   # Written from outside.
@@ -24,7 +31,7 @@ class @ItemSearchForm
 
   onSubmit: (event) =>
     do event.preventDefault
-    args = ($("#" + i, @form).val() for i in [
+    args = (optTrim($("#" + i, @form).val()) for i in [
       "item_search_input",
       "item_code_search_input",
       "box_number_input",

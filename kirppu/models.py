@@ -6,6 +6,7 @@ import string
 import typing
 import warnings
 
+from django.contrib.admin import decorators
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator
 from django.db import models, transaction, IntegrityError
@@ -157,6 +158,15 @@ class Event(models.Model):
     )
     min_box_size = models.PositiveSmallIntegerField(null=False, default=1)
 
+    collect_bank_information = models.BooleanField(default=False)
+    restrict_bank_country = models.CharField(
+        max_length=250,
+        blank=True,
+        null=True,
+        help_text=_("Comma-separated list of uppercase 2-letter country codes to restrict accepted IBANs."
+                    " Leave empty to allow all."),
+    )
+
     # Link to another database.
     source_db = models.CharField(blank=True, max_length=250, null=True, unique=True)
 
@@ -256,6 +266,13 @@ class Event(models.Model):
             return now < end
 
         return True
+
+    @property
+    def restricted_bank_countries(self) -> list[str]:
+        if self.restrict_bank_country:
+            return self.restrict_bank_country.split(",")
+        else:
+            return []
 
 
 class RemoteEvent(Event):
@@ -476,7 +493,10 @@ class Clerk(models.Model):
         return self.access_key is not None and int(self.access_key, 16) >= 100000
 
     @property
-    @short_description(_("Is enabled?"))
+    @decorators.display(
+        boolean=True,
+        description=_("Is enabled?"),
+    )
     def is_enabled(self):
         return self.is_valid_code and self.user is not None
 
@@ -580,6 +600,9 @@ class Vendor(models.Model):
     terms_accepted = models.DateTimeField(null=True)
     mobile_view_visited = models.BooleanField(default=False)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    bank_iban = models.CharField(max_length=40, blank=True, null=True)
+    bank_bic = models.CharField(max_length=20, blank=True, null=True)
+    bank_skip = models.CharField(max_length=256, blank=True, null=True)
 
     class Meta:
         unique_together = (
@@ -596,6 +619,16 @@ class Vendor(models.Model):
 
     def __str__(self):
         return self.printable_name + " id=" + str(self.id)
+
+    def clean(self):
+        super().clean()
+        no_iban = self.bank_iban is None or self.bank_iban.strip() == ""
+        no_bic = self.bank_bic is None or self.bank_bic.strip() == ""
+        if no_iban != no_bic:
+            raise ValidationError("Either both IBAN and BIC must be given or be blank")
+        if no_iban and no_bic:
+            self.bank_iban = None
+            self.bank_bic = None
 
     @property
     def printable_name(self) -> str:
