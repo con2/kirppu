@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 12:06+0300\n"
-"PO-Revision-Date: 2026-06-29 12:07+0300\n"
+"POT-Creation-Date: 2026-07-05 14:14+0300\n"
+"PO-Revision-Date: 2026-07-05 14:14+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -311,6 +311,11 @@ msgstr "%d, cashier: %c"
 msgid "Vendor Compensation"
 msgstr "Vendor Compensation"
 
+msgid ""
+"Vendor is supposed to get the compensation with a wire transfer, NOT cash!"
+msgstr ""
+"Vendor is supposed to get the compensation with a wire transfer, NOT cash!"
+
 msgid "Sold Items"
 msgstr "Sold Items"
 
@@ -544,6 +549,12 @@ msgstr "id"
 
 msgid "terms accepted?"
 msgstr "terms accepted?"
+
+msgid "redeem option"
+msgstr "redeem option"
+
+msgid "IBAN"
+msgstr "IBAN"
 
 msgid "Add a note?"
 msgstr "Add a note?"
@@ -808,8 +819,8 @@ msgstr "clerk (counter)"
 msgid "Note for suspend"
 msgstr "Note for suspend"
 
-msgid "Confirm"
-msgstr "Confirm"
+msgid "Confirm cash"
+msgstr "Confirm cash"
 
 msgid "Retry"
 msgstr "Retry"

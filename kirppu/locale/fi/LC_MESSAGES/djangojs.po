@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 12:06+0300\n"
-"PO-Revision-Date: 2026-06-29 12:07+0300\n"
+"POT-Creation-Date: 2026-07-05 14:14+0300\n"
+"PO-Revision-Date: 2026-07-05 14:14+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -310,6 +310,10 @@ msgstr "%d, kassalla: %c"
 msgid "Vendor Compensation"
 msgstr "Myyjän Hyvitys"
 
+msgid ""
+"Vendor is supposed to get the compensation with a wire transfer, NOT cash!"
+msgstr "Myyjän hyvitys on tarkoitus suorittaa tilisiirrolla, EI käteisellä!"
+
 msgid "Sold Items"
 msgstr "Myydyt tavarat"
 
@@ -543,6 +547,12 @@ msgstr "id"
 
 msgid "terms accepted?"
 msgstr "ehdot hyväksytty?"
+
+msgid "redeem option"
+msgstr "hyvitysvalinta"
+
+msgid "IBAN"
+msgstr "IBAN"
 
 msgid "Add a note?"
 msgstr "Lisää muistiinpano?"
@@ -807,8 +817,8 @@ msgstr "kassahenkilö (kassa)"
 msgid "Note for suspend"
 msgstr "Huomio keskeytykseen"
 
-msgid "Confirm"
-msgstr "Vahvista"
+msgid "Confirm cash"
+msgstr "Vahvista käteinen"
 
 msgid "Retry"
 msgstr "Yritä uudelleen"

@@ -697,6 +697,8 @@ class Vendor(models.Model):
         missing_name=lambda self: self.user.first_name.strip() == "" or self.user.last_name.strip() == "",
         email=lambda self: self.user.email,
         phone=lambda self: UserAdapter.phone(self.user),
+        with_bank_info=lambda self: self.bank_iban is not None and self.bank_iban != "",
+        without_bank_info=lambda self: self.bank_skip is not None and self.bank_skip != "",
         __extend=_base_dict
     )
     _dict_by_person = model_dict_fn(
@@ -1154,7 +1156,9 @@ class Item(models.Model):
         return self.price_fmt_for(self.price)
 
     @staticmethod
-    def price_fmt_for(value: Decimal) -> Decimal:
+    def price_fmt_for(value: Decimal | float | int | str) -> Decimal:
+        if isinstance(value, (float, int, str)):
+            value = Decimal(value)
         # If value is exact integer, return only the integer part.
         int_value = value.to_integral_value()
         if int_value == value:

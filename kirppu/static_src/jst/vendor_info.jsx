@@ -2,7 +2,7 @@ import {dateTime} from "./helpers";
 
 function Row({title, value, classes}) {
     return (
-        <div className={"row " + (classes || "")}>
+        <div className={"row row-no-gutters " + (classes || "")}>
             <div className="col-xs-3 vendor-info-key">{title}</div>
             <div className="col-xs-9">{value}</div>
         </div>
@@ -20,6 +20,10 @@ export default function render({vendor, title=true}) {
             <Row title={gettext("terms accepted?")} value={
                 vendor.terms_accepted ? dateTime(vendor.terms_accepted) : ""
             }/>
+            {vendor.with_bank_info && <Row title={gettext("redeem option")} value={
+                gettext("IBAN")} id="vendor_bank_row" classes="hidden-print"/>}
+            {vendor.without_bank_info && <Row title={gettext("redeem option")} value={
+                gettext("Cash")} classes="hidden-print"/>}
         </div>
     )
 }

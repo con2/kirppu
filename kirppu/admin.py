@@ -19,7 +19,6 @@ from .forms import (
     UITextForm,
     ClerkEditForm,
     ClerkSSOForm,
-    VendorSetSelfForm,
 )
 
 from .models import (
@@ -213,10 +212,17 @@ class VendorAdmin(admin.ModelAdmin):
             not obj.user.is_superuser and\
             settings.KIRPPU_SU_AS_USER
 
-    def get_form(self, request, obj=None, **kwargs):
-        if self._can_set_user(request, obj):
-            kwargs["form"] = VendorSetSelfForm
-        return super(VendorAdmin, self).get_form(request, obj, **kwargs)
+    def render_change_form(
+        self,
+        request,
+        context,
+        add=False,
+        change=False,
+        form_url="",
+        obj=None,
+    ):
+        context["has_set_user_permission"] = self._can_set_user(request, obj)
+        return super().render_change_form(request, context, add, change, form_url, obj)
 
     def get_readonly_fields(self, request, obj=None):
         fields = ["user"] if obj is not None and not self._can_set_user(request, obj) else []

@@ -27,7 +27,7 @@ from .models import (
     ItemStateLog,
 )
 from .util import shorten_text
-from .utils import StaticText, ButtonWidget, model_dict_fn
+from .utils import StaticText, model_dict_fn
 
 LOG = logging.getLogger(__name__)
 
@@ -392,37 +392,6 @@ def remove_item_from_receipt(
         item.state = Item.BROUGHT
         item.save(update_fields=("state",))
     return removal_entry
-
-
-class VendorSetSelfForm(forms.ModelForm):
-
-    set_user = StaticText(
-        u"Set self as this user.",
-        label="",
-        widget=ButtonWidget,
-    )
-    username = forms.CharField(
-        widget=forms.TextInput(attrs={'readonly': 'readonly'}),
-    )
-
-    def __init__(self, *args, **kwargs):
-        instance = kwargs.get("instance", None)
-        """:type: Vendor"""
-
-        kwargs["initial"] = {
-            "username": instance.user.username,
-        }
-
-        super(VendorSetSelfForm, self).__init__(*args, **kwargs)
-
-        from django.urls import reverse
-        url = reverse("kirppuauth:local_admin_login")
-        click = u"""document.forms[0].action='{0}'; document.forms[0].submit();""".format(url)
-        self.fields["set_user"].widget.set_click(click)
-
-    class Meta:
-        model = Vendor
-        fields = ()
 
 
 class VendorItemForm(forms.Form):

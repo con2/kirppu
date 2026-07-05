@@ -745,11 +745,29 @@ def stats_view(request, event: Event):
     vie = ItemEurosData(ItemEurosData.GROUP_VENDOR, event=event)
     vie.use_cents = True
     vendor_item_data_row_size = 0
+    if event.collect_bank_information:
+        vendors = Vendor.objects.annotate(
+            with_info=models.Q(bank_iban__isnull=False) & ~models.Q(bank_iban=""),
+            without_info=models.Q(bank_skip__isnull=False) & ~models.Q(bank_skip=""),
+        ).values("id", "with_info", "without_info")
+        vendor_bank_map = {
+            info["id"]: info
+            for info in vendors
+        }
+        def euro_header(_vendor_id: int) -> str:
+            vendor = vendor_bank_map[_vendor_id]
+            if vendor["with_info"]:
+                return _("IBAN")
+            if vendor["without_info"]:
+                return _("Cash")
+            return ""
+    else:
+        def euro_header(_vendor_id: int) -> str:
+            return ""
 
     for vendor_id in vic.keys():
-        name = _("Vendor %i") % vendor_id
-        counts = vic.data_set(vendor_id, name)
-        euros = vie.data_set(vendor_id, name)
+        counts = vic.data_set(vendor_id, _("Vendor %i") % vendor_id)
+        euros = vie.data_set(vendor_id, euro_header(vendor_id))
         if vendor_item_data_row_size == 0:
             vendor_item_data_row_size = len(list(counts.property_names))
 
@@ -836,6 +854,43 @@ def statistical_stats_view(request, event: Event):
     brought_boxes = _boxes.filter(representative_item__state__in=brought_states).count()
     items_in_deleted_boxes = _items.filter(box__representative_item__hidden=True).count()
 
+    if event.collect_bank_information:
+        vendor_bank_info_stat = _vendors.aggregate(
+            with_info=models.Count(
+                "id", filter=models.Q(bank_iban__isnull=False) & ~models.Q(bank_iban="")
+            ),
+            without_info=models.Count(
+                "id", filter=models.Q(bank_skip__isnull=False) & ~models.Q(bank_skip="")
+            ),
+        )
+        item_sums_with_info = Item.price_fmt_for(
+            _items.filter(
+                models.Q(vendor__bank_iban__isnull=False)
+                & ~models.Q(vendor__bank_iban="")
+            ).aggregate(sum=models.Sum("price"))["sum"]
+            or 0
+        )
+        item_sums_without_info = Item.price_fmt_for(
+            _items.filter(
+                models.Q(vendor__bank_skip__isnull=False)
+                & ~models.Q(vendor__bank_skip="")
+            ).aggregate(sum=models.Sum("price"))["sum"]
+            or 0
+        )
+
+        bank_info_stat = dict(
+            with_bank_info=dict(
+                vendors=vendor_bank_info_stat["with_info"],
+                item_sum=item_sums_with_info,
+            ),
+            without_bank_info=dict(
+                vendors=vendor_bank_info_stat["without_info"],
+                item_sum=item_sums_without_info,
+            ),
+        )
+    else:
+        bank_info_stat = dict()
+
     general = {
         "registered": registered,
         "deleted": deleted,
@@ -851,6 +906,7 @@ def statistical_stats_view(request, event: Event):
         "vendors": _vendors.filter(item__state__in=brought_states).distinct().count(),
         "vendorsTotal": _vendors.annotate(items=models.Count("item__id")).filter(items__gt=0).count(),
         "vendorsInMobileView": _vendors.filter(mobile_view_visited=True).count(),
+        "bankInfoStat": bank_info_stat,
 
         "itemsInBox": items_in_box,
         "itemsNotInBox": items_not_in_box,

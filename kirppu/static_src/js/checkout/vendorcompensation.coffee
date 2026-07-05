@@ -11,6 +11,9 @@ class @VendorCompensation extends CheckoutMode
     @cfg.uiRef.codeForm.hide()
     @switcher.setMenuEnabled(false)
     @cfg.uiRef.body.append(Template.vendor_info(vendor: @vendor))
+    if @vendor.with_bank_info
+      safeWarning(gettext("Vendor is supposed to get the compensation with a wire transfer, NOT cash!"), false, true)
+      $("#vendor_bank_row").addClass("bg-danger")
 
     @buttonForm = $('<form class="hidden-print">').append(@buttons(abort: true))
     @cfg.uiRef.body.append(@buttonForm)
@@ -37,6 +40,7 @@ class @VendorCompensation extends CheckoutMode
       onContinue: if cfg.continue then t.onCancel else (if cfg.skip then t.onSkipFailed)
       continueWarn: if cfg.skip or cfg.warn then true
       onRetry: if cfg.retry then t.onRetryFailed
+      abortPrimary: if cfg.confirm and @vendor.with_bank_info then true
     Template.vendor_compensation_buttons(cbs)
 
   onGotItems: (items) =>
@@ -67,7 +71,7 @@ class @VendorCompensation extends CheckoutMode
         extra_col: true
       )
       @itemDiv.empty().append(table)
-      @buttonForm.empty().append(@buttons(confirm: true, abort: true, warn: total < 0))
+      @buttonForm.empty().append(@buttons(confirm: true, abort: true, warn: total < 0 or @vendor.with_bank_info))
 
     else
       @itemDiv.empty().append($('<em>').text(gettext('No compensable items')))

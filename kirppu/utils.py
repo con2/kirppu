@@ -109,21 +109,6 @@ class StaticTextWidget(django.forms.widgets.Widget):
         return self._static_text or value or ""
 
 
-class ButtonWidget(StaticTextWidget):
-    def __init__(self, **kwargs):
-        self._click = kwargs.pop("click", None)
-        super(ButtonWidget, self).__init__(**kwargs)
-
-    def set_click(self, click):
-        self._click = click
-
-    def render(self, name, value, attrs=None, renderer=None):
-        return format_html('<button type="button" onclick="{0}">{1}</button>',
-            self._click,
-            self._static_text or value or "",
-        )
-
-
 class StaticText(django.forms.CharField):
     """
     Static text-field using StaticTextWidget. Only required parameter is `text`.

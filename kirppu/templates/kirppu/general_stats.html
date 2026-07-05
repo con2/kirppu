@@ -162,6 +162,18 @@
                     <div class="col-xs-3 info-key">{% trans "Vendors visited mobile view" %}</div>
                     <div class="col-xs-9">{{ general.vendorsInMobileView }}</div>
                 </div>
+                {% if event.collect_bank_information %}
+                    {% with with=general.bankInfoStat.with_bank_info without=general.bankInfoStat.without_bank_info %}
+                    <div class="row">
+                        <div class="col-xs-3 info-key">{% trans "Vendors with bank info" %}</div>
+                        <div class="col-xs-9">{{ with.vendors }} ({% blocktrans with vendors=without.vendors %}{{ vendors }} without info{% endblocktrans %})</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-3 info-key">{% trans "Sum of item prices with bank info" %}</div>
+                        <div class="col-xs-9">{{ with.item_sum|format_price }} ({% blocktrans with item_sum=without.item_sum|format_price %}{{ item_sum }} without info{% endblocktrans %})</div>
+                    </div>
+                    {% endwith %}
+                {% endif %}
             </div>
         </div>
     </div>

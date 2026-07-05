@@ -1,13 +1,15 @@
-export default function render({onConfirm, onAbort, onContinue, continueWarn, onRetry}) {
+export default function render({onConfirm, onAbort, onContinue, continueWarn, onRetry, abortPrimary}) {
     const btns = [
         onConfirm &&
         <input type="button" className={"btn " + (continueWarn ? "btn-warning" : "btn-success")}
-               value={gettext('Confirm')}
+               value={gettext('Confirm cash')}
                onclick={onConfirm}
+               id="vendor-compensation-confirm"
+               disabled
         />
 
         , onAbort &&
-        <input type="button" className="btn btn-default"
+        <input type="button" className={"btn " + (abortPrimary ? "btn-primary" : "btn-default")}
                value={gettext('Cancel')}
                onclick={onAbort}
         />
@@ -24,7 +26,11 @@ export default function render({onConfirm, onAbort, onContinue, continueWarn, on
                onclick={onContinue}
         />
     ]
-
+    if (onConfirm) {
+        setTimeout(function () {
+            $("#vendor-compensation-confirm").removeAttr("disabled")
+        }, 3000)
+    }
     return (
         <div>
             {btns.reduce(

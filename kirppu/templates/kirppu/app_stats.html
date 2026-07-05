@@ -17,6 +17,9 @@
     dd + dt {
         margin-top: 0.5em;
     }
+    th span {
+        font-weight: normal;
+    }
     @media print {
         /* Override bootstrap behaviour. */
         a[href]:after { content: ""; }
@@ -321,12 +324,17 @@
                 return CURRENCY[0] + value.formatCents() + CURRENCY[1];
             };
 
-            const createRow = function(row, skip_name, formatter) {
+            const createRow = function(row, skip_name, formatter, header_override) {
                 const hRow = $("<tr>");
                 if (!skip_name) {
-                    hRow.append($("<th>").text(row[0]));
+                    if (header_override !== undefined) {
+                        const extra = $("<span>").text(row[0]);
+                        hRow.append($("<th>").text(header_override + " ").append(extra))
+                    } else {
+                        hRow.append($("<th>").text(row[0]));
+                    }
                 } else {
-                    hRow.append($("<th>"))
+                    hRow.append($("<td>").text(row[0]));
                 }
                 // 1 is name, not included in row_length.
                 for (let v = 1; v <= row_length; v++) {
@@ -380,7 +388,7 @@
                 }
                 stat_table.append(createHeaderRow(row_length + 1, "{% trans "Sum of prices:" %}"));
                 for (let i = 0; i < euros.length; i++) {
-                    stat_table.append(createRow(euros[i], false, format_currency));
+                    stat_table.append(createRow(euros[i], false, format_currency, counts[i][0]));
                 }
             };
             const show_by_vendor = function(input) {

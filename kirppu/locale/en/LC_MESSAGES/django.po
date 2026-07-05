@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 12:06+0300\n"
-"PO-Revision-Date: 2026-06-29 12:09+0300\n"
+"POT-Creation-Date: 2026-07-05 14:13+0300\n"
+"PO-Revision-Date: 2026-07-05 14:08+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -321,18 +321,15 @@ msgstr "Business Identifier Code, usually you don't need to write this"
 msgid "Part of the number is omitted for security"
 msgstr "Part of the number is omitted for security"
 
-#| msgid "Invalidate"
 msgid "Invalid IBAN"
 msgstr "Invalid IBAN"
 
 msgid "Country is not allowed"
 msgstr "Country is not allowed"
 
-#| msgid "Invalidate"
 msgid "Invalid BIC"
 msgstr "Invalid BIC"
 
-#| msgid "Name is required."
 msgid "BIC is required"
 msgstr "BIC is required"
 
@@ -348,9 +345,6 @@ msgstr "last name"
 msgid "email address"
 msgstr "email address"
 
-#| msgid ""
-#| "When set, registration is disabled even if registration end is set. If "
-#| "not set, registration is enabled until registration end if that is set."
 msgid ""
 "When set, registration is disabled. If not set, registration is enabled "
 "between start and end, blank being an open end."
@@ -1004,6 +998,20 @@ msgstr "%(vendors)s (%(total)s total)"
 msgid "Vendors visited mobile view"
 msgstr "Vendors visited mobile view"
 
+msgid "Vendors with bank info"
+msgstr "Vendors with bank info"
+
+#, python-format
+msgid "%(vendors)s without info"
+msgstr "%(vendors)s without info"
+
+msgid "Sum of item prices with bank info"
+msgstr "Sum of item prices with bank info"
+
+#, python-format
+msgid "%(item_sum)s without info"
+msgstr "%(item_sum)s without info"
+
 msgctxt "Mean value, average"
 msgid "Mean"
 msgstr "Mean"
@@ -1376,6 +1384,9 @@ msgstr "Box full of Ranma"
 
 msgid "Counter commands"
 msgstr "Counter commands"
+
+msgid "Cash"
+msgstr "Cash"
 
 #, python-format
 msgid "Vendor %i"

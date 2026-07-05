@@ -1,0 +1,16 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+{% block object-tools-items %}
+    {% if has_set_user_permission %}
+    <li>
+    <form id="sudo_form" method="post" action="{% url "kirppuauth:local_admin_login" %}">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ original.user }}">
+        <a href="javascript:confirm('Your access scope will be changed. Really continue?') && document.getElementById('sudo_form').submit()" class="">
+            Set self as this user
+        </a>
+    </form>
+    </li>
+    {% endif %}
+{{ block.super }}
+{% endblock %}

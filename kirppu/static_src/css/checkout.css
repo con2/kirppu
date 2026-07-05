@@ -102,9 +102,10 @@ tr.receipt_tr_clickable:hover {
 .vendor-info-box > dl {
     margin: 0;
 }
-.vendor-info-key {
+.row .vendor-info-key {
     font-weight: bold;
     text-align: right;
+    padding-right: 1em;
 }
 
 .short-code-display {
