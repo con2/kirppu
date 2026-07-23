@@ -23,7 +23,7 @@ export default function render({vendor, title=true}) {
             {vendor.with_bank_info && <Row title={gettext("redeem option")} value={
                 gettext("IBAN")} id="vendor_bank_row" classes="hidden-print"/>}
             {vendor.without_bank_info && <Row title={gettext("redeem option")} value={
-                gettext("Cash")} classes="hidden-print"/>}
+                gettext("Cash: %s").replace("%s", vendor.without_bank_info)} classes="hidden-print"/>}
         </div>
     )
 }
