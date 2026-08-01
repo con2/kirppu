@@ -82,11 +82,15 @@ def accounting_menu(
     fill = functools.partial(_fill, event, request.resolver_match.view_name)
 
     permissions = permissions or EventPermission.get(event, request.user)
+    export = []
+    if event.collect_bank_information:
+        export = [fill(_("Balance export"), "kirppu:balance_export")]
 
     if permissions.can_see_accounting:
         return [
             fill(_("View"), "kirppu:accounting"),
             fill(_("Download"), "kirppu:accounting", query={"download": ""}),
+            *export,
             MenuItem.separator(),
             fill(_("View items"), "kirppu:item_dump", query={"txt": ""}),
             fill(_("View items (CSV)"), "kirppu:item_dump"),

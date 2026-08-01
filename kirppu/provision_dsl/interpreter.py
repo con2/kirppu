@@ -53,13 +53,13 @@ class ErrorType(enum.Enum):
 
 
 class Error(Exception):
-    def __init__(self, msg: str, code: typing.Union[str, ErrorType], ast=None):
+    def __init__(self, msg: str, code: str | ErrorType, ast=None):
         super().__init__(msg)
         self.code = code
         self.ast = ast
 
 
-def tokenize(program: str) -> typing.Optional[typing.List[str]]:
+def tokenize(program: str) -> list[str]:
     tokens = []
     start = 0
     length = len(program)
@@ -69,6 +69,14 @@ def tokenize(program: str) -> typing.Optional[typing.List[str]]:
     in_code = True
     while start < length:
         match = TOKENS.search(program, start)
+        if match is None:
+            to_end = program.find("\n", start)
+            if to_end == -1:
+                to_end = None
+            errors.append(
+                "Invalid token line %d col %d: %s" % (visual_line, start, program[start:to_end])
+            )
+            break
         if match.start(0) != start and in_code:
             errors.append(
                 "Invalid code line %d col %d: %s" % (

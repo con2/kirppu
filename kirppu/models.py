@@ -73,7 +73,7 @@ class UserAdapterBase(object):
         return name.title()
 
     @classmethod
-    def full_name(cls, user):
+    def full_name(cls, user) -> str:
         return user.get_full_name()
 
 
@@ -90,7 +90,7 @@ class Person(models.Model):
     email = models.EmailField(_('email address'), blank=True)
     phone = models.CharField(max_length=64, blank=True, null=False)
 
-    def full_name(self):
+    def full_name(self) -> str:
         return u"{first_name} {last_name}".format(first_name=self.first_name, last_name=self.last_name).strip()
 
     def __str__(self):
@@ -1156,13 +1156,14 @@ class Item(models.Model):
         return self.price_fmt_for(self.price)
 
     @staticmethod
-    def price_fmt_for(value: Decimal | float | int | str) -> Decimal:
+    def price_fmt_for(value: Decimal | float | int | str, short_exact: bool = True) -> Decimal:
         if isinstance(value, (float, int, str)):
             value = Decimal(value)
-        # If value is exact integer, return only the integer part.
-        int_value = value.to_integral_value()
-        if int_value == value:
-            return int_value
+        if short_exact:
+            # If value is exact integer, return only the integer part.
+            int_value = value.to_integral_value()
+            if int_value == value:
+                return int_value
         # Else, display digits with precision from FRACTION*.
         return value.quantize(Item.Q_EXP)
 

@@ -34,9 +34,12 @@
   "overrides": {
     "gulp-coffee": {
       "merge": "2.1.1"
+    },
+    "gulp-match": {
+      "minimatch": "^10.0"
     }
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=20.0.0"
   }
 }

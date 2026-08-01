@@ -1,0 +1,164 @@
+{% extends "kirppu/common.html" %}{% load i18n kirppu_login static %}
+
+{% block title %}{% trans "Balance export" %} – {{ block.super }}{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    <script src="{% static "kirppu/js/checkout_comp.js" %}"></script>
+{% endblock %}
+
+{% block body %}
+    <h3>Balance data</h3>
+    <a href="{% url "kirppu:balance_export_csv" event_slug=event.slug %}" target="_blank"
+    >Get the CSV</a>
+    (<a class="small" href="{% url "kirppu:balance_export_csv" event_slug=event.slug %}?verbose=1" target="_blank"
+    >verbose version</a>)
+    <hr/>
+
+    <h3>Compensation finalization</h3>
+    <form method="post" class="form-horizontal">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="hash" class="col-sm-2 control-label">Content hash</label>
+            <div class="col-sm-7">
+                <input type="text" {% if not enabled %}disabled="disabled" {% endif %}name="hash" id="hash" class="form-control" placeholder="H..." />
+                <div id="hash-errors" class="text-danger pre-nl"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="counter" class="col-sm-2 control-label">Counter code</label>
+            <div class="col-sm-7">
+                <input type="text" {% if not enabled %}disabled="disabled" {% endif %}name="counter" id="counter" class="form-control" placeholder=":*..." />
+                <div id="counter-errors" class="text-danger pre-nl"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div id="form-errors" class="text-danger pre-nl"></div>
+                <button id="do_compensate" {% if not enabled %}disabled="disabled" {% endif %}type="button" class="btn btn-primary">Compensate</button>
+            </div>
+        </div>
+    </form>
+    <div class="progress">
+        <div class="progress-bar" id="progress" role="progressbar"></div>
+        <div class="progress-bar progress-bar-danger" id="progress-error-bar"></div>
+    </div>
+    <script>
+    (function() {
+        function getError(value) {
+            if (value) {
+                let o = "";
+                for (let i in value) {
+                    const v = value[i];
+                    if (v.message) {
+                        o += "\n- " + v.message;
+                    }
+                }
+                return o.trim();
+            } else {
+                return "";
+            }
+        }
+
+        const csrf = Cookies.get("csrftoken");
+        const startBtn = $("#do_compensate");
+        const progress = $("#progress");
+        const progressError = $("#progress-error-bar");
+        const progressTrack = progress.parent();
+        const hashErrors = $("#hash-errors");
+        const counterErrors = $("#counter-errors");
+        const errors = $("#form-errors");
+
+        function doRequest(url, body) {
+            return window.fetch(url, {
+                body: body,
+                method: "POST",
+                headers: new Headers({
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrf,
+                })
+            })
+        }
+
+        function doProgress(processed, count) {
+            const text = `${processed} / ${count}`
+            progress.css("width", Math.round(processed / count * 100) + "%")
+            progress.text(text)
+            progressTrack.attr("title", text)
+        }
+
+        async function iterate(index) {
+            const res = await doRequest("{% url "kirppu:balance_export_iter" event_slug=event.slug %}")
+            if (res.ok) {
+                const rs = await res.json()
+                if (rs.index >= rs.length) {
+                    return 0
+                }
+                return 1
+            }
+            console.error(res)
+            const text = await res.text()
+            errors.text(
+                `- Error processing vendor at index ${index + 1}\n- ` +
+                text.substring(0, 250)
+            )
+
+            return -1
+        }
+
+        async function end() {
+            const res = await doRequest("{% url "kirppu:balance_export_end" event_slug=event.slug %}")
+            if (!res.ok) {
+                console.error(res)
+            }
+        }
+
+        startBtn.on("click", async () => {
+            startBtn.attr("disabled", "disabled")
+            hashErrors.text("")
+            counterErrors.text("")
+            errors.text("")
+            progress.removeClass("progress-bar-success")
+            progressError.css("width", "0")
+
+            const startRes = await doRequest("{% url "kirppu:balance_export_start" event_slug=event.slug %}",
+                JSON.stringify({
+                    "hash": $("#hash").val(),
+                    "counter_code": $("#counter").val(),
+                }),
+            )
+
+            if (!startRes.ok) {
+                const errData = await startRes.json();
+                hashErrors.text(getError(errData["hash"]))
+                counterErrors.text(getError(errData["counter_code"]))
+                errors.text(getError(errData["__all__"]))
+                startBtn.removeAttr("disabled")
+            } else {
+                const startInfo = await startRes.json()
+                const count = startInfo.length
+                let processed = startInfo.index
+                doProgress(processed, count)
+
+                let result
+                do {
+                    result = await iterate(processed)
+                    if (result >= 0) {
+                        processed++
+                        doProgress(processed, count)
+                    } else if (result < 0) {
+                        progressError.css("width", Math.round(100 / count) + "%")
+                    }
+                } while (result > 0);
+
+                if (result === 0) {
+                    await end()
+                    progress.addClass("progress-bar-success")
+                } else {
+                    startBtn.removeAttr("disabled")
+                }
+            }
+        })
+    })();
+    </script>
+{% endblock %}

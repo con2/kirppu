@@ -17,8 +17,8 @@ from django.http.response import (
 from django.shortcuts import (
     get_object_or_404,
     render,
-    reverse,
 )
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils.timezone import now
 from ipware.ip import get_client_ip
@@ -823,6 +823,15 @@ def item_compensate_end(request, event):
         receipt_pk = int(request.POST["receipt"])
         vendor_id = int(request.POST["vendor"])
 
+    receipt = compensation_end(receipt_pk, vendor_id, event)
+
+    if "compensation" in request.session:
+        del request.session["compensation"]
+
+    return receipt.as_dict()
+
+
+def compensation_end(receipt_pk: int, vendor_id: int, event: Event):
     state = "init"
     try:
         with transaction.atomic():
@@ -859,6 +868,7 @@ def item_compensate_end(request, event):
 
             state = "account"
             Account.objects.filter(pk=account_id).update(balance=F("balance") - total)
+            return receipt
 
     except IntegrityError:
         if state == "account":
@@ -867,11 +877,6 @@ def item_compensate_end(request, event):
                             _("Not enough money in account ({0}) to give out ({1})").format(account_balance, total))
         else:
             raise
-
-    if "compensation" in request.session:
-        del request.session["compensation"]
-
-    return receipt.as_dict()
 
 
 @ajax_func('^vendor/get$', method='GET')

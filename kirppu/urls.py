@@ -32,6 +32,7 @@ from .views import (
 )
 from .views import access_signup
 from .views import accounting
+from .views import balance_export
 from .views import event_management
 from .views.frontpage import front_page
 from .checkout_api import checkout_js
@@ -47,6 +48,11 @@ event_urls = [
     path(r'accounting/', accounting.accounting_receipt_view, name="accounting"),
     path(r'accounting/live', accounting.live_accounts, name="live_accounts"),
     path('accounting/flow', flow_stats),
+    path("accounting/export", balance_export.view, name="balance_export"),
+    path("accounting/export/csv", balance_export.csv_view, name="balance_export_csv"),
+    path("accounting/export/start", balance_export.start_compensation, name="balance_export_start"),
+    path("accounting/export/iter", balance_export.iter_vendor, name="balance_export_iter"),
+    path("accounting/export/end", balance_export.end_compensation, name="balance_export_end"),
     path(r'itemdump/', dump_items_view, name="item_dump"),
     path(r'clerks/', get_clerk_codes, name='clerks'),
     path(r'boxes/', get_boxes_codes, name="box_codes"),
