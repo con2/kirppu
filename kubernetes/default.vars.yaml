@@ -43,7 +43,7 @@ djangoapp_allowed_hosts: !Concat
 ingress_letsencrypt_enabled: false
 ingress_letsencrypt_cluster_issuer: letsencrypt-prod
 
-ingress_class_name: nginx
+ingress_class_name: traefik
 
 # NOTE: "managed" PostgreSQL should not be considered production-ready.
 postgres_managed: true
@@ -153,14 +153,20 @@ gunicorn_environment:
         name: !Var djangoapp_name
         key: kompassiApiApplicationPassword
 
-# Default annotations work for nginx ingress with or without LetsEncrypt TLS. Override if you need something else.
-base_ingress_annotations: []
+# The https-redirect middleware must only be attached where TLS is actually configured
+# (not local/dev without letsencrypt) - see infrastructure/kubernetes/traefik-middlewares.yaml
+# for why this is a per-app opt-in Middleware rather than a global entrypoint redirect
+# (ACME HTTP-01 safety). kirppu-backup always has TLS (manually managed cert), so it
+# gets the middleware unconditionally via base_ingress_annotations.
+base_ingress_annotations:
+  traefik.ingress.kubernetes.io/router.middlewares: default-https-redirect@kubernetescrd
 
+# Default annotations work with or without LetsEncrypt TLS. Override if you need something else.
 ingress_annotations: !If
   test: !Var ingress_letsencrypt_enabled
   then:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: default-https-redirect@kubernetescrd
 
 ingress_tls: !If
   test: !Var ingress_letsencrypt_enabled
