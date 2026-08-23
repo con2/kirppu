@@ -274,6 +274,10 @@ class Event(models.Model):
         else:
             return []
 
+    def is_in_past(self, today: datetime.date | None = None) -> bool:
+        today = today or datetime.date.today()
+        return self.end_date < today
+
 
 class RemoteEvent(Event):
     """Event instance from "EXTRA_DATABASES"."""
@@ -600,9 +604,15 @@ class Vendor(models.Model):
     terms_accepted = models.DateTimeField(null=True)
     mobile_view_visited = models.BooleanField(default=False)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    bank_iban = models.CharField(max_length=40, blank=True, null=True)
+    bank_iban = models.CharField(
+        max_length=40,
+        blank=True,
+        null=True,
+        help_text=_('"!" means cleared, but previously set.'),
+    )
     bank_bic = models.CharField(max_length=20, blank=True, null=True)
     bank_skip = models.CharField(max_length=256, blank=True, null=True)
+    bank_lock = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (
@@ -629,6 +639,16 @@ class Vendor(models.Model):
         if no_iban and no_bic:
             self.bank_iban = None
             self.bank_bic = None
+
+    @property
+    def has_bank_iban(self) -> bool:
+        # Returning True for cleared iban ("!")
+        return self.bank_iban is not None and self.bank_iban != ""
+
+    @property
+    def has_bank_skip(self) -> bool:
+        # Returning True for cleared skip reason ("!")
+        return self.bank_skip is not None and self.bank_skip != ""
 
     @property
     def printable_name(self) -> str:
@@ -697,8 +717,8 @@ class Vendor(models.Model):
         missing_name=lambda self: self.user.first_name.strip() == "" or self.user.last_name.strip() == "",
         email=lambda self: self.user.email,
         phone=lambda self: UserAdapter.phone(self.user),
-        with_bank_info=lambda self: self.bank_iban is not None and self.bank_iban != "",
-        without_bank_info=lambda self: self.bank_skip if self.bank_skip is not None and self.bank_skip != "" else None,
+        with_bank_info=lambda self: self.has_bank_iban,
+        without_bank_info=lambda self: self.bank_skip if self.has_bank_skip else None,
         __extend=_base_dict
     )
     _dict_by_person = model_dict_fn(

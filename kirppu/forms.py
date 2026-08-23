@@ -607,7 +607,7 @@ class BankAccountForm(forms.Form):
     reason = forms.CharField(max_length=160, strip=True, required=False)
 
     def __init__(self, *args, initial=None, restrict_countries: list[str] | None = None, **kwargs):
-        if initial:
+        if initial and initial["iban"] != "!":
             initial["iban"] = hide_part(
                 try_or_default(schwifty.IBAN, initial["iban"], formatted=True), 2, 5
             )
@@ -616,10 +616,20 @@ class BankAccountForm(forms.Form):
             )
         super().__init__(*args, initial=initial, **kwargs)
         self._restrict_countries = restrict_countries
-        if initial and initial["iban"]:
-            self.fields["iban"].help_text = _(
-                "Part of the number is omitted for security"
-            )
+        if initial:
+            if initial["iban"] not in (None, "", "!"):
+                self.fields["iban"].help_text = _(
+                    "Part of the number is omitted for security"
+                )
+            elif initial["iban"] == "!":
+                self.fields["iban"].help_text = _(
+                    "This information has been removed"
+                )
+            if initial["reason"] == "!":
+                self.fields["reason"].help_text = _(
+                    "This information has been removed"
+                )
+
 
     def full_clean(self):
         # Change required flags per with_account selection before any other validation is done.

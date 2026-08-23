@@ -1,4 +1,4 @@
-const termsApp = (function (termsUrl, bankInfo) {
+const termsApp = (function (termsUrl, bankInfo, lockedInfo) {
     const eall = $("#__all__-error");
     const cb = $("#terms-accepted");
     const btn = $("#terms-accept");
@@ -36,15 +36,16 @@ const termsApp = (function (termsUrl, bankInfo) {
 
     function updateDisabled() {
         if (with_account.prop("checked")) {
-            biban.prop("disabled", "");
-            bbic.prop("disabled", "");
+            const disableEntry = lockedInfo ? "disabled" : "";
+            biban.prop("disabled", disableEntry);
+            bbic.prop("disabled", disableEntry);
             reason.prop("disabled", "disabled");
             liban.addClass("required");
             lreason.removeClass("required");
         } else {
             biban.prop("disabled", "disabled");
             bbic.prop("disabled", "disabled");
-            reason.prop("disabled", "");
+            reason.prop("disabled", lockedInfo ? "disabled" : "");
             liban.removeClass("required");
             lreason.addClass("required");
         }
@@ -121,7 +122,7 @@ const termsApp = (function (termsUrl, bankInfo) {
         }).fail(function (jqXHR) {
             let text;
             if (jqXHR.responseJSON) {
-                updateErrors(jqXHR.responseJSON["errors"])
+                updateErrors(jqXHR.responseJSON["errors"] || {})
                 if (!jqXHR.responseJSON["time"]) {
                     cb.prop("disabled", "");
                 }

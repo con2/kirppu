@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 14:13+0300\n"
-"PO-Revision-Date: 2026-07-05 14:08+0300\n"
+"POT-Creation-Date: 2026-08-23 17:05+0300\n"
+"PO-Revision-Date: 2026-08-23 17:05+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 26.04.2\n"
+"X-Generator: Lokalize 26.04.3\n"
 
 msgid "View help."
 msgstr "View help."
@@ -321,6 +321,9 @@ msgstr "Business Identifier Code, usually you don't need to write this"
 msgid "Part of the number is omitted for security"
 msgstr "Part of the number is omitted for security"
 
+msgid "This information has been removed"
+msgstr "This information has been removed"
+
 msgid "Invalid IBAN"
 msgstr "Invalid IBAN"
 
@@ -406,6 +409,9 @@ msgstr "Statistics"
 
 msgid "Accounting"
 msgstr "Accounting"
+
+msgid "\"!\" means cleared, but previously set."
+msgstr "\"!\" means cleared, but previously set."
 
 msgid "Value cannot be negative"
 msgstr "Value cannot be negative"
@@ -881,6 +887,13 @@ msgstr "Has brought items"
 
 msgid "Has uncompensated items"
 msgstr "Has uncompensated items"
+
+msgid "Balance export"
+msgstr "Balance export"
+
+msgid "Your user account is missing clerk permission to perform this operation"
+msgstr ""
+"Your user account is missing clerk permission to perform this operation"
 
 msgid "Box codes"
 msgstr "Box codes"

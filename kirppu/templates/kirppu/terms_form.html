@@ -22,7 +22,8 @@
             {% load_text "bank_before" %}
             <div class="radio">
                 <label>
-                    <input type="radio" id="bank_with_account" class="bank_with_account" name="with_account" value="1"{% if bank_info.with_account.value %} checked{% endif %}>
+                    <input type="radio" id="bank_with_account" class="bank_with_account" name="with_account"
+                           value="1"{% if bank_info.with_account.value %} checked{% endif %}{% if locked_bank_info or locked_bank_change %} disabled{% endif %}>
                     {% translate "Bank account information" %}
                 </label>
             </div>
@@ -30,7 +31,7 @@
                 <label for="bank_iban" id="label_iban" class="col-sm-2 control-label{% if bank_info.with_account.value %} required{% endif %}">{% trans "IBAN" %}</label>
                 <div class="col-sm-5">
                     <input id="bank_iban" type="text" class="form-control" maxlength="{{ bank_info.iban.field.max_length }}"
-                           {% if not bank_info.with_account.value %}disabled {% endif %}value="{{ bank_info.iban.value|default_if_none:"" }}"
+                           {% if not bank_info.with_account.value or locked_bank_info %}disabled {% endif %}value="{{ bank_info.iban.value|default_if_none:"" }}"
                            placeholder="AA00 0000 0000 0000 0000" />
                     <span class="help-block small">{{ bank_info.iban.help_text }}</span>
                     <div class="text-danger pre-nl" id="bank_iban-error"></div>
@@ -38,7 +39,7 @@
                 <label for="bank_bic" class="col-sm-1 control-label">{% trans "BIC" %}</label>
                 <div class="col-sm-4">
                     <input id="bank_bic" type="text" class="form-control" maxlength="{{ bank_info.bic.field.max_length }}"
-                           {% if not bank_info.with_account.value %}disabled {% endif %}value="{{ bank_info.bic.value|default_if_none:"" }}"
+                           {% if not bank_info.with_account.value or locked_bank_info %}disabled {% endif %}value="{{ bank_info.bic.value|default_if_none:"" }}"
                            placeholder="AAAAAAAA" />
                     <span class="help-block small">{{ bank_info.bic.help_text }}</span>
                     <div class="text-danger pre-nl" id="bank_bic-error"></div>
@@ -46,7 +47,8 @@
             </div>
             <div class="radio">
                 <label>
-                    <input type="radio" id="bank_without_account" class="bank_with_account" name="with_account" value="0"{% if not bank_info.with_account.value %} checked{% endif %}>
+                    <input type="radio" id="bank_without_account" class="bank_with_account" name="with_account"
+                           value="0"{% if not bank_info.with_account.value %} checked{% endif %}{% if locked_bank_info or locked_bank_change  %} disabled{% endif %}>
                     {% translate "I am not able to receive wire transfers and ask for an exception to receive possible payment in cash" %}
                 </label>
             </div>
@@ -55,7 +57,8 @@
                     {% translate "Reason" %}</label>
                 <div class="col-sm-10">
                     <input id="bank_reason" type="text" class="form-control" name="reason" maxlength="{{ bank_info.reason.field.max_length }}"
-                           {% if bank_info.with_account.value %}disabled {% endif %}value="{{ bank_info.reason.value|default_if_none:"" }}">
+                           {% if bank_info.with_account.value or locked_bank_info %}disabled {% endif %}value="{{ bank_info.reason.value|default_if_none:"" }}">
+                    <span class="help-block small">{{ bank_info.reason.help_text }}</span>
                     <div class="text-danger pre-nl" id="bank_reason-error"></div>
                 </div>
             </div>
@@ -66,7 +69,7 @@
             {% if not terms_accepted %}
             <button class="btn btn-default" type="button" id="terms-accept" disabled="disabled">{% trans "Accept" %}</button>
             {% elif event.collect_bank_information %}
-            <button class="btn btn-default" type="button" id="terms-accept">{% trans "Update" %}</button>
+            <button class="btn btn-default" type="button" id="terms-accept" {% if locked_bank_info %}disabled{% endif %}>{% trans "Update" %}</button>
             {% endif %}
             <p id="terms-template"{% if not terms_accepted %} class="hidden"{% endif %}>
                 {% with terms_accepted|default:"%s" as terms_time %}
@@ -77,7 +80,10 @@
     </div>
 
     <script>
-        termsApp("{% url "kirppu:accept_terms" event_slug=event.slug %}", {{ event.collect_bank_information|yesno:"true,false" }});
+        termsApp("{% url "kirppu:accept_terms" event_slug=event.slug %}",
+            {{ event.collect_bank_information|yesno:"true,false" }},
+            {{ locked_bank_info|yesno:"true,false" }},
+        );
     </script>
 </form>
 {% if not terms_accepted %}

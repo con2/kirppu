@@ -16,8 +16,7 @@
     <hr/>
 
     <h3>Compensation finalization</h3>
-    <form method="post" class="form-horizontal">
-        {% csrf_token %}
+    <form method="post" class="form-horizontal" action="javascript:false">
         <div class="form-group">
             <label for="hash" class="col-sm-2 control-label">Content hash</label>
             <div class="col-sm-7">
@@ -34,7 +33,7 @@
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <div id="form-errors" class="text-danger pre-nl"></div>
+                <div id="form-errors" class="text-danger pre-nl">{% if not enabled %}{% translate "Your user account is missing clerk permission to perform this operation" %}{% endif %}</div>
                 <button id="do_compensate" {% if not enabled %}disabled="disabled" {% endif %}type="button" class="btn btn-primary">Compensate</button>
             </div>
         </div>
@@ -43,6 +42,37 @@
         <div class="progress-bar" id="progress" role="progressbar"></div>
         <div class="progress-bar progress-bar-danger" id="progress-error-bar"></div>
     </div>
+    <hr/>
+
+    <h3>Bank data cleanup</h3>
+    <p class="text-danger">
+    This operation cannot be undone. Only proceed after balance processing has been completed and finalized.
+    </p>
+    <form class="form-horizontal" method="post" action="javascript:false">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button id="check_cleanup" type="button" class="btn btn-primary">Check</button>
+                <span class="glyphicon text-success"> </span>
+                <div id="check-errors" class="text-danger pre-nl"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="confirm" class="col-sm-2 control-label">Confirm</label>
+            <div class="col-sm-7">
+                <input type="text" name="confirm" id="confirm" disabled class="form-control"/>
+                <span class="help-block small">To clear bank account information from vendors, type in the field: &quot;%s&quot;</span>
+                <div id="confirm-errors" class="text-danger pre-nl"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div id="clear-result" class="text-danger pre-nl"></div>
+                <button id="do_clear" disabled type="button" class="btn btn-danger">Clear vendors' bank account details
+                </button>
+            </div>
+        </div>
+    </form>
+
     <script>
     (function() {
         function getError(value) {
@@ -69,15 +99,24 @@
         const counterErrors = $("#counter-errors");
         const errors = $("#form-errors");
 
-        function doRequest(url, body) {
-            return window.fetch(url, {
-                body: body,
-                method: "POST",
-                headers: new Headers({
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrf,
+        async function doRequest(url, body) {
+            try {
+                return await window.fetch(url, {
+                    body: body,
+                    method: "POST",
+                    headers: new Headers({
+                        "Accept": "plain/text; application/json",
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrf,
+                    })
                 })
-            })
+            } catch (e) {
+                console.error(e)
+                return new Response(
+                    new Blob([e], { type: "text/plain" }),
+                    { status: 500 },
+                )
+            }
         }
 
         function doProgress(processed, count) {
@@ -157,6 +196,65 @@
                 } else {
                     startBtn.removeAttr("disabled")
                 }
+            }
+        })
+
+        // 3rd phase
+
+        const checkBtn = $("#check_cleanup")
+        const checkErrors = $("#check-errors")
+        const confirmInput = $("#confirm")
+        const clearBtn = $("#do_clear")
+        const clearResult = $("#clear-result")
+        const expect = "Clear {{ event.slug }}"
+        const confirmHelpSpan = confirmInput.siblings("span").first()
+        confirmHelpSpan.text(confirmHelpSpan.text().replace("%s", expect))
+
+        // Ensure we always start fresh.
+        checkBtn.parents("form")[0].reset()
+        confirmInput.attr("disabled", "disabled")
+
+        checkBtn.on("click", async () => {
+            checkErrors.text("")
+            checkBtn.attr("disabled", "disabled")
+            const res = await doRequest("{% url "kirppu:balance_check_cleanup" event_slug=event.slug %}")
+            checkBtn.removeAttr("disabled")
+            if (res.ok) {
+                checkBtn.siblings(".glyphicon").addClass("glyphicon-check")
+                const resText = await res.text()
+                if (resText === "OK") {
+                    confirmInput.removeAttr("disabled")
+                } else {
+                    checkErrors.text("Nothing to do")
+                }
+            } else {
+                checkBtn.siblings(".glyphicon").removeClass("glyphicon-check")
+                checkErrors.text(await res.text())
+            }
+        })
+
+        function updateChangeState() {
+            if (confirmInput.val() === expect) {
+                clearBtn.removeAttr("disabled")
+            } else if (clearBtn.attr("disabled") !== "disabled") {
+                clearBtn.attr("disabled", "disabled")
+            }
+        }
+        confirmInput.on("keyup", updateChangeState)
+        confirmInput.on("change", updateChangeState)
+
+        clearBtn.on("click", async () => {
+            clearResult.text("")
+            clearBtn.attr("disabled", "disabled")
+            const res = await doRequest("{% url "kirppu:balance_details_cleanup" event_slug=event.slug %}")
+            clearResult.text(await res.text())
+            if (res.ok) {
+                clearResult.removeClass("text-danger")
+                clearResult.addClass("text-success")
+            } else {
+                clearResult.removeClass("text-success")
+                clearResult.addClass("text-danger")
+                clearBtn.removeAttr("disabled")
             }
         })
     })();

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 14:13+0300\n"
-"PO-Revision-Date: 2026-07-05 14:10+0300\n"
+"POT-Creation-Date: 2026-08-23 17:05+0300\n"
+"PO-Revision-Date: 2026-08-23 17:08+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 26.04.2\n"
+"X-Generator: Lokalize 26.04.3\n"
 
 msgid "View help."
 msgstr "Näytä ohje."
@@ -325,6 +325,9 @@ msgstr "Bank Identifier Code, ei yleensä tarvitse täyttää"
 msgid "Part of the number is omitted for security"
 msgstr "Osa numerosta on piilotettu tietoturvan vuoksi"
 
+msgid "This information has been removed"
+msgstr "Tämä tieto on poistettu"
+
 msgid "Invalid IBAN"
 msgstr "Virheellinen IBAN"
 
@@ -411,6 +414,9 @@ msgstr "Tilastot"
 
 msgid "Accounting"
 msgstr "Kirjanpito"
+
+msgid "\"!\" means cleared, but previously set."
+msgstr "\"!\" tarkoittaa tyhjennettyä, mutta aiemmin täytettyä."
 
 msgid "Value cannot be negative"
 msgstr "Arvo ei voi olla negatiivinen"
@@ -886,6 +892,14 @@ msgstr "On tuotuja tavaroita"
 
 msgid "Has uncompensated items"
 msgstr "On hyvittämättömiä tavaroita"
+
+msgid "Balance export"
+msgstr "Tilien vienti"
+
+msgid "Your user account is missing clerk permission to perform this operation"
+msgstr ""
+"Käyttäjätunnukseltasi puuttuu kassahenkilön oikeudet tämän toiminnon suorittam"
+"iseen"
 
 msgid "Box codes"
 msgstr "Laatikkokoodit"

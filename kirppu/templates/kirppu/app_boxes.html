@@ -111,7 +111,10 @@
         </div>{# panel-body, panel #}
     </form>
     {% else %}
-    {% include "kirppu/registration_closed.html" with classes="col-sm-8" %}
+    {% include "kirppu/registration_closed.html" %}
+    {% if is_vendor %}
+        {% include "kirppu/terms_form.html" %}
+    {% endif %}
     <div class="panel panel-default hidden-print col-sm-8">
         <div class="panel-body">
             {% load_texts "box_info" %}

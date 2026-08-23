@@ -30,10 +30,21 @@ from ..checkout_api import compensation_end, item_mode_change
 from ..provision import Provision
 
 DataRow: typing.TypeAlias = tuple[int, str, str, str, decimal.Decimal]
-DataRowEx: typing.TypeAlias = tuple[int, str, str, str, decimal.Decimal, decimal.Decimal, decimal.Decimal, decimal.Decimal]
+DataRowEx: typing.TypeAlias = tuple[
+    int,
+    str,
+    str,
+    str,
+    decimal.Decimal,
+    decimal.Decimal,
+    decimal.Decimal,
+    decimal.Decimal,
+]
 
 
-def _data_iterator(event: Event, verbose: bool = False) -> typing.Iterator[DataRow | DataRowEx]:
+def _data_iterator(
+    event: Event, verbose: bool = False
+) -> typing.Iterator[DataRow | DataRowEx]:
     vo = (
         Vendor.objects.filter(event=event)
         .filter(~models.Q(bank_iban=""), bank_iban__isnull=False)
@@ -72,8 +83,12 @@ def _data_iterator(event: Event, verbose: bool = False) -> typing.Iterator[DataR
                 vendor.bank_iban,
                 vendor.bank_bic,
                 final_sum,
-                Item.price_fmt_for(provision.provision or decimal.Decimal(0), short_exact=False),
-                Item.price_fmt_for(provision.provision_fix or decimal.Decimal(0), short_exact=False),
+                Item.price_fmt_for(
+                    provision.provision or decimal.Decimal(0), short_exact=False
+                ),
+                Item.price_fmt_for(
+                    provision.provision_fix or decimal.Decimal(0), short_exact=False
+                ),
                 Item.price_fmt_for(vendor.sum or 0, short_exact=False),
             )
         else:
@@ -126,7 +141,18 @@ def csv_view(request, event_slug: str):
     with io.StringIO() as buf:
         writer = csv.writer(buf, dialect=csv.excel)
         if verbose:
-            writer.writerow(["ID", _("Name"), "IBAN", "BIC", _("Sum"), "Included provision", "Provision fix", "Original"])
+            writer.writerow(
+                [
+                    "ID",
+                    _("Name"),
+                    "IBAN",
+                    "BIC",
+                    _("Sum"),
+                    "Included provision",
+                    "Provision fix",
+                    "Original",
+                ]
+            )
         else:
             writer.writerow(["ID", _("Name"), "IBAN", "BIC", _("Sum")])
         price_sum = decimal.Decimal(0)
@@ -210,7 +236,10 @@ def json_vendor_pos(pos: int, vendors: list[int], clazz=HttpResponse):
 def start_compensation(request, event_slug: str):
     event = _preconditions(request, event_slug)
 
-    args = json.loads(request.body)
+    try:
+        args = json.loads(request.body)
+    except json.JSONDecodeError:
+        return json_bad_request("Invalid JSON")
     hasher = hashlib.sha256()
     form = ExportCompensationForm(args, request, event, hasher)
     if not form.is_valid():
@@ -247,24 +276,28 @@ def start_compensation(request, event_slug: str):
 
 @login_required
 @require_POST
-@transaction.atomic
 def iter_vendor(request, event_slug: str):
     event = _preconditions(request, event_slug)
 
-    vendors: list[int] = request.session["compensation_vendors"]
+    pos: int | None = request.session.get("compensation_vendor_pos")
+    vendors: list[int] | None = request.session.get("compensation_vendors")
+    if pos is None or not vendors:
+        return HttpResponseBadRequest("Not started", content_type="text/plain")
+    if pos >= len(vendors):
+        return HttpResponseBadRequest("Overflow", content_type="text/plain")
+    vendor_id = vendors[pos]
+
+    new_pos = _do_compensation(request, event, pos, vendor_id)
+    return json_vendor_pos(new_pos, vendors)
+
+
+@transaction.atomic
+def _do_compensation(request, event: Event, pos: int, vendor_id: int) -> int:
     clerk_pk: int = request.session["compensation_clerk"]
     counter_pk: int = request.session["compensation_counter"]
-    if not vendors or not clerk_pk or not counter_pk:
-        return HttpResponseBadRequest("Not started")
-    pos: int = request.session["compensation_vendor_pos"]
-
-    if pos >= len(vendors):
-        return HttpResponseBadRequest("Overflow")
 
     counter = Counter.objects.only("pk").get(pk=counter_pk)
     clerk = Clerk.objects.only("pk").get(pk=clerk_pk)
-
-    vendor_id = vendors[pos]
     vendor = Vendor.objects.get(event=event, id=vendor_id)
 
     receipt = Receipt.objects.create(
@@ -280,16 +313,28 @@ def iter_vendor(request, event_slug: str):
 
     compensation_end(receipt.pk, vendor_id, event)
 
+    # Prevent further modifications from the processed vendor.
+    vendor.bank_lock = True
+    vendor.save(update_fields=["bank_lock"])
+
     pos += 1
     request.session["compensation_vendor_pos"] = pos
 
-    return json_vendor_pos(pos, vendors)
+    return pos
 
 
 @login_required
 @require_POST
 def end_compensation(request, event_slug: str):
-    _preconditions(request, event_slug)
+    event = _preconditions(request, event_slug)
+
+    # Lock rest of the vendors too
+    (
+        Vendor.objects.filter(event=event)
+        .filter(~models.Q(bank_skip=""), bank_skip__isnull=False)
+        .update(bank_lock=True)
+    )
+
     for k in (
         "compensation_hash",
         "compensation_vendors",
@@ -299,4 +344,50 @@ def end_compensation(request, event_slug: str):
     ):
         if k in request.session:
             del request.session[k]
-    return HttpResponse()
+    return HttpResponse(content_type="text/plain")
+
+
+def _can_cleanup(event: Event) -> bool:
+    for _ in _data_iterator(event):
+        return False
+    return True
+
+
+@login_required
+@require_POST
+def check_cleanup(request, event_slug: str):
+    event = _preconditions(request, event_slug)
+
+    if _can_cleanup(event):
+        if (
+            Vendor.objects.filter(event=event)
+            .filter(models.Q(bank_iban="!"), bank_iban__isnull=False, bank_lock=True)
+            .count()
+        ) > 0:
+            return HttpResponse("NOP", content_type="text/plain")
+        return HttpResponse("OK", content_type="text/plain")
+
+    return HttpResponse(
+        "There are vendors with bank info, without compensation",
+        content_type="text/plain",
+        status=409,
+    )
+
+
+@login_required
+@require_POST
+def do_cleanup(request, event_slug: str):
+    event = _preconditions(request, event_slug)
+
+    if not _can_cleanup(event):
+        return HttpResponseBadRequest(
+            "There are vendors with bank info, without compensation",
+            content_type="text/plain",
+        )
+
+    rows = Vendor.objects.filter(event=event).update(bank_iban="!", bank_bic="!")
+
+    return HttpResponse(
+        "Updated %d vendors" % rows,
+        content_type="text/plain",
+    )

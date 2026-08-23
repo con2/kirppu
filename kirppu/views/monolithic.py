@@ -23,9 +23,9 @@ from django.http import Http404
 from django.shortcuts import (
     redirect,
     render,
-    reverse,
     get_object_or_404,
 )
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.formats import localize
 from django.utils.translation import gettext as _
@@ -458,6 +458,7 @@ def get_items(request, event_slug, bar_type):
         }
     )
 
+    is_past_event = event.is_in_past()
     render_params = {
         'event': event,
         'source_event': event.get_real_event(),
@@ -469,9 +470,14 @@ def get_items(request, event_slug, bar_type):
         'profile_url': settings.PROFILE_URL,
         'terms_accepted': vendor.terms_accepted if vendor is not None else False,
         "bank_info": bank_info,
+        # Nothing should be changed if the form is disabled..
+        "locked_bank_info": vendor is not None and vendor.bank_lock,
+        # Selection should be not changed from bank to cash if the event has passed, as no cash can be given out.
+        "locked_bank_change": is_past_event and (vendor is None or vendor.has_bank_iban),
 
         'is_registration_open': is_vendor_open(request, event),
         'is_registration_closed_for_users': is_registration_closed_for_users(event=event),
+        'is_vendor': vendor is not None,
         'menu': vendor_menu(request, event),
         'itemTypes': ItemType.as_tuple(event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
@@ -526,6 +532,7 @@ def get_boxes(request, event_slug):
         }
     )
 
+    is_past_event = event.is_in_past()
     render_params = {
         'event': event,
         'source_event': event.get_real_event(),
@@ -536,9 +543,14 @@ def get_boxes(request, event_slug):
         'profile_url': settings.PROFILE_URL,
         'terms_accepted': vendor.terms_accepted if vendor is not None else False,
         "bank_info": bank_info,
+        # Nothing should be changed if the form is disabled.
+        "locked_bank_info": vendor is not None and vendor.bank_lock,
+        # Selection should be not changed from bank to cash if the event has passed, as no cash can be given out.
+        "locked_bank_change": is_past_event and (vendor is None or vendor.has_bank_iban),
 
         'is_registration_open': is_vendor_open(request, event),
         'is_registration_closed_for_users': is_registration_closed_for_users(event),
+        'is_vendor': vendor is not None,
         'menu': vendor_menu(request, event),
         'itemTypes': ItemType.as_tuple(event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
@@ -1019,12 +1031,31 @@ def accept_terms(request, event_slug):
     errors: dict = {}
     update_fields: list[str] = []
     extra_values: dict = {}
-    vendor = Vendor.get_or_create_vendor(request, event)
+
+    if is_open := is_vendor_open(request, event):
+        vendor = Vendor.get_or_create_vendor(request, event)
+    else:
+        vendor = Vendor.get_vendor(request, event)
+        if vendor is None:
+            return HttpResponseForbidden(_("Registration is closed"))
+
     if event.collect_bank_information:
+        if vendor.bank_lock:
+            # The banking information has been removed and is not allowed to be entered anymore.
+            return HttpResponseBadRequest(json.dumps({"result": "failure"}), "application/json")
+
         form = get_form(BankAccountForm, request, restrict_countries=event.restricted_bank_countries)
         if form.is_valid():
-            extra_values["with_account"] = form.cleaned_data["with_account"]
-            if form.cleaned_data["with_account"]:
+            with_account = form.cleaned_data["with_account"]
+            if event.is_in_past() and not with_account:
+                # Setting reason in old event; allow only if reason was already being used.
+                previously_with_account = vendor.has_bank_iban
+                if previously_with_account or not vendor.has_bank_skip:
+                    # Don't deselect account choice for past event.
+                    return HttpResponseBadRequest(json.dumps({"result": "failure"}), "application/json")
+
+            extra_values["with_account"] = with_account
+            if with_account:
                 vendor.bank_iban = form.cleaned_data["iban"]
                 vendor.bank_bic = form.cleaned_data["bic"]
                 vendor.bank_skip = None
@@ -1041,7 +1072,7 @@ def accept_terms(request, event_slug):
         else:
             errors.update(form.errors.get_json_data())
 
-    if vendor.terms_accepted is None:
+    if is_open and vendor.terms_accepted is None:
         if request.POST.get("terms-accepted") == "true":
             if not errors:
                 vendor.terms_accepted = timezone.now()
