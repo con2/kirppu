@@ -338,7 +338,7 @@ class TestBalanceExport(TestCase, ResultMixin):
         self.assertEqual(start.get("index"), 0)
         self.assertEqual(start.get("length"), length)
 
-    def test_simple_compensation(self):
+    def test_simple_compensation(self) -> Vendor:
         v = _make_iban_vendor(self.event, self.user)
         i = ItemFactory(vendor=v, state=Item.SOLD)
 
@@ -354,6 +354,7 @@ class TestBalanceExport(TestCase, ResultMixin):
         self.assertTrue(Vendor.objects.get(pk=v.pk).bank_lock)
 
         self.assertSuccess(self.client.post(self._url("kirppu:balance_export_end")))
+        return v
 
     def test_compensation_mixed(self):
         v2 = _make_skip_vendor(self.event, self.user)
@@ -400,4 +401,32 @@ class TestBalanceExport(TestCase, ResultMixin):
             self.client.post(self._url("kirppu:balance_check_cleanup")),
             "NOP",
             status_code=200,
+        )
+
+    def test_cleanup_mixed(self):
+        v2 = _make_skip_vendor(self.event, self.user)
+        i2 = ItemFactory(vendor=v2, state=Item.SOLD)
+        v1 = self.test_simple_compensation()
+        self.assertEqual(Item.objects.get(pk=i2.pk).state, Item.SOLD)
+
+        self.assertSuccess(
+            self.client.post(self._url("kirppu:balance_details_cleanup"))
+        )
+
+        v2.refresh_from_db()
+        self.assertEqual(
+            v2.bank_skip,
+            TEST_REASON,
+            "Skip reason should not have been cleared for skip vendor",
+        )
+        self.assertIsNone(
+            v2.bank_iban, "Bank info should not have been changed for skip vendor"
+        )
+
+        v1.refresh_from_db()
+        self.assertEqual(
+            v1.bank_iban, "!", "Bank info should have been cleared for iban vendor"
+        )
+        self.assertIsNone(
+            v1.bank_skip, "Skip reason should not have been changed for iban vendor"
         )

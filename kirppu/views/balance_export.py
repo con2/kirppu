@@ -385,7 +385,11 @@ def do_cleanup(request, event_slug: str):
             content_type="text/plain",
         )
 
-    rows = Vendor.objects.filter(event=event).update(bank_iban="!", bank_bic="!")
+    rows = (
+        Vendor.objects.filter(event=event)
+        .filter(~models.Q(bank_iban=""), bank_iban__isnull=False)
+        .update(bank_iban="!", bank_bic="!")
+    )
 
     return HttpResponse(
         "Updated %d vendors" % rows,
