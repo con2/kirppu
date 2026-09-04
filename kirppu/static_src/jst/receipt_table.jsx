@@ -18,7 +18,7 @@ export function receipt_table({caption}) {
 
 export function receipt_table_row({joined, vendor, code, name, price, text}) {
     if (joined) {
-        return <td colSpan="4">{text}</td>
+        return <tr><td colSpan="4">{text}</td></tr>
     }
     return (
         <tr id={code}>

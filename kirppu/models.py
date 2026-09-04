@@ -119,6 +119,12 @@ class Event(models.Model):
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=250)
     home_page = models.URLField(blank=True)
+    organiser = models.CharField(
+        max_length=250,
+        blank=True,
+        default="",
+        help_text=_("Organiser name, and registration number"),
+    )
     start_date = models.DateField()
     end_date = models.DateField()
 
@@ -165,6 +171,11 @@ class Event(models.Model):
         null=True,
         help_text=_("Comma-separated list of uppercase 2-letter country codes to restrict accepted IBANs."
                     " Leave empty to allow all."),
+    )
+    purchase_receipt_tail = models.TextField(
+        blank=True,
+        default="",
+        help_text=_("Text lines to append into each receipt.")
     )
 
     # Link to another database.

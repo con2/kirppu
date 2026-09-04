@@ -4,7 +4,7 @@ class @ReceiptPrintMode extends CheckoutMode
   @strTotal: gettext("Total")
   @strTitle: gettext("Receipt")
   @strTitleFind: gettext("Find receipt")
-  @strSell: pgettext("%d is date and time of the receipt, %c is name of the cashier.", "%d, cashier: %c")
+  @strSell: pgettext("%d is date and time of the receipt, %e is event name, %i is receipt id", "%d, receipt %i, %e")
 
   constructor: (cfg, switcher, receiptData) ->
     super
@@ -58,14 +58,16 @@ class @ReceiptPrintMode extends CheckoutMode
 
     sellStr = dPrintF(@constructor.strSell,
       d: DateTimeFormatter.datetime(receiptData.end_time)
-      c: receiptData.clerk.print
+      e: receiptData.event
+      i: receiptData.id
     )
 
     @receipt.body.append(row) for row in [
-      @constructor.middleLine()
+      PrintReceiptTable.joinedLine()
       PrintReceiptTable.createRow("", "", @constructor.strTotal, receiptData.total, true)
       PrintReceiptTable.joinedLine(sellStr)
-    ].concat(@constructor.tailLines())
+    ]
+    @receipt.body.append(PrintReceiptTable.joinedLine(row)) for row in receiptData.tail
 
     @hasReceipt = true
     @switcher.updateHead()
@@ -74,8 +76,3 @@ class @ReceiptPrintMode extends CheckoutMode
 
   onReturnToCounter: =>
     @switcher.switchTo(CounterMode)
-
-  @middleLine: () -> PrintReceiptTable.joinedLine()
-  @tailLines: () -> [
-    PrintReceiptTable.joinedLine()
-  ]

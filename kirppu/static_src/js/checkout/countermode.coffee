@@ -186,7 +186,8 @@ class @CounterMode extends ItemCheckoutMode
     else
       text = gettext("Total: %t").replace("%t", sum_fmt)
 
-    @receiptSum.set(text)
+    receipt_id = dPrintF(gettext("Receipt: #%i / "), i: @_receipt.id())
+    @receiptSum.set(receipt_id + text)
     @receiptSum.setEnabled(@_receipt.isActive())
 
   reserveItem: (code, box) ->
@@ -446,6 +447,8 @@ class ReceiptData
     @rowCount = 0
     @total = 0
     @data = data
+
+  id: -> if @data? then @data.id else "-"
 
   end: (data=null) ->
     @active = false

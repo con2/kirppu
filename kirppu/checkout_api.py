@@ -1152,11 +1152,22 @@ def _get_receipt_data_with_items(**kwargs):
 
     data = receipt.as_dict()
     data["items"] = receipt.row_list()
+
+    event: Event = receipt.counter.event
+    data["event"] = event.name
+    tail = []
+    if event.organiser:
+        tail.append(event.organiser)
+    if extra_tail := event.purchase_receipt_tail.strip():
+        tail.extend(extra_tail.split("\n"))
+    if tail:
+        data["tail"] = tail
+
     return data
 
 
 @ajax_func('^receipt$', method='GET')
-def receipt_get(request):
+def receipt_get(request, event: Event):
     """
     Find receipt by receipt id or one item in the receipt.
     """
@@ -1174,7 +1185,7 @@ def receipt_get(request):
         }
     else:
         raise AjaxError(RET_BAD_REQUEST)
-    return _get_receipt_data_with_items(**query)
+    return _get_receipt_data_with_items(**query, counter__event=event)
 
 
 @ajax_func('^receipt/activate$')
