@@ -1107,17 +1107,28 @@ def remove_item_from_receipt(request, event_slug):
     form = get_form(ItemRemoveForm, request, event=event)
 
     if request.method == "POST" and form.is_valid():
-        try:
-            with transaction.atomic():
-                removal = _remove_item_from_receipt(request, form.cleaned_data["code"], form.cleaned_data["receipt"])
-                account_id = removal.receipt.dst_account_id
-                Account.objects.filter(pk=account_id).update(balance=models.F("balance") - removal.item.price)
-        except (ValueError, AssertionError) as e:
-            form.add_error(None, e.args[0])
+        if form.cleaned_data["is_box"]:
+            repeat = form.cleaned_data["box_amount"]
+            subject_amount = f"{repeat}* " if repeat > 1 else ""
+            suffix = "items" if repeat > 1 else "item"
+            subject = f"{subject_amount}box {form.cleaned_data['box_number']} {suffix}"
         else:
-            messages.add_message(request, messages.INFO, "Item {0} removed from {1}".format(
-                form.cleaned_data["code"], removal.receipt
-            ))
+            repeat = 1
+            subject = f"item {form.cleaned_data['code']}"
+
+        try:
+            for iteration in range(repeat):
+                with transaction.atomic():
+                    removal = _remove_item_from_receipt(request, form.cleaned_data["code"], form.cleaned_data["receipt"])
+                    account_id = removal.receipt.dst_account_id
+                    Account.objects.filter(pk=account_id).update(balance=models.F("balance") - removal.item.price)
+        except (ValueError, AssertionError) as e:
+            during = f" at iteration {iteration + 1}/{repeat}" if repeat > 1 else ""
+            form.add_error(None, e.args[0] + during)
+        else:
+            messages.add_message(request, messages.INFO, "{0} removed from {1}: {2}".format(
+                subject, removal.receipt.id, removal.receipt
+            ).capitalize())
             return HttpResponseRedirect(url.reverse('kirppu:remove_item_from_receipt',
                                                     kwargs={"event_slug": event.slug}))
 

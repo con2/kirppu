@@ -309,8 +309,10 @@ class UITextForm(forms.ModelForm):
 
 
 class ItemRemoveForm(forms.Form):
+    BOX_PATTERN = r"(?:(?P<amount>\d+)[x*])?box[_ -]?(?P<number>\d+)$"
+
     receipt = forms.IntegerField(min_value=0, label=u"Receipt ID")
-    code = forms.CharField(label=u"Item code")
+    code = forms.CharField(label="Item code or box number")
 
     def __init__(self, *args, event, **kwargs):
         self._event = event
@@ -324,16 +326,54 @@ class ItemRemoveForm(forms.Form):
 
     def clean_code(self):
         data = self.cleaned_data["code"]
-        if box_match := re.match(r"box[_ -]?(\d+)$", data):
-            # Indefinite check: there may be multiple Box objects with same box_number, across different Events.
-            if not Box.objects.filter(box_number=int(box_match[1])).exists():
+        if box_match := re.match(self.BOX_PATTERN, data):
+            if (amount := int(box_match.group("amount") or 1)) < 1:
+                raise forms.ValidationError("Box item amount must be at least 1")
+
+            number = int(box_match.group("number"))
+            if not Box.objects.filter(
+                box_number=number,
+                representative_item__vendor__event=self._event,
+            ).exists():
                 raise forms.ValidationError("Box {} not found".format(box_match[1]))
-            return data
+            return (number, amount)
         if not Item.is_item_barcode(data):
             raise forms.ValidationError("Value is not an item barcode")
         if not Item.objects.filter(code=data, vendor__event=self._event).exists():
             raise forms.ValidationError(u"Item with code {code} not found.".format(code=data))
         return data
+
+    def clean(self) -> dict:
+        cleaned_data = super().clean()
+
+        match cleaned_data["code"]:
+            case (box_number, amount_to_remove):
+                receipt_box_item_count = ReceiptItem.objects.filter(
+                    receipt=cleaned_data["receipt"],
+                    action=ReceiptItem.ADD,
+                    item__box__box_number=box_number,
+                ).count()
+
+                if receipt_box_item_count == 0:
+                    self.add_error("code", f"No box {box_number} items in receipt.")
+                elif receipt_box_item_count < amount_to_remove:
+                    self.add_error("code", f"Not enough box {box_number} items in receipt. Only {receipt_box_item_count} left in it.")
+
+                cleaned_data["box_number"] = box_number
+                cleaned_data["box_amount"] = amount_to_remove
+                cleaned_data["is_box"] = True
+
+            case str(item_code):
+                if not ReceiptItem.objects.filter(
+                    receipt=cleaned_data["receipt"],
+                    action=ReceiptItem.ADD,
+                    item__code=item_code,
+                ).exists():
+                    self.add_error("code", f"Item is not in receipt {cleaned_data["receipt"]}")
+
+                cleaned_data["is_box"] = False
+
+        return cleaned_data
 
 
 @transaction.atomic
@@ -350,19 +390,21 @@ def remove_item_from_receipt(
     if isinstance(item_or_code, Item):
         item = item_or_code
     else:
-        if box_match := re.match(r"box[_ -]?(\d+)$", item_or_code):
-            box_number = int(box_match[1])
-            receipt_box_item = ReceiptItem.objects.filter(
-                receipt=receipt,
-                action=ReceiptItem.ADD,
-                item__box__box_number=box_number,
-            ).order_by("-add_time")[0:1]
-            if not receipt_box_item:
-                raise ValueError("Box item not found on receipt")
-            item = receipt_box_item[0].item
-            item = Item.objects.select_for_update().get(pk=item.pk)
-        else:
-            item = Item.objects.select_for_update().get(code=item_or_code)
+        match item_or_code:
+            case (box_number, _):
+                receipt_box_item = ReceiptItem.objects.filter(
+                    receipt=receipt,
+                    action=ReceiptItem.ADD,
+                    item__box__box_number=box_number,
+                ).order_by("-add_time")[0:1]
+                if not receipt_box_item:
+                    raise ValueError("Box item not found on receipt")
+                item = receipt_box_item[0].item
+                item = Item.objects.select_for_update().get(pk=item.pk)
+            case str(code):
+                item = Item.objects.select_for_update().get(code=code)
+            case _:
+                raise ValueError()
 
     if item.state not in (Item.SOLD, Item.STAGED):
         raise ValueError("Item is not sold or staged, but {}".format(item.state))
