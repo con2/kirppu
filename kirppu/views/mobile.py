@@ -153,6 +153,7 @@ def _login_view(request, event):
     min_length = first(field.validators, lambda v: v.code == "min_length")
     return render(request, "kirppu/vendor_status_login.html", {
         'event': event,
+        'source_event': event.get_real_event(),
         'min_length': min_length.limit_value if min_length else 0,
         'max_length': field.max_length,
         'errors': errors,
