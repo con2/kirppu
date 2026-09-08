@@ -3,7 +3,6 @@ import datetime
 import json
 import re
 import typing
-import warnings
 
 from django import template
 from django.conf import settings
@@ -19,10 +18,7 @@ register = template.Library()
 
 def _get_ui_text_query(context, id_):
     event = context["event"]  # type: Event
-    source_event = context.get("source_event")  # type: typing.Union[Event, RemoteEvent]
-    if source_event is None:
-        warnings.warn("Missing source_event value when getting text " + id_)
-        source_event = event
+    source_event: Event | RemoteEvent = context["source_event"]
     database = source_event.get_real_database_alias()
     return UIText.objects.using(database).filter(event=source_event)
 

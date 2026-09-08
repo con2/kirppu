@@ -49,12 +49,6 @@ from .utils import datetime_iso_human
 
 BOX_RE = re.compile(r"box[_-]?(\d+)")
 
-def with_description(short_description):
-    def decorator(action_function):
-        action_function.short_description = short_description
-        return action_function
-    return decorator
-
 
 class FieldAccessor:
     """
@@ -204,6 +198,7 @@ class VendorAdmin(admin.ModelAdmin):
         "user",
         "person",
     )
+    autocomplete_fields = ["user"]
 
     @staticmethod
     def _can_set_user(request, obj):
@@ -229,6 +224,7 @@ class VendorAdmin(admin.ModelAdmin):
         fields.append("terms_accepted")
         if obj is not None:
             fields.append("event")
+            fields.append("user")
             fields.append("person")
         return fields
 
@@ -306,14 +302,14 @@ class ClerkAdmin(admin.ModelAdmin):
         else:
             return _clerk_id_link, _user_link, _clerk_access_code_link, 'is_enabled', 'event'
 
-    @with_description(gettext(u"Generate missing Clerk access codes"))
+    @admin.display(description=gettext("Generate missing Clerk access codes"))
     def _gen_clerk_code(self, request, queryset):
         for clerk in queryset:
             if not clerk.is_valid_code:
                 clerk.generate_access_key()
                 clerk.save(update_fields=["access_key"])
 
-    @with_description(gettext(u"Delete Clerk access codes"))
+    @admin.display(description=gettext("Delete Clerk access codes"))
     def _del_clerk_code(self, request, queryset):
         for clerk in queryset:
             while True:
@@ -334,7 +330,7 @@ class ClerkAdmin(admin.ModelAdmin):
             msg = "Unknown error key: " + error
         self.message_user(request, msg, messages.ERROR)
 
-    @with_description(gettext(u"Move unused access code to existing Clerk."))
+    @admin.display(description=gettext("Move unused access code to existing Clerk."))
     @transaction.atomic
     def _move_clerk_code(self, request, queryset):
         if len(queryset) != 2:
@@ -511,21 +507,23 @@ class ClerkAdmin(admin.ModelAdmin):
 
 @admin.register(Counter)
 class CounterAdmin(admin.ModelAdmin):
-    list_display = ("name", "identifier", "event", "is_in_use", "is_locked")
+    list_display = ("name", "identifier", _event_link, "is_in_use", "is_locked")
     list_filter = ("event",)
     actions = ("lock_counter", "reset_use")
 
-    @with_description(gettext("Lock Counter"))
+    @admin.display(description=gettext("Lock Counter"))
     def lock_counter(self, request, queryset):
         for counter in queryset:
             counter.assign_private_key(for_lock=True)
 
-    @with_description(gettext("Reset Counter usage status"))
+    @admin.display(description=gettext("Reset Counter usage status"))
     def reset_use(self, request, queryset):
         queryset.update(private_key=None)
 
 
-admin.site.register(ReceiptExtraRow)
+@admin.register(ReceiptExtraRow)
+class ReceiptExtraRowAdmin(admin.ModelAdmin):
+    readonly_fields = ["receipt"]
 
 
 @admin.register(UIText)
@@ -548,7 +546,7 @@ class ItemTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    @with_description(gettext(u"Re-generate bar codes for items"))
+    @admin.display(description=gettext("Re-generate bar codes for items"))
     def _regen_barcode(self, request, queryset):
         for item in queryset:
             item.code = Item.gen_barcode()
@@ -565,6 +563,7 @@ class ItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'price', 'state', RefLinkAccessor('vendor', gettext("Vendor")))
     ordering = ('vendor', 'name')
     search_fields = ['name', 'code']
+    search_help_text = gettext("Item code or name")
     list_select_related = ("vendor", "vendor__user")
     list_filter = (
         "vendor__event",
@@ -585,11 +584,11 @@ class ReceiptItemAdmin(admin.TabularInline):
     exclude = ["item"]
     readonly_fields = [_receipt_item_link, "action", "price_str", "add_time_str"]
 
-    @with_description(Item._meta.get_field("price").verbose_name)
+    @admin.display(description=Item._meta.get_field("price").verbose_name)
     def price_str(self, instance: ReceiptItem):
         return instance.item.price
 
-    @with_description(ReceiptItem._meta.get_field("add_time").verbose_name)
+    @admin.display(description=ReceiptItem._meta.get_field("add_time").verbose_name)
     def add_time_str(self, instance: ReceiptItem):
         return instance.add_time.isoformat(sep=" ", timespec="milliseconds")
 
@@ -611,8 +610,9 @@ class ReceiptAdmin(admin.ModelAdmin):
         ReceiptExtraAdmin,
         ReceiptNoteAdmin,
     ]
-    ordering = ["-start_time"]
-    list_display = ["__str__", "status", "total", "counter", "end_time_str"]
+    ordering = ["-id"]
+    list_display = ["id", "receipt_str", "status", "total", "counter", "end_time_str"]
+    list_display_links = ["id", "receipt_str"]
     list_filter = [
         ("type", admin.ChoicesFieldListFilter),
         "clerk__event",
@@ -620,14 +620,18 @@ class ReceiptAdmin(admin.ModelAdmin):
         "counter",
         "status",
     ]
-    search_fields = ["items__code", "items__name"]
-    search_help_text = gettext("Item code, item name, or \"boxNN\".")
+    search_fields = ["id", "items__code", "items__name"]
+    search_help_text = gettext("Receipt ID, item code, item name, or \"boxNN\".")
     actions = ["re_calculate_total"]
     exclude = ["end_time"]
-    readonly_fields = ["start_time_str", "end_time_str"]
+    readonly_fields = ["id", "start_time_str", "end_time_str"]
     list_select_related = ["clerk", "clerk__user", "counter"]
+    autocomplete_fields = [
+        "vendor",
+    ]
+    date_hierarchy = "end_time"
 
-    @with_description("Re-calculate total sum of receipt")
+    @admin.display(description="Re-calculate total sum of receipt")
     def re_calculate_total(self, request, queryset):
         for i in queryset:  # type: Receipt
             i.calculate_total()
@@ -636,11 +640,15 @@ class ReceiptAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    @with_description(Receipt._meta.get_field("start_time").verbose_name)
+    @admin.display(ordering="-start_time", description=Receipt._meta.verbose_name)
+    def receipt_str(self, instance: Receipt) -> str:
+        return str(instance)
+
+    @admin.display(description=Receipt._meta.get_field("start_time").verbose_name)
     def start_time_str(self, instance: Receipt):
         return datetime_iso_human(instance.start_time)
 
-    @with_description(Receipt._meta.get_field("end_time").verbose_name)
+    @admin.display(ordering="-end_time", description=Receipt._meta.get_field("end_time").verbose_name)
     def end_time_str(self, instance: Receipt):
         return datetime_iso_human(instance.end_time)
 
@@ -669,6 +677,7 @@ class ItemStateLogAdmin(admin.ModelAdmin):
     model = ItemStateLog
     ordering = ["-id"]
     search_fields = ['item__code', 'clerk__user__username']
+    search_help_text = gettext("Item code or clerk username")
     list_display = ['id', 'time_str',
                     RefLinkAccessor("item", gettext("Item")),
                     'old_state', 'new_state',
@@ -679,13 +688,13 @@ class ItemStateLogAdmin(admin.ModelAdmin):
     )
     readonly_fields = ["time_str"]
     list_filter = (
-        "old_state", "new_state", "clerk", "counter",
+        "old_state", "new_state", "clerk__event", "clerk", "counter",
     )
     autocomplete_fields = [
         "item",
     ]
 
-    @with_description(ItemStateLog._meta.get_field("time").verbose_name)
+    @admin.display(description=ItemStateLog._meta.get_field("time").verbose_name)
     def time_str(self, instance: ItemStateLog):
         return datetime_iso_human(instance.time)
 
@@ -716,6 +725,7 @@ class BoxAdmin(admin.ModelAdmin):
         'get_item_count',
     ]
     search_fields = ['box_number', 'description', 'representative_item__code']
+    search_help_text = gettext("Box number, Box code, or description")
     ordering = ['box_number']
     list_display = [
         'box_number',
@@ -747,7 +757,7 @@ class BoxAdmin(admin.ModelAdmin):
     def get_changelist(self, request, **kwargs):
         return self.BoxChangeList
 
-    @with_description(gettext("Item count"))
+    @admin.display(description=gettext("Item count"))
     def _list_item_count(self, instance):
         return instance.item_count
 
@@ -783,3 +793,6 @@ class AccessSignupAdmin(admin.ModelAdmin):
         "update_time",
     )
     list_filter = ("event",)
+    autocomplete_fields = [
+        "user",
+    ]

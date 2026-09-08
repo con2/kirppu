@@ -136,7 +136,7 @@ def list_transfers(request, event):
 
 
 @ajax_func('^accounts/transfer$', method="POST", overseer=True)
-def transfer_money(request, event, src_id, dst_id, amount, note, auth, commit=False):
+def transfer_money(request, event, src_id, dst_id, amount, note, auth, commit: str | None = None):
     # Session clerk is mostly just stored into the note.
     session_clerk = get_clerk(request)
     clerk = Clerk.by_code(auth, event=event)

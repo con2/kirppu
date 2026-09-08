@@ -40,7 +40,7 @@ def box_find(request, event, box_number, box_item_count="1"):
     box_item_count = _parse_item_count(box_item_count)
 
     box = _get_box_or_404(box_number, event=event)
-    available_count = box.item_set.filter(state=Item.BROUGHT).count()
+    available_count = box.item_set.filter(state__in=(Item.BROUGHT, Item.RETURNED)).count()
     if available_count < box_item_count:
         raise AjaxError(RET_CONFLICT, _("Not enough available box items, only {} exist").format(available_count))
 
@@ -103,9 +103,17 @@ def box_item_reserve(request, event, box_number, box_item_count="1"):
     receipt = get_receipt(receipt_id, for_update=True)
 
     # Must force id-list to ensure stability.
-    # Otherwise the "list" is considered as a subquery which may not be stable.
-    candidates = list(box.item_set.select_for_update()
-                      .filter(state=Item.BROUGHT)[:box_item_count + 1].values_list("pk", flat=True))
+    # Otherwise, the "list" is considered as a subquery which may not be stable.
+    # Here we also allow returned items as those may be concurrently carried by multiple people:
+    # the vendor itself returning the box, and a customer buying some of its items.
+    # However, if the items then end up not being sold, they are returned as brought and
+    # need to be returned separately.
+    candidates = list(
+        box.item_set
+        .select_for_update()
+        .filter(state__in=(Item.BROUGHT, Item.RETURNED))[:box_item_count + 1]
+        .values_list("pk", flat=True)
+    )
 
     # Avoid representative item, as it is needed for representing all available items.
     # Reserve it only when it is last item to be reserved.
