@@ -6,14 +6,18 @@ import io
 import json
 import typing
 
+from datetime import timedelta
+
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import models, transaction
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
+import schwifty
 
 from ..models import (
     Clerk,
@@ -27,7 +31,9 @@ from ..models import (
     UserAdapter,
 )
 from ..checkout_api import compensation_end, item_mode_change
+from .pain import Pain
 from ..provision import Provision
+from ..util import get_form
 
 DataRow: typing.TypeAlias = tuple[int, str, str, str, decimal.Decimal]
 DataRowEx: typing.TypeAlias = tuple[
@@ -128,6 +134,7 @@ def view(request, event_slug: str):
         {
             "event": event,
             "enabled": has_clerk,
+            "form": XmlForm(),
         },
     )
 
@@ -170,6 +177,106 @@ def csv_view(request, event_slug: str):
             content_type="text/csv+plain; charset=UTF-8",
             headers={"Content-Disposition": f"inline; filename={event_slug}.csv"},
         )
+
+
+class XmlForm(forms.Form):
+    initiating_party = forms.CharField(
+        help_text="Official name of association",
+    )
+    initiating_id = forms.CharField(
+        help_text="Service ID (9 characters)",
+        min_length=9,
+        max_length=9,
+    )
+    debtor_iban = forms.CharField(max_length=45, strip=True)
+    debtor_bic = forms.CharField(max_length=16, strip=True, required=False)
+    message = forms.CharField()
+    version = forms.ChoiceField(choices=(
+        ("9", "09"),
+        ("13", "13"),
+    ))
+
+    def clean_debtor_iban(self) -> schwifty.IBAN:
+        data = self.cleaned_data["debtor_iban"]
+        try:
+            iban = schwifty.IBAN(data, validate_bban=True)
+        except ValueError as e:
+            raise forms.ValidationError("Iban validation error: %s" % str(e))
+        return iban
+
+    def clean_debtor_bic(self) -> schwifty.BIC | None:
+        data = self.cleaned_data["debtor_bic"]
+        if data:
+            try:
+                return schwifty.BIC(data)
+            except ValueError as e:
+                raise forms.ValidationError("Bic validation error: %s" % str(e))
+        return None
+
+    def clean(self):
+        iban: schwifty.IBAN | None = self.cleaned_data.get("debtor_iban")
+        clean_bic: schwifty.BIC | None = self.cleaned_data.get("debtor_bic")
+        if iban:
+            if not iban.bic and not clean_bic:
+                self.add_error("debtor_bic", _("BIC is required"))
+                return None
+            elif iban.bic and clean_bic and iban.bic != clean_bic:
+                self.add_error("debtor_bic", _("BIC does not match the IBAN"))
+                return None
+            else:
+                self.cleaned_data["debtor_bic"] = iban.bic or clean_bic
+
+        return self.cleaned_data
+
+
+@login_required
+@require_POST
+def xml_view(request, event_slug: str):
+    event = _preconditions(request, event_slug)
+    form = get_form(XmlForm, request)
+    if not form.is_valid():
+        return HttpResponseBadRequest(
+            form.errors.as_text(),
+            content_type="text/plain; charset=UTF-8",
+        )
+
+    now = timezone.now()
+    tomorrow = (now + timedelta(days=1)).date()
+
+    pain = Pain(pain_version=int(form.cleaned_data["version"]))
+    pain.group_header(
+        msg_id=f"{event_slug}-pmts",
+        initiating_party=form.cleaned_data["initiating_party"],
+        pmt_id="kirppu-" + now.date().strftime("%Y%m%d"),
+        exc_date=tomorrow.strftime("%Y-%m-%d"),
+        cre_date=now.isoformat(),
+    )
+    pain.debtor(
+        org_name=form.cleaned_data["initiating_party"],
+        org_id=form.cleaned_data["initiating_id"],
+        iban=form.cleaned_data["debtor_iban"],
+        bic=form.cleaned_data["debtor_bic"],
+    )
+    hasher = hashlib.sha256()
+
+    for v in _data_iterator(event):
+        pain.transfer_to(
+            e2e_id=f"{event_slug}-{v[0]}",
+            name=v[1],
+            iban=v[2],
+            msg=form.cleaned_data["message"],
+            amount=str(v[4]),
+        )
+        _hash_row(hasher, v)
+
+    pain.root.appendChild(pain.doc.createComment("Content hash: H" + hasher.hexdigest()))
+    pain.finish()
+
+    return HttpResponse(
+        pain.doc.toprettyxml("  ", encoding="UTF-8"),
+        content_type="text/xml; charset=UTF-8",
+        headers={"Content-Disposition": f"inline; filename={event_slug}-H{hasher.hexdigest()}.xml"},
+    )
 
 
 class ExportCompensationForm(forms.Form):
@@ -295,6 +402,19 @@ def iter_vendor(request, event_slug: str):
 def _do_compensation(request, event: Event, pos: int, vendor_id: int) -> int:
     clerk_pk: int = request.session["compensation_clerk"]
     counter_pk: int = request.session["compensation_counter"]
+
+    # if True:
+    #     import time
+    #     time.sleep(1)
+    #     index = pos
+    #     print(index)
+    #     pos = index + 1
+    #
+    #     request.session["compensation_vendor_pos"] = pos
+    #     if index == 2:
+    #         raise HttpResponseBadRequest("Test error")
+    #
+    #     return pos
 
     counter = Counter.objects.only("pk").get(pk=counter_pk)
     clerk = Clerk.objects.only("pk").get(pk=clerk_pk)

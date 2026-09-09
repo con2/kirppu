@@ -9,10 +9,21 @@
 
 {% block body %}
     <h3>Balance data</h3>
+    <h4>Data as CSV</h4>
+    <p>
     <a href="{% url "kirppu:balance_export_csv" event_slug=event.slug %}" target="_blank"
     >Get the CSV</a>
     (<a class="small" href="{% url "kirppu:balance_export_csv" event_slug=event.slug %}?verbose=1" target="_blank"
     >verbose version</a>)
+    </p>
+
+    <h4 style="margin-top: 1em;">pain.001.001.09 xml message</h4>
+    <form method="post" action="{% url "kirppu:balance_export_xml" event_slug=event.slug %}">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <input type="submit" />
+    </form>
+
     <hr/>
 
     <h3>Compensation finalization</h3>

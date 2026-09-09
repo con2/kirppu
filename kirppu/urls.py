@@ -50,6 +50,7 @@ event_urls = [
     path('accounting/flow', flow_stats),
     path("accounting/export", balance_export.view, name="balance_export"),
     path("accounting/export/csv", balance_export.csv_view, name="balance_export_csv"),
+    path("accounting/export/xml", balance_export.xml_view, name="balance_export_xml"),
     path("accounting/export/start", balance_export.start_compensation, name="balance_export_start"),
     path("accounting/export/iter", balance_export.iter_vendor, name="balance_export_iter"),
     path("accounting/export/end", balance_export.end_compensation, name="balance_export_end"),
