@@ -142,16 +142,6 @@ gunicorn_environment:
     value: "HTTP_X_FORWARDED_PROTO=https"
   - name: KIRPPU_ALLOW_PROVISION_FUNCTIONS
     value: "1"
-  - name: KOMPASSI_API_APPLICATION_NAME
-    valueFrom:
-      secretKeyRef:
-        name: !Var djangoapp_name
-        key: kompassiApiApplicationName
-  - name: KOMPASSI_API_APPLICATION_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: !Var djangoapp_name
-        key: kompassiApiApplicationPassword
 
 # The https-redirect middleware must only be attached where TLS is actually configured
 # (not local/dev without letsencrypt) - see infrastructure/kubernetes/traefik-middlewares.yaml
