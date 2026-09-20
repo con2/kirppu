@@ -18,7 +18,6 @@ from .forms import (
     ClerkGenerationForm,
     UITextForm,
     ClerkEditForm,
-    ClerkSSOForm,
 )
 
 from .models import (
@@ -377,7 +376,7 @@ class ClerkAdmin(admin.ModelAdmin):
         return True
 
     def save_related(self, request, form, formsets, change):
-        if isinstance(form, (ClerkEditForm, ClerkSSOForm)):
+        if isinstance(form, ClerkEditForm):
             # No related fields...
             return
         return super(ClerkAdmin, self).save_related(request, form, formsets, change)
@@ -393,30 +392,7 @@ class ClerkAdmin(admin.ModelAdmin):
         info = self.opts.app_label, self.opts.model_name
         return super(ClerkAdmin, self).get_urls() + [
             re_path(r'^add/bulk_unbound$', self.bulk_add_unbound, name="%s_%s_bulk" % info),
-            re_path(r'^add/sso$', self.add_from_sso, name="%s_%s_sso" % info),
         ]
-
-    def add_from_sso(self, request):
-        if not self.has_add_permission(request) or not self.uses_sso:
-            raise PermissionDenied
-
-        form = get_form(ClerkSSOForm, request)  # type: ClerkSSOForm
-
-        if request.method == 'POST' and form.is_valid():
-            clerk = form.save()
-            self.log_addition(request, clerk, {"added": {}})
-
-            msg = format_html(
-                gettext_eager("Clerk {name} added into {event}."),
-                name=form.cleaned_data["user"],
-                event=form.cleaned_data["event"],
-            )
-            self.message_user(request, msg, messages.SUCCESS)
-
-            from django.http import HttpResponseRedirect
-            return HttpResponseRedirect(reverse("admin:%s_%s_changelist" % (self.opts.app_label, self.opts.model_name)))
-
-        return self._get_custom_form(request, form, gettext('Add clerk from SSO provider'))
 
     def bulk_add_unbound(self, request):
         if not self.has_add_permission(request):

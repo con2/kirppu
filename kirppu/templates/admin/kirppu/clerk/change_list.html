@@ -8,16 +8,7 @@
     </style>
 {{ block.super }}
     {% if has_add_permission %}
-    {% url opts|admin_urlname:'sso' as add_sso_url %}
     {% url opts|admin_urlname:'bulk' as add_bulk_url %}
-    {% if cl.model_admin.uses_sso %}
-        <li>
-        <a href="{% add_preserved_filters add_sso_url is_popup %}" class="addlink">
-                {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }} from SSO provider{% endblocktrans %}
-            </a>
-        </li>
-    {% endif %}
-
     <li class="display-for-clerk">
         <a href="{% add_preserved_filters add_bulk_url is_popup %}" class="addlink">
             {% blocktrans with cl.opts.verbose_name as name %}Add unbound {{ name }}{% endblocktrans %}

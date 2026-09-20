@@ -2,11 +2,9 @@ import logging
 import re
 
 from django import forms
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.utils.html import mark_safe
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 import schwifty
@@ -53,70 +51,6 @@ class ClerkGenerationForm(forms.Form):
 
     def get_count(self):
         return self.cleaned_data["count"]
-
-
-class ClerkSSOForm(forms.ModelForm):
-    user = forms.CharField(
-        max_length=30,
-        validators=[
-            AbstractUser.username_validator
-        ],
-        label=_("Username"),
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(ClerkSSOForm, self).__init__(*args, **kwargs)
-        self._sso_user = None
-
-    def get_fieldsets(self):
-        return [(None, {'fields': self.base_fields})]
-
-    def clean(self):
-        cleaned_data = super().clean()
-        username = cleaned_data["user"]
-        event = cleaned_data["event"]
-        user = get_user_model().objects.filter(username=username)
-        if len(user) > 0:
-            clerk = Clerk.objects.filter(user=user[0], event=event)
-            if len(clerk) > 0:
-                raise forms.ValidationError("Clerk {username} already exists for event {event}.".format(
-                    **locals())
-                )
-
-        from kompassi_crowd.kompassi_client import KompassiError, kompassi_get
-        try:
-            self._sso_user = kompassi_get('people', username)
-        except KompassiError as e:
-            raise forms.ValidationError(u'Failed to get Kompassi user {username}: {e}'.format(
-                username=username, e=e)
-            )
-
-        return cleaned_data
-
-    def save(self, commit=True):
-        event = self.cleaned_data["event"]
-        username = self.cleaned_data["user"]
-        user = get_user_model().objects.filter(username=username)
-        if len(user) > 0 and user[0].password != "":
-            clerk = Clerk(user=user[0])
-            if commit:
-                clerk.save()
-            return clerk
-
-        from kompassi_crowd.kompassi_client import user_defaults_from_kompassi
-        user, created = get_user_model().objects.get_or_create(
-            username=username,
-            defaults=user_defaults_from_kompassi(self._sso_user)
-        )
-
-        clerk = Clerk(event=event, user=user)
-        if commit:
-            clerk.save()
-        return clerk
-
-    class Meta:
-        model = Clerk
-        exclude = ("user", "access_key")
 
 
 class ClerkEditForm(forms.ModelForm):
@@ -327,7 +261,8 @@ class ItemRemoveForm(forms.Form):
     def clean_code(self):
         data = self.cleaned_data["code"]
         if box_match := re.match(self.BOX_PATTERN, data):
-            if (amount := int(box_match.group("amount") or 1)) < 1:
+            amount = int(box_match.group("amount") or 1)
+            if amount < 1:
                 raise forms.ValidationError("Box item amount must be at least 1")
 
             number = int(box_match.group("number"))
@@ -336,15 +271,17 @@ class ItemRemoveForm(forms.Form):
                 representative_item__vendor__event=self._event,
             ).exists():
                 raise forms.ValidationError("Box {} not found".format(box_match[1]))
-            return (number, amount)
+            return number, amount
         if not Item.is_item_barcode(data):
             raise forms.ValidationError("Value is not an item barcode")
         if not Item.objects.filter(code=data, vendor__event=self._event).exists():
             raise forms.ValidationError(u"Item with code {code} not found.".format(code=data))
         return data
 
-    def clean(self) -> dict:
+    def clean(self) -> dict | None:
         cleaned_data = super().clean()
+        if cleaned_data is None:
+            return None
 
         match cleaned_data["code"]:
             case (box_number, amount_to_remove):
@@ -369,7 +306,7 @@ class ItemRemoveForm(forms.Form):
                     action=ReceiptItem.ADD,
                     item__code=item_code,
                 ).exists():
-                    self.add_error("code", f"Item is not in receipt {cleaned_data["receipt"]}")
+                    self.add_error("code", f"Item is not in receipt {cleaned_data['receipt']}")
 
                 cleaned_data["is_box"] = False
 
@@ -507,7 +444,7 @@ class VendorBoxForm(VendorItemForm):
 class PersonCreationForm(forms.ModelForm):
     class Meta:
         model = Person
-        fields = forms.ALL_FIELDS
+        fields = forms.models.ALL_FIELDS
 
 
 class AccessSignupBooleanField(forms.BooleanField):
@@ -519,6 +456,7 @@ class AccessSignupBooleanField(forms.BooleanField):
         as_boolean = super().to_python(value)
         if as_boolean:
             return self._enum_value.value
+        return None
 
 
 class AccessSignupForm(forms.Form):

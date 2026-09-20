@@ -30,9 +30,9 @@ code.yv8k02zi:before {
     content: "???";
 }
 
-#logout-menuitem { padding: 0; }
-#logout-menuitem form { display: flex; }
-#logout-menuitem form button {
+.dropdown .logout-item { padding: 0; }
+.dropdown .logout-item form { display: flex; }
+.dropdown .logout-item form button {
     flex-grow: 1;
     padding: 3px 20px;
 }

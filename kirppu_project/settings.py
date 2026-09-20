@@ -247,15 +247,6 @@ LOGGING = {
 }
 
 # Mapping from Kompassi user fields to Kirppu user fields.
-# for SSOClerkForm
-KOMPASSI_USER_MAP = [
-    # Kompassi, django
-    ('username', 'username'),
-    ('email', 'email'),
-    ('first_name', 'first_name'),
-    ('surname', 'last_name'),
-    ('phone', 'phone'),
-]
 # for OAuth2
 KOMPASSI_USER_MAP_V2 = [
     # django, Kompassi
@@ -266,17 +257,7 @@ KOMPASSI_USER_MAP_V2 = [
     ('phone', 'phone'),
 ]
 
-KOMPASSI_API_APPLICATION_NAME = env(
-    'KOMPASSI_API_APPLICATION_NAME',
-    default='kirppu',
-)
-KOMPASSI_API_APPLICATION_PASSWORD = env(
-    'KOMPASSI_API_APPLICATION_PASSWORD',
-    default='fill me in',
-)
-
 KOMPASSI_HOST = env('KOMPASSI_HOST', default='https://kompassi.eu')
-KOMPASSI_API_V1_URL = '{KOMPASSI_HOST}/api/v1'.format(**locals())
 KOMPASSI_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_HOST}/oauth2/authorize/'.format(**locals())
 KOMPASSI_OAUTH2_TOKEN_URL = '{KOMPASSI_HOST}/oauth2/token/'.format(**locals())
 KOMPASSI_OAUTH2_REVOKE_URL = '{KOMPASSI_HOST}/oauth2/revoke/'.format(**locals())

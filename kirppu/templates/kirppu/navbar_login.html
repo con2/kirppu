@@ -14,7 +14,7 @@
             <li><a href="{{ profile_url }}" target="_blank">{% trans "Profile" %}</a></li>
             {% endif %}
             <li>
-                <a class="logout-item" id="logout-menuitem">
+                <a class="logout-item">
                     <form method="post" action="{% kirppu_logout_url event.get_absolute_url %}">
                         {% csrf_token %}
                         {% if logout_next %}<input type="hidden" name="next" value="{{ logout_next }}" />{% endif %}
