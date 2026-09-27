@@ -37,6 +37,13 @@ def index(request, event_slug: str):
     }))
 
 
+def _name(user: AbstractUser) -> str:
+    if user.username.startswith("!"):
+        return UserAdapter.full_name(user)
+    else:
+        return "%s (%s)" % (UserAdapter.full_name(user), user.username)
+
+
 class PersonInfo:
     user: AbstractUser
     id: int
@@ -59,7 +66,7 @@ class PersonInfo:
     def __init__(self, user: AbstractUser):
         self.user = user
         self.id = user.id
-        self.name = "%s (%s)" % (UserAdapter.full_name(user), user.username)
+        self.name = _name(user)
 
     def as_dict(self):
         return {key: getattr(self, key) for key in (
@@ -83,7 +90,7 @@ def make_signup_data(signup: AccessSignup):
     target_set = signup.target_set
     targets = [int(t) for t in target_set.split(",")] if target_set else []
     return {
-        "name": "%s (%s)" % (UserAdapter.full_name(signup.user), signup.user.username),
+        "name": _name(signup.user),
         "username": signup.user.username,
         "save_time": format_datetime(signup.update_time),
         "resolution_time": format_datetime(signup.resolution_time) if signup.resolution_time is not None else None,

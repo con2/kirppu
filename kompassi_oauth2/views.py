@@ -3,12 +3,15 @@ import typing
 import requests
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.core.exceptions import MultipleObjectsReturned
 from django.http import HttpResponse
 from django.shortcuts import redirect, resolve_url
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import View
 from requests_oauthlib import OAuth2Session
+
+from .backends import OAuth2Message
 
 
 def get_session(request, **kwargs):
@@ -63,7 +66,13 @@ class CallbackView(View):
 
         self._finish(request)
 
-        user = authenticate(request=request, oauth2_session=session)
+        try:
+            user = authenticate(request=request, oauth2_session=session)
+        except OAuth2Message as e:
+            return HttpResponse(e.args[0], status=403)
+        except KeyError:
+            return HttpResponse("OAuth2 login failed", status=500)
+
         if user is not None and user.is_active:
             login(request, user)
             return redirect(get_redirect_url(request, next_url, settings.LOGIN_REDIRECT_URL))

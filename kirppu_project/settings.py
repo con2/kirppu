@@ -247,20 +247,19 @@ LOGGING = {
 }
 
 # Mapping from Kompassi user fields to Kirppu user fields.
-# for OAuth2
-KOMPASSI_USER_MAP_V2 = [
+# for OIDC
+KOMPASSI_USER_MAP_OIDC = [
     # django, Kompassi
-    ('username', 'username'),
     ('email', 'email'),
-    ('first_name', 'first_name'),
-    ('last_name', 'surname'),
+    ('first_name', 'given_name'),
+    ('last_name', 'family_name'),
     ('phone', 'phone'),
 ]
 
-KOMPASSI_HOST = env('KOMPASSI_HOST', default='https://kompassi.eu')
-KOMPASSI_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_HOST}/oauth2/authorize/'.format(**locals())
-KOMPASSI_OAUTH2_TOKEN_URL = '{KOMPASSI_HOST}/oauth2/token/'.format(**locals())
-KOMPASSI_OAUTH2_REVOKE_URL = '{KOMPASSI_HOST}/oauth2/revoke/'.format(**locals())
+KOMPASSI_HOST = env("KOMPASSI_HOST", default="https://dev.kompassi.eu")
+KOMPASSI_OAUTH2_AUTHORIZATION_URL = f"{KOMPASSI_HOST}/oauth2/authorize/"
+KOMPASSI_OAUTH2_TOKEN_URL = f"{KOMPASSI_HOST}/oauth2/token/"
+KOMPASSI_OAUTH2_REVOKE_URL = f"{KOMPASSI_HOST}/oauth2/revoke/"
 
 KOMPASSI_OAUTH2_CLIENT_ID = env(
     'KOMPASSI_OAUTH2_CLIENT_ID',
@@ -272,10 +271,11 @@ KOMPASSI_OAUTH2_CLIENT_SECRET = env(
     default='kompassi_insecure_test_client_secret'
 )
 
-KOMPASSI_OAUTH2_SCOPE = ['read']
-KOMPASSI_API_V2_USER_INFO_URL = '{KOMPASSI_HOST}/api/v2/people/me'.format(**locals())
+# profile might be not needed as openid includes most properties already this time.
+KOMPASSI_OAUTH2_SCOPE = ["openid", "email", "phone", "profile"]
+KOMPASSI_OIDC_USER_INFO_URL = f"{KOMPASSI_HOST}/oidc/userinfo/"
+KOMPASSI_OIDC_REQUIRE_VERIFIED_EMAIL = env.bool("KOMPASSI_OIDC_REQUIRE_VERIFIED_EMAIL", default=True)
 KOMPASSI_API_V2_EVENT_INFO_URL_TEMPLATE = '{kompassi_host}/api/v2/events/{event_slug}'
-KOMPASSI_ADMIN_GROUP = env('KOMPASSI_ADMIN_GROUP', default='admins')
 
 
 # Kirppu authentication configurations:

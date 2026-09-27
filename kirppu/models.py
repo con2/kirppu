@@ -427,8 +427,7 @@ class Clerk(models.Model):
 
     def as_dict(self):
         return {
-            "user": str(self.user),
-            "print": UserAdapter.print_name(self.user),
+            "user": UserAdapter.print_name(self.user),
         }
 
     def get_code(self):
