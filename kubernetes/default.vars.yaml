@@ -106,6 +106,8 @@ gunicorn_environment:
       secretKeyRef:
         name: !Var djangoapp_name
         key: secretKey
+  - name: KOMPASSI_HOST
+    value: "https://kompassi.eu"
   - name: KOMPASSI_OAUTH2_CLIENT_ID
     valueFrom:
       secretKeyRef:
