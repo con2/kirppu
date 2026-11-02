@@ -10,7 +10,7 @@ dependencies = [
     "django-ratelimit~=4.0",
     "django~=5.2.0",
     "mistune~=3.3.0",
-    "pillow~=12.0",
+    "pillow~=13.0",
     "pubcode~=1.1.0",
     "schwifty",
     "whitenoise~=6.11.0",
@@ -21,7 +21,7 @@ dependencies = [
 oauth = [
     "requests~=2.30",
     "requests-oauthlib~=2.0.0",
-    "oauthlib~=3.3.0",
+    "oauthlib~=4.0.0",
 ]
 production = [
     "gunicorn~=25.0",
